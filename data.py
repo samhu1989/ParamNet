@@ -11,7 +11,6 @@ class DataFetcher(threading.Thread):
         self.BATCH_SIZE = 16;
         self.HEIGHT=192;
         self.WIDTH=256;
-        self.HID_NUM=128;
         self.PTS_DIM=3;
         self.Data = Queue.Queue(64);
         self.DataTag = Queue.Queue(64);
@@ -20,7 +19,7 @@ class DataFetcher(threading.Thread):
         self.stopped = False;
         self.Dir = [];
         self.useMix = True;
-        self.randfunc="np.random.normal(0.0,1.0,[self.HID_NUM,PTS_NUM,3])";
+        self.randfunc="np.random.normal(0.0,1.0,[self.BATCH_SIZE,PTS_NUM,3])";
     
     def shuffleDir(self):
         random.shuffle(self.Dir);
@@ -69,13 +68,16 @@ class DataFetcher(threading.Thread):
                 self.EpochCnt += 1;
         for i in range(VIEW_NUM):
             x2D = np.zeros([self.BATCH_SIZE,self.HEIGHT,self.WIDTH,4]);
-            x3D = eval(self.randfunc);
+            rand = eval(self.randfunc);
             yGT = np.zeros([self.BATCH_SIZE,PTS_NUM,3]);
+            data_dict = {};
+            data_dict['x2D'] = x2D;
+            data_dict['yGT'] = yGT;
+            data_dict.update(rand);
             if fdense is not None:
                 yGTdense = np.zeros([self.BATCH_SIZE,PTS_DENSE_NUM,3]);
-                q.append((x2D,x3D,yGT,yGTdense));
-            else:
-                q.append((x2D,x3D,yGT));
+                data_dict['yGTdense'] = yGTdense;
+            q.append(data_dict);
         fi = 0;
         for f,fdense in files:
             x2DIn = f["IMG"][...];
@@ -84,10 +86,10 @@ class DataFetcher(threading.Thread):
             if fdense is not None:
                 yGTDense = fdense["PV"][...];
             for i in range(VIEW_NUM):
-                q[i][0][fi,...] = x2DIn[i,...];
-                q[i][2][fi,...] = yGTIn[i,...];
+                q[i]['x2D'][fi,...] = x2DIn[i,...];
+                q[i]['yGT'][fi,...] = yGTIn[i,...];
                 if yGTDense is not None:
-                    q[i][-1][fi,...] = yGTDense[i//2,...];
+                    q[i]['yGTdense'][fi,...] = yGTDense[i//2,...];
             f.close();
             fi += 1;
         return q;
@@ -108,17 +110,22 @@ class DataFetcher(threading.Thread):
             self.EpochCnt += 1;
         num = VIEW_NUM // self.BATCH_SIZE;
         assert num*self.BATCH_SIZE==VIEW_NUM,"self.BATCH_SIZE is not times of VIEW_NUM in dataset";
+        data_dict = {};
         for i in range(num):
             x2D = np.zeros([self.BATCH_SIZE,self.HEIGHT,self.WIDTH,4]);
-            x3D = eval(self.randfunc);
+            rand = eval(self.randfunc);
             yGT = np.zeros([self.BATCH_SIZE,PTS_NUM,3]);
-            q.append((x2D,x3D,yGT));
+            data_dict={};
+            data_dict['x2D'] = x2D;
+            data_dict['yGT'] = yGT;
+            data_dict.update(rand);
+            q.append(data_dict);
             tag.append(ftag);
         for i in range(VIEW_NUM):
             qi = i // self.BATCH_SIZE ;
             qj = i % self.BATCH_SIZE;
-            q[qi][0][qj,...] = x2DIn[i,...];
-            q[qi][2][qj,...] = yGTIn[i,...];
+            q[qi]['x2D'][qj,...] = x2DIn[i,...];
+            q[qi]['yGT'][qj,...] = yGTIn[i,...];
         f.close();
         return q,tag;
     
