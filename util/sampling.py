@@ -88,6 +88,41 @@ def randsphere(m=None):
         pts[i,2] = 1.0-2.0*r2;
     return pts;
 
+def randsphere2(m=None):
+    pts = np.random.normal(size=[m,3]).astype(np.float32);
+    pts += 1e-8;
+    pts_norm = np.sqrt(np.sum(np.square(pts),axis=1,keepdims=True));
+    pts /= pts_norm;
+    return pts;
+
+def randsphere3(m=None):
+    PTS_DIM = 3;
+    pts = np.zeros([m,PTS_DIM],np.float32);
+    pts_init = randsphere2(3);
+    pts[0:3,:] = pts_init[0:3,:];
+    for i in range(3,m):
+        center = np.mean(pts[0:i,:],axis=0);
+        tmppts = randsphere2(m);
+        dist = np.sum(np.square(tmppts - center),axis=1);
+        pts[i,:]=tmppts[np.argmax(dist),:];
+    return pts;
+
+
+def randsphere4(m=None):
+    pts = np.zeros([m,3],np.float32);
+    n = np.linspace(1,m,m);
+    n += np.random.normal();
+    tmp = 0.5*(np.sqrt(5)-1)*n;
+    theta = 2.0*np.pi*(tmp - np.floor(tmp));
+    pts[:,0] = np.cos(theta);
+    pts[:,1] = np.sin(theta);
+    pts[:,2] = 2.0*(n - n.min()) / (n.max()-n.min()) - 1.0;
+    scale = np.sqrt(1 - np.square(pts[:,2]));
+    pts[:,0] *= scale;
+    pts[:,1] *= scale;
+    return pts;
+    
+
 def getface(tri_lst):
     f = [];
     for tri in tri_lst:
@@ -103,7 +138,8 @@ def rand_n_sphere(n,m=None):
         pts = np.zeros([n,m,PTS_DIM],np.float32);
     for i in range(n):
         pts[i,:,:] = randsphere(m);
-    return pts;
+    data_dict={'x3D':pts,'x3D_final':pts};
+    return data_dict;
 
 def rand_1_sphere(n,m=None):
     OUTPUTPOINTS = 1024;
@@ -115,7 +151,8 @@ def rand_1_sphere(n,m=None):
     sphere = randsphere(m);
     for i in range(n):
         pts[i,:,:] = sphere;
-    return pts;
+    data_dict={'x3D':pts,'x3D_final':pts}; 
+    return data_dict;
 
 def edge_interp(pts,fidx):
     edge_dict = {};
@@ -159,7 +196,7 @@ def rand_sphere_interp(n,m=None,level=3):
     if m is None:
         m = 256;
     pts = np.zeros([n,m,3],np.float32);
-    sphere = randsphere(m);
+    sphere = randsphere4(m);
     for i in range(n):
         pts[i,:,:] = sphere;
     hulllst = triangulateSphere(sphere.reshape([1,-1,3]));
@@ -172,5 +209,15 @@ def rand_sphere_interp(n,m=None,level=3):
         interpidx.append(eidx);
         interp_sphere = sphere[eidx,:];
         interp_sphere = np.mean(interp_sphere,axis=1);
+        interp_sphere_norm = np.sqrt(np.sum(np.square(interp_sphere),axis=1,keepdims=True));
+        interp_sphere /= interp_sphere_norm;
         sphere = np.concatenate([sphere,interp_sphere],axis=0);
-    return pts,interpidx,flst;
+    data_dict = {};
+    data_dict['x3D'] = pts;
+    data_dict['eidx'] = interpidx;
+    data_dict['fidx'] = flst;
+    ptsfinal = np.zeros([n,sphere.shape[0],3],np.float32);
+    for i in range(n):
+        ptsfinal[i,:,:] = sphere;
+    data_dict['x3D_final'] = ptsfinal;
+    return data_dict;
