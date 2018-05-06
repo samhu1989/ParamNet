@@ -1,0 +1,110 @@
+\section{Experimental Evaluation}
+\subsection{Experimental Setup}
+We train and evaluate our models on the ShapeNet\citep{shapenetdata}. Specifically, we use the version 2 release of ShapeNetCore55 which contains over 50k of
+manually created and cleaned 3D CAD models in 55 category.
+The images for training
+and testing are rendered in random angles to provide synthetic training data for the model. In total,
+51,856 shape models are covered. For the training/validation/testing split, we follow the CSV file provided by the ShapeNet website and resulted in 36,622/5,110/10,124 shapes. The 3D CAD objects are
+stored as meshes, we re-sample the meshes into point sets. In order to capture only the shape surface, we uses the code from \citep{Wang-2017-OCNN} and execute ``virtual scan" for the re-sampling.
+\subsection{Point Set Generation with Synthetic Images}
+In this subsection, we compare our approach with point set generation network (PSGN)\citep{PSGN} on ShapeNet dataset \citep{shapenetdata}. 
+\iffalse
+\begin{table}
+	\centering
+	\begin{tabular}{c c c c c}
+		Input & GT & PSGN\citep{PSGN} & ParamNet Points & ParamNet Mesh \\
+		\midrule
+		\includegraphics[width=0.19\linewidth]{img/input/000.png}&
+		\includegraphics[width=0.19\linewidth]{img/GT/000.png}&
+		\includegraphics[width=0.19\linewidth]{img/PSGN/000.png}&
+		\includegraphics[width=0.19\linewidth]{img/KPARAM/000.png}&
+		\includegraphics[width=0.19\linewidth]{img/KPARAM/000m.png}\\
+		%
+		\includegraphics[width=0.19\linewidth]{img/input/001.png}&
+		\includegraphics[width=0.19\linewidth]{img/GT/001.png}&
+		\includegraphics[width=0.19\linewidth]{img/PSGN/001.png}&
+		\includegraphics[width=0.19\linewidth]{img/KPARAM/001.png}&
+		\includegraphics[width=0.19\linewidth]{img/KPARAM/001m.png}\\
+		%
+		\includegraphics[width=0.19\linewidth]{img/input/002.png}&
+		\includegraphics[width=0.19\linewidth]{img/GT/002.png}&
+		\includegraphics[width=0.19\linewidth]{img/PSGN/002.png}&
+		\includegraphics[width=0.19\linewidth]{img/KPARAM/002.png}&
+		\includegraphics[width=0.19\linewidth]{img/KPARAM/002m.png}\\
+		%
+		\includegraphics[width=0.19\linewidth]{img/input/003.png}&
+		\includegraphics[width=0.19\linewidth]{img/GT/003.png}&
+		\includegraphics[width=0.19\linewidth]{img/PSGN/003.png}&
+		\includegraphics[width=0.19\linewidth]{img/KPARAM/003.png}&
+		\includegraphics[width=0.19\linewidth]{img/KPARAM/003m.png}\\
+	\end{tabular}
+	\caption{Visual Result}
+	\label{tab:vis}
+\end{table}
+\fi
+\begin{table}
+	\caption{Comparison with point set generation network on point set Chamfer Distance. }
+	\label{tab:seg}
+	\centering
+	\begin{tabular}{c c c c}
+		Category & Category id & Ours & PSGN\citep{PSGN} \\
+		\midrule
+		aircraft & 02691156 & 0.345 & {\color{green} \textbf{0.324}}\\   
+		dustbin & 02747177 & 0.256 & {\color{green} \textbf{0.254}}\\
+		bag & 02773838  & {\color{green} \textbf{0.322}} & 0.408\\
+		basket & 02801938 & {\color{green}\textbf{0.738}} & 0.826\\
+		bathtub & 02808440 & 0.349 & {\color{green}\textbf{0.331}}\\
+		bench & 02828884 & {\color{green}\textbf{0.242}} & 0.255\\
+		bed & 02818832 & 0.507 & {\color{green}\textbf{0.468}}\\
+		birdhouse & 02843684 & 0.516 & {\color{green}\textbf{0.471}}\\
+		shelf & 02871439 & 0.179 & {\color{green}\textbf{0.174}}\\
+		bottle & 02876657 & 0.154 & {\color{green}\textbf{0.163}}\\
+		bowl & 02880940 & 0.643 & {\color{green}\textbf{0.606}}\\
+		bus & 02924116 & {\color{green}\textbf{0.146}} & 0.148\\
+		dresser & 02933112 & {\color{green}\textbf{0.311}} & 0.317\\
+		camera & 02942699 & {\color{green}\textbf{0.701}} & 0.738\\
+		can & 02946921 & 0.143 & {\color{green}\textbf{0.140}}\\
+		cap & 02954340 & {\color{green} \textbf{1.082}} & 1.358\\
+		car & 02958343 & 0.253 & {\color{green} \textbf{0.243}}\\
+		cellphone & 02992529,04401088 & {\color{green}\textbf{0.059}},0.108 & 0.061,{\color{green}\textbf{0.105}}\\
+		chair & 03001627 & 0.203 & {\color{green}\textbf{0.201}}\\
+		clock & 03046257 & 0.344 & {\color{green}\textbf{0.333}}\\
+		keyboard & 03085013 & 0.352 & {\color{green}\textbf{0.327}}\\
+		dishwasher & 03207941 & 0.255 & {\color{green}\textbf{0.214}}\\
+		monitor & 03211117 & 0.293 & {\color{green}\textbf{0.291}}\\
+		headphone & 03261776 & {\color{green}\textbf{0.373}} & 0.462\\
+		hydrant & 03325088 & {\color{green}\textbf{0.409}} & 0.410\\
+		file cabinet& 03337140 & 0.179 & 0.179\\
+		guitar & 03467517 & 0.039 & 0.039\\
+		helmet & 03513137 & {\color{green}\textbf{0.772}} & 0.825\\
+		vase & 03593526 & {\color{green}\textbf{0.227}} & 0.242\\
+		knife & 03624134 & {\color{green}\textbf{0.060}}  & 0.086\\
+		lamp & 03636649 & 0.332 & {\color{green}\textbf{0.323}}\\
+		laptop & 03642806 & 0.246 & 0.246\\
+		speaker & 03691459 & 0.351 & {\color{green}\textbf{0.346}}\\
+		mailbox & 03710193 & 0.322 & {\color{green}\textbf{0.211}}\\
+		mike & 03759954 & 0.838 & {\color{green}\textbf{0.624}}\\
+		microwave & 03761084 & {\color{green}\textbf{0.248}} & 0.269\\
+		motorcycle & 03790512 & 0.283 & {\color{green}\textbf{0.271}}\\
+		mug & 03797390 & 0.356 & {\color{green}\textbf{0.313}}\\
+		piano & 03928116 & {\color{green}\textbf{0.382}} & 0.388\\
+		pillow & 03938244 & {\color{green}\textbf{0.457}} & 0.563\\
+		handgun & 03948459,04090263 & {\color{green}\textbf{0.292}},0.169 & 0.310,{\color{green}\textbf{0.162}}\\
+		planter & 03991062 & 0.346 & 0.346\\
+		printer & 04004475 & 0.620 & {\color{green}\textbf{0.583}}\\
+		remote & 04074963 & 0.073 & {\color{green}\textbf{0.072}}\\
+		missile & 04099429 & {\color{green}\textbf{0.149}} & 0.157\\
+		skateboard & 04225987 & 0.250 & {\color{green}\textbf{0.231}}\\
+		sofa & 04256520 & {\color{green}\textbf{0.312}} & 0.327\\
+		stove & 04330267 & {\color{green}\textbf{0.341}} & 0.344\\
+		table & 04379243 & {\color{green}\textbf{0.314}} & 0.331\\
+		tower & 04460130 & 0.482 & {\color{green}\textbf{0.334}}\\
+		train & 04468005 & 0.250 & {\color{green}\textbf{0.240}}\\
+		ship  & 04530566 & {\color{green}\textbf{0.256}} & 0.259\\
+		washer &  04554684 & {\color{green}\textbf{0.247}} & 0.272\\
+		mean   &     -     & {\color{green}\textbf{0.336}} & 0.337
+	\end{tabular}
+\end{table}
+
+\subsection{Ablation Experiments}
+\subsection{Point Set Generation with Real Images}
