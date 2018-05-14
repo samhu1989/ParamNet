@@ -1,12 +1,12 @@
 \section{Experimental Evaluation}
-\subsection{Experimental Setup}
+\subsection{Experimental setup}
 We train and evaluate our models on the ShapeNet\citep{shapenetdata}. Specifically, we use the version 2 release of ShapeNetCore55 which contains over 50k of
 manually created and cleaned 3D CAD models in 55 category.
 The images for training
 and testing are rendered in random angles to provide synthetic training data for the model. In total,
 51,856 shape models are covered. For the training/validation/testing split, we follow the CSV file provided by the ShapeNet website and resulted in 36,622/5,110/10,124 shapes. The 3D CAD objects are
 stored as meshes, we re-sample the meshes into point sets. In order to capture only the shape surface, we uses the code from \citep{Wang-2017-OCNN} and execute ``virtual scan" for the re-sampling.
-\subsection{Point Set Generation with Synthetic Images}
+\subsection{Comparing to state-of-art}
 In this subsection, we compare our approach with point set generation network (PSGN)\citep{PSGN} on ShapeNet dataset \citep{shapenetdata}. 
 \iffalse
 \begin{table}
@@ -106,5 +106,6 @@ In this subsection, we compare our approach with point set generation network (P
 	\end{tabular}
 \end{table}
 
-\subsection{Ablation Experiments}
-\subsection{Point Set Generation with Real Images}
+\subsection{Ablation study}
+\subsection{Number of \textit{K}-neighbor PointNet}
+\subsection{Semantic and sampling variation}
