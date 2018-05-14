@@ -68,6 +68,12 @@ def pretrain(setttings={}):
                         i += 1;
                 if ('fidx' in data_dict.keys()) and ('fidx' in net_dict.keys()):
                     feed[net_dict['fidx']] = data_dict['fidx'][-1];
+                if 'lplidx' in data_dict.keys():
+                    i = 0;
+                    while 'lplidx_%d'%i in net_dict.keys():
+                        feed[net_dict['lplidx_%d'%i]] = data_dict['lplidx'][i];
+                        feed[net_dict['lplw_%d'%i]] = data_dict['lplw'][i];
+                        i += 1;
                 #feed[net_dict['']]
                 opt = net_dict['optmse'];
                 _,summary,step = sess.run([
@@ -80,6 +86,8 @@ def pretrain(setttings={}):
                     saver.save(sess,'%s/'%dumpdir+"model_pretrain");
                 epoch_len = len(train_fetcher.Dir);
                 print "Pretrain,GT_PTS_NUM",GT_PTS_NUM,"step:",step,"/",epoch_len,"learning rate:",lrate;
+                if step > len(train_fetcher.Dir):
+                    break;
         finally:
             train_fetcher.shutdown();
     return;
@@ -130,7 +138,7 @@ def train(setttings={}):
             train_fetcher.start();
             val_fetcher.start();
             lastEpoch = 0;
-            for traincnt in range(10*len(train_fetcher.Dir)):
+            for traincnt in range(8*len(train_fetcher.Dir)):
                 data_dict = train_fetcher.fetch();
                 x2D = data_dict['x2D'];
                 x3D = data_dict['x3D'];
@@ -151,6 +159,12 @@ def train(setttings={}):
                         i += 1;
                 if ('fidx' in data_dict.keys()) and ('fidx' in net_dict.keys()):
                     feed[net_dict['fidx']] = data_dict['fidx'][-1];
+                if 'lplidx' in data_dict.keys():
+                    i = 0;
+                    while 'lplidx_%d'%i in net_dict.keys():
+                        feed[net_dict['lplidx_%d'%i]] = data_dict['lplidx'][i];
+                        feed[net_dict['lplw_%d'%i]] = data_dict['lplw'][i];
+                        i += 1;
                 #feed[net_dict['']]
                 if net_name.endswith('_DUAL'):
                     opt = net_dict['optdchmf'];
@@ -180,12 +194,20 @@ def train(setttings={}):
                         i += 1;
                 if ('fidx' in data_dict.keys()) and ('fidx' in net_dict.keys()):
                     feed[net_dict['fidx']] = data_dict['fidx'][-1];
+                if 'lplidx' in data_dict.keys():
+                    i = 0;
+                    while 'lplidx_%d'%i in net_dict.keys():
+                        feed[net_dict['lplidx_%d'%i]] = data_dict['lplidx'][i];
+                        feed[net_dict['lplw_%d'%i]] = data_dict['lplw'][i];
+                        i += 1;
                 summary,loss,step = sess.run([net_dict['sum'],net_dict['chmf'],net_dict['step']],feed_dict=feed);
                 valid_writer.add_summary(summary,step);
                 if step % 200 == 0:
                     saver.save(sess,'%s/'%dumpdir+"model_epoch%d.ckpt"%train_fetcher.EpochCnt);
                 epoch_len = len(train_fetcher.Dir);
                 print "Epoch:",train_fetcher.EpochCnt,"GT_PTS_NUM",GT_PTS_NUM,"step:",step,"/",epoch_len,"learning rate:",lrate;
+                if step > 8*len(train_fetcher.Dir):
+                    break;
         finally:
             train_fetcher.shutdown();
             val_fetcher.shutdown();
@@ -207,12 +229,11 @@ def test(settings={}):
         config.allow_soft_placement = True;
         
     test_fetcher = DataFetcher();
-    test_fetcher.BATCH_SIZE = sizes[0];
-    test_fetcher.PTS_DIM = sizes[1];
-    test_fetcher.HID_NUM = sizes[2];
-    test_fetcher.HEIGHT = sizes[3];
-    test_fetcher.WIDTH = sizes[4];
-    test_fetcher.Dir = util.listdir(testdir,".h5");
+    test_fetcher.BATCH_SIZE = settings['batch_size'];
+    test_fetcher.PTS_DIM = 3;
+    test_fetcher.HEIGHT = settings['height'];
+    test_fetcher.WIDTH = settings['width'];
+    test_fetcher.Dir = util.listdir(traindir,".h5");
     test_fetcher.useMix = False;
     
     FetcherLst.append(test_fetcher);
@@ -263,6 +284,12 @@ def test(settings={}):
                         i += 1;
                 if ('fidx' in data_dict.keys()) and ('fidx' in net_dict.keys()):
                     feed[net_dict['fidx']] = data_dict['fidx'][-1];
+                if 'lplidx' in data_dict.keys():
+                    i = 0;
+                    while 'lplidx_%d'%i in net_dict.keys():
+                        feed[net_dict['lplidx_%d'%i]] = data_dict['lplidx'][i];
+                        feed[net_dict['lplw_%d'%i]] = data_dict['lplw'][i];
+                        i += 1;
                 yout=None;
                 loss=None;
                 yout,loss = sess.run([net_dict['ox3D'],net_dict['chmf']],feed_dict=feed);
@@ -298,10 +325,10 @@ def test(settings={}):
 
 if __name__ == "__main__":
     #some default value
-    datadir="/data4T1/samhu/shapenet_split_complete";
-    dumpdir="/data4T1/samhu/tf_dump/SL_Exp_04_train";
-    preddir="/data4T1/samhu/tf_dump/predict";
-    net_name="VPSGN";
+    datadir="/data4T/samhu/shapenet_split_complete";
+    dumpdir="/data4T/samhu/tf_dump/SL_Exp_04_train";
+    preddir="/data4T/samhu/tf_dump/predict";
+    net_name="PSGN";
     gpuid=1;
     testbegin = None;
     testend = None;

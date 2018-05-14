@@ -42,6 +42,7 @@ def KPARAM_33(settings={}):
         kpN = 4;
         uplevel = 2;
         net['rand'] = "util.rand_sphere_interp(%d,66,%d)"%(BATCH_SIZE,uplevel);
+        net['ox3D00']=x3D;
         for i in range(kpN):
             x = block.decoder_instn(xs,name="decoder%02d"%i);
             x3D = kpblock6ext(x,x3D,BATCH_SIZE,k,name="kpblock%d"%i);
@@ -51,8 +52,10 @@ def KPARAM_33(settings={}):
                 interpx3D = tf.gather(x3D,eidx,axis=1);
                 interpx3D = tf.reduce_mean(interpx3D,axis=2);
                 x3D = tf.concat([x3D,interpx3D],axis=1);
+            net['ox3D%02d'%(i+1)]=x3D;
         x3D = kpblock6dn(x3D,BATCH_SIZE,k,name="kpblockdn");
         x = block.decoder_instn(xs,name="decoderg");
+        net['ox3D%02d'%(kpN+1)]=x3D;
         x3D,scalereg = kpblock6g(x,x3D,BATCH_SIZE);
         net['ox3D'] = x3D;
         #

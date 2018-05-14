@@ -212,6 +212,8 @@ def rand_sphere_interp(n,m=None,level=3):
         interp_sphere_norm = np.sqrt(np.sum(np.square(interp_sphere),axis=1,keepdims=True));
         interp_sphere /= interp_sphere_norm;
         sphere = np.concatenate([sphere,interp_sphere],axis=0);
+    fidx,eidx = edge_interp(sphere,flst[-1]);
+    interpidx.append(eidx);
     data_dict = {};
     data_dict['x3D'] = pts;
     data_dict['eidx'] = interpidx;
@@ -220,4 +222,105 @@ def rand_sphere_interp(n,m=None,level=3):
     for i in range(n):
         ptsfinal[i,:,:] = sphere;
     data_dict['x3D_final'] = ptsfinal;
+    return data_dict;
+
+def laplace(n,fidx):
+    lplidx = np.zeros([n,6],dtype=np.int32) - 1;
+    lplcnt = np.zeros([n],dtype=np.int32);
+    lplw = np.zeros([n,6],dtype=np.float32);
+    for i in range(fidx.shape[0]):
+        vidx0 = fidx[i,0];
+        vidx1 = fidx[i,1];
+        vidx2 = fidx[i,2];
+        vs0 = lplidx[vidx0,:];
+        vs1 = lplidx[vidx1,:];
+        vs2 = lplidx[vidx2,:];
+        if not vidx1 in vs0 and lplcnt[vidx0] < 6:
+            lplidx[vidx0,lplcnt[vidx0]] = vidx1;
+            lplw[vidx0,lplcnt[vidx0]] = 1.0;
+            lplcnt[vidx0] += 1;
+        if not vidx2 in vs0 and lplcnt[vidx0] < 6:
+            lplidx[vidx0,lplcnt[vidx0]] = vidx2;
+            lplw[vidx0,lplcnt[vidx0]] = 1.0;
+            lplcnt[vidx0] += 1;
+        if not vidx0 in vs1 and lplcnt[vidx1] < 6:
+            lplidx[vidx1,lplcnt[vidx1]] = vidx0;
+            lplw[vidx1,lplcnt[vidx1]] = 1.0;
+            lplcnt[vidx1] += 1;
+        if not vidx2 in vs1 and lplcnt[vidx1] < 6:
+            lplidx[vidx1,lplcnt[vidx1]] = vidx2;
+            lplw[vidx1,lplcnt[vidx1]] = 1.0;
+            lplcnt[vidx1] += 1;
+        if not vidx0 in vs2 and lplcnt[vidx2] < 6:
+            lplidx[vidx2,lplcnt[vidx2]] = vidx0;
+            lplw[vidx2,lplcnt[vidx2]] = 1.0;
+            lplcnt[vidx2] += 1;
+        if not vidx1 in vs2 and lplcnt[vidx2] < 6:
+            lplidx[vidx2,lplcnt[vidx2]] = vidx1;
+            lplw[vidx2,lplcnt[vidx2]] = 1.0;
+            lplcnt[vidx2] += 1;
+    assert lplcnt.min() > 0;
+    lplw /= lplcnt.reshape((n,1)).astype(np.float32);
+    return lplidx,lplw;
+
+def rand_sphere_interp2(n,m=None,level=3):
+    if m is None:
+        m = 256;
+    pts = np.zeros([n,m,3],np.float32);
+    sphere = randsphere4(m);
+    for i in range(n):
+        pts[i,:,:] = sphere;
+    hulllst = triangulateSphere(sphere.reshape([1,-1,3]));
+    interpidx = [];
+    flst = [];
+    flst.append(hulllst[0].simplices);
+    data_dict = {};
+    data_dict['lplidx'] = [];
+    data_dict['lplw'] = [];
+    lplidx,lplw = laplace(int(sphere.shape[0]),flst[-1]);
+    data_dict['lplidx'].append(lplidx);
+    data_dict['lplw'].append(lplw);
+    for l in range(level):
+        fidx,eidx = edge_interp(sphere,flst[-1]);
+        flst.append(fidx);
+        interpidx.append(eidx);
+        interp_sphere = sphere[eidx,:];
+        interp_sphere = np.mean(interp_sphere,axis=1);
+        interp_sphere_norm = np.sqrt(np.sum(np.square(interp_sphere),axis=1,keepdims=True));
+        interp_sphere /= interp_sphere_norm;
+        sphere = np.concatenate([sphere,interp_sphere],axis=0);
+        lplidx,lplw = laplace(int(sphere.shape[0]),flst[-1]);
+        data_dict['lplidx'].append(lplidx);
+        data_dict['lplw'].append(lplw);
+    _,eidx = edge_interp(sphere,flst[-1]);
+    interpidx.append(eidx);
+    data_dict['x3D'] = pts;
+    data_dict['eidx'] = interpidx;
+    data_dict['fidx'] = flst;
+    ptsfinal = np.zeros([n,sphere.shape[0],3],np.float32);
+    for i in range(n):
+        ptsfinal[i,:,:] = sphere;
+    data_dict['x3D_final'] = ptsfinal;
+    return data_dict;
+    
+def rand_sphere_nointerp(n,m=None):
+    pts = np.zeros([n,m,3],np.float32);
+    sphere = randsphere4(m);
+    for i in range(n):
+        pts[i,:,:] = sphere;
+    hulllst = triangulateSphere(sphere.reshape([1,-1,3]));
+    flst = [];
+    flst.append(hulllst[0].simplices);
+    data_dict = {};
+    _,eidx = edge_interp(sphere,flst[-1]);
+    data_dict['x3D'] = pts;
+    data_dict['x3D_final'] = pts;
+    data_dict['eidx'] = [];
+    data_dict['eidx'].append(eidx);
+    data_dict['fidx'] = flst;
+    data_dict['lplidx'] = [];
+    data_dict['lplw'] = [];
+    lplidx,lplw = laplace(int(sphere.shape[0]),flst[-1]);
+    data_dict['lplidx'].append(lplidx);
+    data_dict['lplw'].append(lplw);
     return data_dict;

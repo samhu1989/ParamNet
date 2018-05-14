@@ -56,7 +56,7 @@ def KPARAM_33_DUAL(settings={}):
         x3D,scalereg = kpblock6g(x,x3D,BATCH_SIZE);
         net['ox3D'] = x3D;
         #
-        dists_forward,_,dists_backward,_= loss.ChamferDistLoss.Loss(yGT,x3D)
+        dists_forward,_,dists_backward,_ = loss.ChamferDistLoss.Loss(yGT,x3D)
         dists_forward=tf.reduce_mean(dists_forward);
         dists_backward=tf.reduce_mean(dists_backward); 
         tf.summary.scalar("dists_forward",dists_forward);
@@ -67,6 +67,8 @@ def KPARAM_33_DUAL(settings={}):
         tf.summary.scalar("decay",decay);
         net['chmf'] = loss_nodecay;
         loss_with_decay = loss_nodecay + decay + scalereg;
+        df_with_decay = dists_forward*2*1024*100 + decay + scalereg;
+        db_with_decay = dists_backward*2*1024*100 + decay + scalereg;
         tf.summary.scalar("loss_with_decay",loss_with_decay);
         #
         fidx = tf.placeholder(tf.int32,shape=[None,3],name='fidx');
@@ -92,6 +94,12 @@ def KPARAM_33_DUAL(settings={}):
         net['step'] = gstep;
         optdchmf = tf.train.AdamOptimizer(lr).minimize(dual_loss_decay,global_step=gstep);
         net['optdchmf'] = optdchmf;
+        optchmf = tf.train.AdamOptimizer(lr).minimize(loss_with_decay,global_step=gstep);
+        net['optchmf'] = optchmf;
+        optdf = tf.train.AdamOptimizer(lr).minimize(df_with_decay,global_step=gstep);
+        net['optdf'] = optdf;
+        optdb = tf.train.AdamOptimizer(lr).minimize(db_with_decay,global_step=gstep);
+        net['optdb'] = optdb;
         #
         net['sum'] = tf.summary.merge_all();
         prestepinit = tf.constant_initializer(0);

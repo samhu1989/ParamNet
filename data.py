@@ -12,14 +12,14 @@ class DataFetcher(threading.Thread):
         self.HEIGHT=192;
         self.WIDTH=256;
         self.PTS_DIM=3;
-        self.Data = Queue.Queue(64);
-        self.DataTag = Queue.Queue(64);
+        self.Data = Queue.Queue(256);
+        self.DataTag = Queue.Queue(256);
         self.Cnt = 0;
         self.EpochCnt = 0;
         self.stopped = False;
         self.Dir = [];
         self.useMix = True;
-        self.randfunc="np.random.normal(0.0,1.0,[self.BATCH_SIZE,PTS_NUM,3])";
+        self.randfunc="util.rand_n_sphere(self.BATCH_SIZE,PTS_NUM)";
     
     def shuffleDir(self):
         random.shuffle(self.Dir);
@@ -77,6 +77,7 @@ class DataFetcher(threading.Thread):
             if fdense is not None:
                 yGTdense = np.zeros([self.BATCH_SIZE,PTS_DENSE_NUM,3]);
                 data_dict['yGTdense'] = yGTdense;
+                data_dict['ynGT'] = yGTdense.copy();
             q.append(data_dict);
         fi = 0;
         for f,fdense in files:
@@ -85,11 +86,13 @@ class DataFetcher(threading.Thread):
             yGTDense = None;
             if fdense is not None:
                 yGTDense = fdense["PV"][...];
+                ynGTDense = fdense["PN"][...];
             for i in range(VIEW_NUM):
                 q[i]['x2D'][fi,...] = x2DIn[i,...];
                 q[i]['yGT'][fi,...] = yGTIn[i,...];
                 if yGTDense is not None:
                     q[i]['yGTdense'][fi,...] = yGTDense[i//2,...];
+                    q[i]['ynGT'][fi,...] = ynGTDense[i//2,...];
             f.close();
             fi += 1;
         return q;
@@ -100,6 +103,13 @@ class DataFetcher(threading.Thread):
         datapath = self.Dir[self.Cnt];
         f = h5py.File(datapath,"r");
         ftag = os.path.basename(datapath).split("_")[0];
+        densepath = datapath.split(".")[0]+".dense";
+        fdense = None;
+        if os.path.exists(densepath):
+            fdense = h5py.File(densepath,"r");
+            yGTDenseIn = fdense["PV"][...];
+            ynGTDenseIn = fdense["PN"][...];
+            PTS_DENSE_NUM = int(yGTDenseIn.shape[-2]);
         self.Cnt += 1;
         x2DIn = f["IMG"];
         yGTIn = f["PV"];
@@ -119,6 +129,9 @@ class DataFetcher(threading.Thread):
             data_dict['x2D'] = x2D;
             data_dict['yGT'] = yGT;
             data_dict.update(rand);
+            if fdense:
+                data_dict['yGTdense'] = np.zeros([self.BATCH_SIZE,PTS_DENSE_NUM,3]);
+                data_dict['ynGT'] = np.zeros([self.BATCH_SIZE,PTS_DENSE_NUM,3]);
             q.append(data_dict);
             tag.append(ftag);
         for i in range(VIEW_NUM):
@@ -126,7 +139,12 @@ class DataFetcher(threading.Thread):
             qj = i % self.BATCH_SIZE;
             q[qi]['x2D'][qj,...] = x2DIn[i,...];
             q[qi]['yGT'][qj,...] = yGTIn[i,...];
+            if fdense:
+                q[qi]['yGTdense'][qj,...] = yGTDenseIn[i//2,...];
+                q[qi]['ynGT'][qj,...] = ynGTDenseIn[i//2,...];
         f.close();
+        if fdense:
+            fdense.close();
         return q,tag;
     
     def run(self):

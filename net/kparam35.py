@@ -6,7 +6,7 @@ import block;
 import group;
 from kp import *;
 
-def KPARAM_34_DUAL(settings={}):
+def KPARAM_35(settings={}):
     if 'batch_size' in settings.keys():
         BATCH_SIZE=settings['batch_size'];
     else:
@@ -40,8 +40,8 @@ def KPARAM_34_DUAL(settings={}):
         xs = block.encoder_instn(x);
         k = 16;
         kpN = 4;
-        uplevel = 3;
-        net['rand'] = "util.rand_sphere_interp(%d,34,%d)"%(BATCH_SIZE,uplevel);
+        uplevel = 2;
+        net['rand'] = "util.rand_sphere_interp(%d,66,%d)"%(BATCH_SIZE,uplevel);
         for i in range(kpN):
             x = block.decoder_instn(xs,name="decoder%02d"%i);
             x3D = kpblock6ext(x,x3D,BATCH_SIZE,k,name="kpblock%d"%i);
@@ -55,10 +55,18 @@ def KPARAM_34_DUAL(settings={}):
         x = block.decoder_instn(xs,name="decoderg");
         x3D,scalereg = kpblock6g(x,x3D,BATCH_SIZE);
         net['ox3D'] = x3D;
+        eidx = tf.placeholder(tf.int32,shape=[None,2],name='eidx_%d'%uplevel);
+        net['eidx_%d'%uplevel] = eidx;
+        x3Dedge = tf.gather(x3D,eidx,axis=1);
+        x3Dedgelen = x3Dedge*tf.constant([1,1,1,-1,-1,-1],dtype=tf.float32,shape=[1,1,2,3],name='substract')
+        x3Dedgelen2 = tf.sqrt(tf.reduce_sum(tf.square(tf.reduce_sum(x3Dedgelen,axis=2)),axis=2));
+        x3Dedgevar = tf.reduce_sum(tf.square(x3Dedgelen2 - tf.reduce_mean(x3Dedgelen2,axis=1,keep_dims=True)));
+        tf.summary.scalar("x3Dedgevar",x3Dedgevar);
         #
-        dists_forward,_,dists_backward,_= loss.ChamferDistLoss.Loss(yGT,x3D)
+        dists_forward,_,dists_backward,idxb = loss.ChamferDistLoss.Loss(yGT,x3D);
         dists_forward=tf.reduce_mean(dists_forward);
-        dists_backward=tf.reduce_mean(dists_backward); 
+        dists_backward=tf.reduce_mean(dists_backward);
+        #
         tf.summary.scalar("dists_forward",dists_forward);
         tf.summary.scalar("dists_backward",dists_backward);
         loss_nodecay=(dists_forward+dists_backward)*1024*100;
@@ -66,21 +74,8 @@ def KPARAM_34_DUAL(settings={}):
         decay = tf.add_n(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))*0.1;
         tf.summary.scalar("decay",decay);
         net['chmf'] = loss_nodecay;
-        loss_with_decay = loss_nodecay + decay + scalereg;
+        loss_with_decay = loss_nodecay + decay + scalereg + x3Dedgevar;
         tf.summary.scalar("loss_with_decay",loss_with_decay);
-        #
-        fidx = tf.placeholder(tf.int32,shape=[None,3],name='fidx');
-        net['fidx'] = fidx;
-        fx3D = tf.reduce_mean( tf.gather( x3D , fidx, axis=1 ), axis=2, name='fx3D' );
-        fdf,_,fdb,_ = loss.ChamferDistLoss.Loss(yGT,fx3D);
-        fdf = tf.reduce_mean(fdf);
-        fdb = tf.reduce_mean(fdb);
-        floss_nodecay = ( fdf + fdb )*1024*100;
-        tf.summary.scalar("floss_no_decay",floss_nodecay);
-        dual_loss_nodecay = floss_nodecay + loss_nodecay;
-        tf.summary.scalar("dual_loss_nodecay",dual_loss_nodecay);
-        dual_loss_decay = dual_loss_nodecay + decay + scalereg;
-        tf.summary.scalar("dual_loss_decay",dual_loss_decay);
         #
         mse = 2*1024*100*tf.reduce_mean(tf.reduce_sum(tf.square(x3D - yGT),axis=2));
         mse_with_decay = mse + decay + scalereg;
@@ -90,8 +85,8 @@ def KPARAM_34_DUAL(settings={}):
         stepinit = tf.constant_initializer(0);
         gstep = tf.get_variable(shape=[],initializer=stepinit,trainable=False,name='step',dtype=tf.int32);
         net['step'] = gstep;
-        optdchmf = tf.train.AdamOptimizer(lr).minimize(dual_loss_decay,global_step=gstep);
-        net['optdchmf'] = optdchmf;
+        optchmf = tf.train.AdamOptimizer(lr).minimize(loss_with_decay,global_step=gstep);
+        net['optchmf'] = optchmf;
         #
         net['sum'] = tf.summary.merge_all();
         prestepinit = tf.constant_initializer(0);

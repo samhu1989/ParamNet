@@ -67,8 +67,8 @@ def debug_train():
 
 def debug_up():
     N = 2;
-    M = 66;
-    level = 2;
+    M = 34;
+    level = 3;
     for t in range(3):
         data_dict = util.rand_sphere_interp(N,M,level);
         pts = data_dict['x3D'];
@@ -87,7 +87,7 @@ def debug_up():
             pts = np.concatenate([pts,interp_pts], axis=1);
             faces = [];
             for j in range(pts.shape[0]):
-                faces.append(flst[i]);
+                faces.append(flst[i+1]);
             print pts.shape;
             util.write_to_obj('../debug/T%d_L%d'%(t,(i+1)),pts,faces=faces);
         faces = [];
