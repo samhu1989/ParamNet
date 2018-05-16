@@ -75,11 +75,11 @@ l_{reg} = \sum_{(i,j)\in\mathcal{E}}(||\mathbf{x}_i-\mathbf{x}_j||_2 - \frac{1}{
 \end{equation}
 
 \subsection{Network initialization}
-When start training from scratch, the proposed loss and network still can not prevent the network to output surface with severe global self-intersection. To alleviate this problem, we adopt a network initialization step to reset the parameterization network to start at a state that output surface without self-intersection. At this step we train the network with the loss shown in (\ref{equ:mse}). The $\mathbf{y}$ used in (\ref{equ:mse}) is not the points from groundtruth, but the points sampled from parameter domain with a 0.5 scale down. In other words, this step will reset the network so that the parameterization network will map from a sphere to a smaller sphere, when taking any image as input. We do this initialization by one epoch on the training data. 
+When start training from scratch, the proposed loss and network still can not prevent the network to output surface with severe global self-intersection. To alleviate this problem, we adopt a network initialization step to reset the parameterization network to start at a state that output surface without self-intersection. At this step we train the network with the loss shown in (\ref{equ:init}). The $\mathbf{y}$ used in (\ref{equ:mse}) is not the points from groundtruth, but the points sampled from parameter domain with a 0.5 scale down. In other words, this step will reset the network so that the parameterization network will map from a sphere to a smaller sphere, when taking any image as input. We do this initialization by one epoch on the training data. 
 
 \begin{equation}
-\label{equ:mse}
-l_{mse} = \sum_\mathbf{x}||\mathbf{x} - \mathbf{y}||_2^2
+\label{equ:init}
+l_{init} = \sum_\mathbf{x}||\mathbf{x} - \mathbf{y}||_2^2
 \end{equation}
 
 

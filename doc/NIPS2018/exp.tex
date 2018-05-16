@@ -6,7 +6,7 @@ The images for training
 and testing are rendered in random angles to provide synthetic training data for the model. In total,
 51,856 shape models are covered. For the training/validation/testing split, we follow the CSV file provided by the ShapeNet website and resulted in 36,622/5,110/10,124 shapes. The 3D CAD objects are
 stored as meshes, we re-sample the meshes into point sets. In order to capture only the shape surface, we uses the code from \citep{Wang-2017-OCNN} and execute ``virtual scan" for the re-sampling.
-\subsection{Comparing to state-of-art}
+\subsection{Comparing to state-of-the-art}
 In this subsection, we compare our approach with point set generation network (PSGN)\citep{PSGN} on ShapeNet dataset \citep{shapenetdata}. 
 \iffalse
 \begin{table}
