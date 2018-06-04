@@ -16,7 +16,7 @@ The parameterization network is built by stacking several \textit{K}-neighbor Po
 
 The semantic network is built on convolution, deconvolution and fully connected layers, it takes image as input to predict the parameters (i.e.$\{P_1,P_2,P_3,P_4,P_5\}$ in Figure~\ref{fig:overview}) for the parameterization network. In this way, the semantic network relates the input image to the parameterization.
 \subsection{Parameter domain}
-In the proposed framework, we use unit sphere surface as parameter domain. As shown in Figure~\ref{fig:overview}, at the beginning of the parameterization network $N=1024$ points are uniformly sampled from the parameter domain. Triangulation is also applied on these sampled points. The edge connections built by triangulation are later used in the Laplacian smooth layer and the edge length regularization term. They are also used to connect output points to mesh.
+In the proposed framework, we use unit sphere surface as parameter domain. As shown in Figure~\ref{fig:overview}, at the beginning of the parameterization network $N=1024$ points are uniformly sampled from the parameter domain. Triangulation is also applied on these sampled points. The edge connections built by triangulation are later used in the Laplacian smooth layer and the edge length regularization term. These connections are also used to connect output points to mesh.
 \subsection{\textit{K}-neighbor PointNet for parameterization network} 
 \label{subsec:k-n_point_net}
 
@@ -51,14 +51,14 @@ Our ablation study shows that the Laplacian smooth significantly improves the re
 In our semantic network, we use convolution layers to extract semantic features from input image as shown in Figure~\ref{fig:semnet}.  Our semantic network adopt the U-shape structure that is similar to UNet\citep{unet}. To fit with our framework, we use separate decoder branches to predict different parameters parameterization network. These predicted parameters (i.e. $P_n=\{w_{n1},w_{n2},w_{n3},b_{n3},w_{n4},b_{n4},s_{n}\}$ ) are plugged into the parameterization network in the way shown in Figure~\ref{fig:overview}
 
 \subsection{Losses}
-The whole loss we use is shown in (\ref{equ:loss}), it is composed of the two terms as follows:
+The whole loss we use is shown in Eq.(\ref{equ:loss}), it is composed of the two terms as follows:
 
 \begin{equation}
 \label{equ:loss}
 l = l_c + l_2 + \lambda l_{reg} 
 \end{equation}
 
-\noindent{\textbf{Chamfer Loss}} The Chamfer distance is directly borrowed from \citep{PSGN}. This loss can drive the output point set to approach the target. As shown in (\ref{equ:chmf}). In (\ref{equ:chmf}), $\mathbf{x}$ are output points and $\mathbf{y}$ are the points from the groundtruth
+\noindent{\textbf{Chamfer Loss}} The Chamfer distance is directly borrowed from \citep{PSGN}. This loss can drive the output point set to approach the target. As shown in Eq.(\ref{equ:chmf}). In Eq.(\ref{equ:chmf}), $\mathbf{x}$ are output points and $\mathbf{y}$ are the points from the groundtruth
 
 \begin{equation}
 \label{equ:chmf}
@@ -75,7 +75,7 @@ l_{reg} = \sum_{(i,j)\in\mathcal{E}}(||\mathbf{x}_i-\mathbf{x}_j||_2 - \frac{1}{
 \end{equation}
 
 \subsection{Network initialization}
-When start training from scratch, the proposed loss and network still can not prevent the network to output surface with severe global self-intersection. To alleviate this problem, we adopt a network initialization step to reset the parameterization network to start at a state that output surface without self-intersection. At this step we train the network with the loss shown in (\ref{equ:init}). The $\mathbf{y}$ used in (\ref{equ:mse}) is not the points from groundtruth, but the points sampled from parameter domain with a 0.5 scale down. In other words, this step will reset the network so that the parameterization network will map from a sphere to a smaller sphere, when taking any image as input. We do this initialization by one epoch on the training data. 
+When start training from scratch, the proposed loss and network still can not prevent the network to output surface with severe global self-intersection. To alleviate this problem, we adopt a network initialization step to reset the parameterization network to start at a state that output surface without self-intersection. At this step we train the network with the loss shown in Eq.(\ref{equ:init}). The $\mathbf{y}$ used in Eq.(\ref{equ:init}) is not the points from groundtruth, but the points sampled from parameter domain with a 0.5 scale down. In other words, this step will reset the network so that the parameterization network will map from a sphere to a smaller sphere, when taking any image as input. We do this initialization by one epoch on the training data. 
 
 \begin{equation}
 \label{equ:init}

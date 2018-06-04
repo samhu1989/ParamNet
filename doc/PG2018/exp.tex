@@ -75,17 +75,17 @@ with (\cite{3Drender})
 \end{table}
 
 \subsection{Ablation study}
-\begin{table}
+\begin{table*}
 	\caption{Ablation study with respect to different components}
 	\label{tab:ablation}
 	\centering
-	\begin{tabular}{c | c c c c}
-		Models &  Full Model  & -Laplation smooth & -Initialization & -Edge Length Regularization \\
+	\begin{tabular}{c | c c c c c}
+		Models &  Full Model  & -Initialization & -Laplation smooth & -Edge Length Regularization & -Norm Loss \\
 		\hline
-		Chamfer loss & - & 0.522 & 0.678 & 0.512 \\
-		EMD			 & - & -     &   -   &   -
+		Chamfer loss & - & 0.848 & 0.789 & 0.811  & 0.780\\
+		EMD			 & - & 1.524 & 1.369 & 4.195  & 1.415
 	\end{tabular}
-\end{table}
+\end{table*}
 \noindent\textbf{Laplacian smooth}
 
 \noindent\textbf{Initialization}
@@ -93,15 +93,16 @@ with (\cite{3Drender})
 \noindent\textbf{Edge Length Regularization}
 
 \noindent\textbf{Number of \textit{K}-neighbor PointNet}
-\begin{table}
+\begin{table*}
 	\caption{Ablation study with respect to number of \textit{K}-neighbor PointNet}
 	\label{tab:pointnet}
 	\centering
 	\begin{tabular}{c | c c c c}
-		Models &  2 & 3 & 4 & 5 \\
+		Number of \textit{K}-neighbor PointNet &  2 & 3 & 4 & 5 \\
 		\hline
-		Chamfer loss & - &  - & - & half done
+		Chamfer loss & - &  0.821 & - & - \\
+		EMD			&  - & 1.360 & - & -
 	\end{tabular}
-\end{table}
+\end{table*}
 \subsection{Semantic and sampling variation}
 add semantic random vector to ParamNet and PSGN\cite{PSGN}
