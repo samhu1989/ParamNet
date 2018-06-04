@@ -1,56 +1,22 @@
 \section{Experiments}
 \subsection{Experimental setup}
 %%===data===%%
-We train and evaluate our models on the ShapeNet\citep{shapenetdata}. Specifically, we use the ShapeNetCore55.v2 which contains over 50k of
+We train and evaluate our models on the ShapeNet\cite{shapenetdata}. Specifically, we use the ShapeNetCore55.v2 which contains over 50k of
 manually created and cleaned 3D CAD models in 55 category.
 The images for training
 and testing are rendered in random angles to provide synthetic training data for the model. In total,
 51,856 shape models are covered. For the training/validation/testing split, we follow the CSV file provided by the ShapeNet website and resulted in 36,622/5,110/10,124 shapes. The 3D CAD objects are
-stored as meshes, we re-sample the meshes into point sets. In order to capture only the shape surface, we uses the code from \citep{Wang-2017-OCNN} and execute ``virtual scan" for the re-sampling.
+stored as meshes, we re-sample the meshes into point sets. In order to capture only the shape surface, we uses the code from \cite{Wang-2017-OCNN} and execute ``virtual scan" for the re-sampling.
 \subsection{Comparing to state-of-the-art}
-In this subsection, we compare our approach with point set generation network (PSGN)\citep{PSGN} 
-with (\cite{3Drender}?)
-\iffalse
-\begin{table}
-	\centering
-	\begin{tabular}{c c c c c}
-		Input & GT & PSGN\citep{PSGN} & ParamNet Points & ParamNet Mesh \\
-		\midrule
-		\includegraphics[width=0.19\linewidth]{img/input/000.png}&
-		\includegraphics[width=0.19\linewidth]{img/GT/000.png}&
-		\includegraphics[width=0.19\linewidth]{img/PSGN/000.png}&
-		\includegraphics[width=0.19\linewidth]{img/KPARAM/000.png}&
-		\includegraphics[width=0.19\linewidth]{img/KPARAM/000m.png}\\
-		%
-		\includegraphics[width=0.19\linewidth]{img/input/001.png}&
-		\includegraphics[width=0.19\linewidth]{img/GT/001.png}&
-		\includegraphics[width=0.19\linewidth]{img/PSGN/001.png}&
-		\includegraphics[width=0.19\linewidth]{img/KPARAM/001.png}&
-		\includegraphics[width=0.19\linewidth]{img/KPARAM/001m.png}\\
-		%
-		\includegraphics[width=0.19\linewidth]{img/input/002.png}&
-		\includegraphics[width=0.19\linewidth]{img/GT/002.png}&
-		\includegraphics[width=0.19\linewidth]{img/PSGN/002.png}&
-		\includegraphics[width=0.19\linewidth]{img/KPARAM/002.png}&
-		\includegraphics[width=0.19\linewidth]{img/KPARAM/002m.png}\\
-		%
-		\includegraphics[width=0.19\linewidth]{img/input/003.png}&
-		\includegraphics[width=0.19\linewidth]{img/GT/003.png}&
-		\includegraphics[width=0.19\linewidth]{img/PSGN/003.png}&
-		\includegraphics[width=0.19\linewidth]{img/KPARAM/003.png}&
-		\includegraphics[width=0.19\linewidth]{img/KPARAM/003m.png}\\
-	\end{tabular}
-	\caption{Visual Result}
-	\label{tab:vis}
-\end{table}
-\fi
+In this subsection, we compare our approach with point set generation network (PSGN)\cite{PSGN} 
+with (\cite{3Drender})
 \begin{table}
 	\caption{Comparison with point set generation network on point set Chamfer Distance. }
 	\label{tab:seg}
 	\centering
 	\begin{tabular}{c c c c}
-		Category & Category id & Ours & PSGN\citep{PSGN} \\
-		\midrule
+		Category & Category id & Ours & PSGN\cite{PSGN} \\
+		\hline
 		aircraft & 02691156 & 0.345 & {\color{blue} \textbf{0.324}}\\   
 		dustbin & 02747177 & 0.256 & {\color{blue} \textbf{0.254}}\\
 		bag & 02773838  & {\color{blue} \textbf{0.322}} & 0.408\\
@@ -115,7 +81,7 @@ with (\cite{3Drender}?)
 	\centering
 	\begin{tabular}{c | c c c c}
 		Models &  Full Model  & -Laplation smooth & -Initialization & -Edge Length Regularization \\
-		\midrule
+		\hline
 		Chamfer loss & - & 0.522 & 0.678 & 0.512 \\
 		EMD			 & - & -     &   -   &   -
 	\end{tabular}
@@ -133,9 +99,9 @@ with (\cite{3Drender}?)
 	\centering
 	\begin{tabular}{c | c c c c}
 		Models &  2 & 3 & 4 & 5 \\
-		\midrule
+		\hline
 		Chamfer loss & - &  - & - & half done
 	\end{tabular}
 \end{table}
 \subsection{Semantic and sampling variation}
-add semantic random vector to ParamNet and PSGN\citep{PSGN}
+add semantic random vector to ParamNet and PSGN\cite{PSGN}
