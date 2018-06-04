@@ -5,6 +5,18 @@
 	\caption{The overview of the network: The proposed framework consists of two networks. One is the parameterization network that maps points sampled from parameter domain to target shape. The other is the semantic network that takes image as input and predict parameters for the parameterization network.}
 	\label{fig:overview}
 \end{figure*}
+\subsection{Image based modeling}
+\subsection{Deep shape generation}
+3D shape is not canonical function which leads to multiple exploration in its representation for deep learning.
+
+\noindent\textbf{Volume Occupancy}
+
+\noindent\textbf{Point Cloud}
+
+\noindent\textbf{Mesh}
+\subsection{Parameterization in deep learning}
+ The idea that utilize parameterization in the representation of 3D shape have been explored by the works of \cite{surfnet}\cite{geoimg}. As detailed as their output can be, the proposed methods involves a non-trainable procedure for the creation of geometry image. These methods also require manifold surface as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contains meshes that are not manifold surfaces. Our method is trying to train a network that can predict the parameterization. We use point set which can easily be sampled from the non-manifold meshes as ground truth. 
+\begin{comment}
 \subsection{Learning to learn and filter prediction}
 It is not a new idea to learn neural networks that predict the parameters of another. It is one of the approaches found for \textit{learning to learn}.  A few authors \cite{schmidhuber1992learning,bertinetto2016learning,jia2016dynamic} , in particular, have proposed to apply such idea in their works. Our work explore this idea under total different motivations. Our motivations are a) to relate the input image to proposed parameterization network b) to handle the \textit{sampling variation} and \textit{semantic variation} separately. 
 
@@ -25,7 +37,4 @@ A even more recent work on arXiv, \cite{img2mesh}, propose a method that retriev
 Our method relates to the above methods in the way that our parameterization network deforms the samples from the surface of unit sphere to the target surface. Its framework can only handle images from a specific category, while our network takes images from multiple categories.  
 The above methods looking to start the deformation from good point set/mesh by retrieval. In such setting, the point set/mesh for retrieval serves as an external memory for the whole model. 
 Our method differs from these method in the way that our network start the learning from scratch. Our template, the unit sphere, contains no prior knowledge for any target shape. It only serves as a parameter domain for sampling.
-  
-\subsection{Parameterization for 3D shape learning}
-3D shape is not canonical function which leads to multiple exploration in its representation for learning. The idea that utilize parameterization in the representation of 3D shape have been explored by the works of \cite{surfnet}\cite{geoimg}. As detailed as their output can be, the proposed methods involves a non-trainable procedure for the creation of geometry image. These methods also require manifold surface as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contains meshes that are not manifold surfaces. Our method is trying to train a network that can predict the parameterization. We use point set which can easily be sampled from the non-manifold meshes as ground truth. 
-
+\end{comment}
