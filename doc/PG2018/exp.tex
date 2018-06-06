@@ -10,69 +10,70 @@ stored as meshes, we re-sample the meshes into point sets. In order to capture o
 \subsection{Comparing to state-of-the-art}
 In this subsection, we compare our approach with point set generation network (PSGN)\cite{PSGN} 
 with (\cite{3Drender})
-\begin{table}
+\begin{table*}
 	\caption{Comparison with point set generation network on point set Chamfer Distance. }
 	\label{tab:seg}
 	\centering
-	\begin{tabular}{c c c c}
-		Category & Category id & Ours & PSGN\cite{PSGN} \\
+	\begin{tabular}{c c c c c c}
+		\multirow{2}{*}{Category} & \multirow{2}{*}{Category id} & \multicolumn{2}{c}{Chamfer} & \multicolumn{2}{c}{EMD}\\ \cmidrule(lr){3-4} \cmidrule(lr){5-6}
+			&	& ParamNet & PSGN\cite{PSGN}       & ParamNet & PSGN\cite{PSGN}\\
 		\hline
-		aircraft & 02691156 & 0.345 & {\color{blue} \textbf{0.324}}\\   
-		dustbin & 02747177 & 0.256 & {\color{blue} \textbf{0.254}}\\
-		bag & 02773838  & {\color{blue} \textbf{0.322}} & 0.408\\
-		basket & 02801938 & {\color{blue}\textbf{0.738}} & 0.826\\
-		bathtub & 02808440 & 0.349 & {\color{blue}\textbf{0.331}}\\
-		bench & 02828884 & {\color{blue}\textbf{0.242}} & 0.255\\
-		bed & 02818832 & 0.507 & {\color{blue}\textbf{0.468}}\\
-		birdhouse & 02843684 & 0.516 & {\color{blue}\textbf{0.471}}\\
-		shelf & 02871439 & 0.179 & {\color{blue}\textbf{0.174}}\\
-		bottle & 02876657 & 0.154 & {\color{blue}\textbf{0.163}}\\
-		bowl & 02880940 & 0.643 & {\color{blue}\textbf{0.606}}\\
-		bus & 02924116 & {\color{blue}\textbf{0.146}} & 0.148\\
-		dresser & 02933112 & {\color{blue}\textbf{0.311}} & 0.317\\
-		camera & 02942699 & {\color{blue}\textbf{0.701}} & 0.738\\
-		can & 02946921 & 0.143 & {\color{blue}\textbf{0.140}}\\
-		cap & 02954340 & {\color{blue} \textbf{1.082}} & 1.358\\
-		car & 02958343 & 0.253 & {\color{blue} \textbf{0.243}}\\
-		cellphone & 02992529,04401088 & {\color{blue}\textbf{0.059}},0.108 & 0.061,{\color{blue}\textbf{0.105}}\\
-		chair & 03001627 & 0.203 & {\color{blue}\textbf{0.201}}\\
-		clock & 03046257 & 0.344 & {\color{blue}\textbf{0.333}}\\
-		keyboard & 03085013 & 0.352 & {\color{blue}\textbf{0.327}}\\
-		dishwasher & 03207941 & 0.255 & {\color{blue}\textbf{0.214}}\\
-		monitor & 03211117 & 0.293 & {\color{blue}\textbf{0.291}}\\
-		headphone & 03261776 & {\color{blue}\textbf{0.373}} & 0.462\\
-		hydrant & 03325088 & {\color{blue}\textbf{0.409}} & 0.410\\
-		file cabinet& 03337140 & 0.179 & 0.179\\
-		guitar & 03467517 & 0.039 & 0.039\\
-		helmet & 03513137 & {\color{blue}\textbf{0.772}} & 0.825\\
-		vase & 03593526 & {\color{blue}\textbf{0.227}} & 0.242\\
-		knife & 03624134 & {\color{blue}\textbf{0.060}}  & 0.086\\
-		lamp & 03636649 & 0.332 & {\color{blue}\textbf{0.323}}\\
-		laptop & 03642806 & 0.246 & 0.246\\
-		speaker & 03691459 & 0.351 & {\color{blue}\textbf{0.346}}\\
-		mailbox & 03710193 & 0.322 & {\color{blue}\textbf{0.211}}\\
-		mike & 03759954 & 0.838 & {\color{blue}\textbf{0.624}}\\
-		microwave & 03761084 & {\color{blue}\textbf{0.248}} & 0.269\\
-		motorcycle & 03790512 & 0.283 & {\color{blue}\textbf{0.271}}\\
-		mug & 03797390 & 0.356 & {\color{blue}\textbf{0.313}}\\
-		piano & 03928116 & {\color{blue}\textbf{0.382}} & 0.388\\
-		pillow & 03938244 & {\color{blue}\textbf{0.457}} & 0.563\\
-		handgun & 03948459,04090263 & {\color{blue}\textbf{0.292}},0.169 & 0.310,{\color{blue}\textbf{0.162}}\\
-		planter & 03991062 & 0.346 & 0.346\\
-		printer & 04004475 & 0.620 & {\color{blue}\textbf{0.583}}\\
-		remote & 04074963 & 0.073 & {\color{blue}\textbf{0.072}}\\
-		missile & 04099429 & {\color{blue}\textbf{0.149}} & 0.157\\
-		skateboard & 04225987 & 0.250 & {\color{blue}\textbf{0.231}}\\
-		sofa & 04256520 & {\color{blue}\textbf{0.312}} & 0.327\\
-		stove & 04330267 & {\color{blue}\textbf{0.341}} & 0.344\\
-		table & 04379243 & {\color{blue}\textbf{0.314}} & 0.331\\
-		tower & 04460130 & 0.482 & {\color{blue}\textbf{0.334}}\\
-		train & 04468005 & 0.250 & {\color{blue}\textbf{0.240}}\\
-		ship  & 04530566 & {\color{blue}\textbf{0.256}} & 0.259\\
-		washer &  04554684 & {\color{blue}\textbf{0.247}} & 0.272\\
-		mean   &     -     & {\color{blue}\textbf{0.336}} & 0.337
+		aircraft & 02691156 & 0.068 & 0.058 & 0.248 & 0.502 \\   
+		dustbin & 02747177 & 0.162 & 0.166 & 0.425 & 1.947 \\
+		bag & 02773838  & 0.398 & 0.453 & 0.921 & 3.258 \\
+		basket & 02801938 & 0.861 & 0.708 & 1.545 & 2.186 \\
+		bathtub & 02808440 & 0.072 & 0.070 & 0.175 & 0.472 \\
+		bench & 02828884 & 0.063 & 0.063 & 0.239 & 0.641 \\
+		bed & 02818832 & 0.362 & 0.291 & 0.865 & 1.523 \\
+		birdhouse & 02843684 & 0.855 & 0.624 & 1.972 & 4.332 \\
+		shelf & 02871439 & 0.100 & 0.081 & 0.407 & 1.475 \\
+		bottle & 02876657 & 0.075 & 0.084 & 0.289 & 1.340 \\
+		bowl & 02880940 & 0.726 & 0.423 & 0.954 & 1.646 \\
+		bus & 02924116 & 0.035 & 0.036 & 0.306 & 0.602\\
+		dresser & 02933112 & 0.082 & 0.078 & 0.168 & 0.799 \\
+		camera & 02942699 & 0.818 & 0.752 & 1.889 & 3.124 \\
+		can & 02946921 & 0.165 & 0.180 & 0.778 & 4.247 \\
+		cap & 02954340 & 1.466 & 2.738 & 2.795 & 3.559 \\
+		car & 02958343 & 0.051 & 0.047 & 0.176 & 0.399 \\
+		cellphone & 02992529,04401088 & 0.143,0.039 & 0.128,0.030& 0.965,0.150 & 7.583,0.974\\
+		chair & 03001627 & 0.042 & 0.038 & 0.117 & 0.605 \\
+		clock & 03046257 & 0.152 & 0.119 & 0.387 & 1.194 \\
+		keyboard & 03085013 & 0.450 & 0.456 & 1.470 & 2.626\\
+		dishwasher & 03207941 & 0.204 & 0.236 & 0.501 & 2.975 \\
+		monitor & 03211117 & 0.079 & 0.067 & 0.224 & 0.811\\
+		headphone & 03261776 & 0.738 & 0.590 & 3.906 & 4.499 \\
+		hydrant & 03325088 & 0.177 & 0.151 & 0.748 & 1.123 \\
+		file cabinet& 03337140 & 0.121 & 0.113 & 0.325 & 1.949 \\
+		guitar & 03467517 & 0.014 & 0.015 & 0.278 & 1.234 \\
+		helmet & 03513137 & 0.789 & 1.199 & 1.693 & 2.387 \\
+		vase & 03593526 & 0.088 & 0.082 & 0.305 & 1.244 \\
+		knife & 03624134 & 0.034  & 0.029 & 0.280 & 2.089 \\
+		lamp & 03636649 & 0.089 & 0.084 & 0.503 & 0.869\\
+		laptop & 03642806 & 0.174 & 0.154 & 0.537 & 1.262 \\
+		speaker & 03691459 & 0.125 & 0.117 & 0.315 & 0.806 \\
+		mailbox & 03710193 & 0.258 & 0.252 & 1.245 & 4.337 \\
+		mike & 03759954 & 1.599 & 1.301 & 3.149 & 6.842 \\
+		microwave & 03761084 & 0.305 & 0.302 & 0.675 & 2.647 \\
+		motorcycle & 03790512 & 0.153 & 0.139 & 0.522 & 1.495\\
+		mug & 03797390 & 0.269 & 0.188 & 0.481 & 1.568 \\
+		piano & 03928116 & 0.234 & 0.227 & 0.693 & 1.587 \\
+		pillow & 03938244 & 0.614 & 0.526 & 0.996 & 2.101 \\
+		handgun & 03948459,04090263 & 0.372,0.049 & 0.309,0.049 & 1.158,0.304 & 2.369,0.790 \\
+		planter & 03991062 & 0.124 & 0.139 & 0.301 & 0.839 \\
+		printer & 04004475 & 0.500 & 0.413 & 1.064 & 1.716 \\
+		remote & 04074963 & 0.106 & 0.105 & 0.846 & 5.940 \\
+		missile & 04099429 & 0.220 & 0.187 & 1.874 & 4.113 \\
+		skateboard & 04225987 & 0.369 & 0.295 & 1.696 & 2.232 \\
+		sofa & 04256520 & 0.051 & 0.052 & 0.172 & 0.321 \\
+		stove & 04330267 & 0.184 & 0.214 & 0.488 & 1.528 \\
+		table & 04379243 & 0.077 & 0.075 & 0.271 & 0.537 \\
+		tower & 04460130 & 0.620 & 0.735 & 1.714 & 3.812 \\
+		train & 04468005 & 0.129 & 0.122 & 0.638 & 1.140 \\
+		ship  & 04530566 & 0.067 & 0.057 & 0.273 & 0.620 \\
+		washer &  04554684 & 0.205 & 0.203 & 0.482 & 1.957 \\
+		mean   &     -     & 0.297 & 0.298 & 0.834 & 1.043
 	\end{tabular}
-\end{table}
+\end{table*}
 
 \subsection{Ablation study}
 \begin{table*}
@@ -82,8 +83,8 @@ with (\cite{3Drender})
 	\begin{tabular}{c | c c c c c}
 		Models &  Full Model  & -Initialization & -Laplation smooth & -Edge Length Regularization & -Norm Loss \\
 		\hline
-		Chamfer loss & - & 0.424 & 0.394 & 0.405  & 0.390\\
-		EMD			 & - & 1.524 & 1.369 & 4.195  & 1.415
+		Chamfer      & 0.297 & 0.424 & 0.394 & 0.405  & 0.390\\
+		EMD			 & 0.834 & 1.524 & 1.369 & 4.195  & 1.415
 	\end{tabular}
 \end{table*}
 \noindent\textbf{Laplacian smooth}
@@ -93,16 +94,16 @@ with (\cite{3Drender})
 \noindent\textbf{Edge Length Regularization}
 
 \noindent\textbf{Number of \textit{K}-neighbor PointNet}
-\begin{table*}
+\begin{table}
 	\caption{Ablation study with respect to number of \textit{K}-neighbor PointNet}
 	\label{tab:pointnet}
 	\centering
 	\begin{tabular}{c | c c c c}
 		Number of \textit{K}-neighbor PointNet &  2 & 3 & 4 & 5 \\
 		\hline
-		Chamfer loss & 0.425 &  0.411 & - & 0.413 \\
-		EMD			 & 1.304 &  1.360 & - & 1.667
+		Chamfer      & 0.425 &  0.411 & 0.297 & 0.313 \\
+		EMD			 & 1.304 &  1.360 & 0.834 & 1.067
 	\end{tabular}
-\end{table*}
+\end{table}
 \subsection{Semantic and sampling variation}
 add semantic random vector to ParamNet and PSGN\cite{PSGN}
