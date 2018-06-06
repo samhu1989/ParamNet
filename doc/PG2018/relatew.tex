@@ -10,9 +10,11 @@
 3D shape is not canonical function which leads to multiple exploration in its representation for deep learning.
 
 \noindent\textbf{Volume occupancy}
+\cite{3DR2N2} proposed 3D-R2N2, a 3D recurrent neural network based on LSTM to infer a 3D volumetric function from a single view or multiple views.
 
 \noindent\textbf{Point cloud}
-
+\cite{PSGN} proposed an alternative approach with neural networks that regress unordered
+3D point sets for 3D shape generation. 
 \noindent\textbf{Mesh}
 \subsection{Parameterization in deep learning}
  The idea that utilize parameterization in the representation of 3D shape have been explored by the works of \cite{surfnet}\cite{geoimg}. As detailed as their output can be, the proposed methods involves a non-trainable procedure for the creation of geometry image. These methods also require manifold surface as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contains meshes that are not manifold surfaces. Our method is trying to train a network that can predict the parameterization. We use point set which can easily be sampled from the non-manifold meshes as ground truth. 
