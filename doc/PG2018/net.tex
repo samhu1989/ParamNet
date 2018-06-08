@@ -26,7 +26,7 @@ An essential building block for our parameterization network is \textit{K}-neigh
 Another essential building block for our parameterization network is the Laplacian smooth. The Laplacian smooth applys the mesh based Laplacian smooth for each point in the point set as in (\ref{equ:lpl}). The mesh is constructed by triangulation on the parameterization domain (i.e. the unit sphere surface). In (\ref{equ:lpl}), $\mathcal{N}(\mathbf{x})$ represents the one-ring neighborhood of $\mathbf{x}$. As described in (\ref{equ:lpl}), the Laplacian smooth is a local linear operation and therefore differentiable.
 
 \begin{equation}
-\mathbf{x} = \frac{1}{|\mathcal{N}(\mathbf{x})|}\sum_{\mathbf{y}\in\mathcal{N}(\mathbf{x})}\mathbf{y}
+\mathbf{x^*} = \frac{1}{|\mathcal{N}(\mathbf{x})|}\sum_{\mathbf{y}\in\mathcal{N}(\mathbf{x})}\mathbf{y}
 \label{equ:lpl}
 \end{equation}
 

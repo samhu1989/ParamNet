@@ -5,38 +5,41 @@
 	\caption{The overview of the network: The proposed framework consists of two networks. One is the parameterization network that maps points sampled from parameter domain to target shape. The other is the semantic network that takes image as input and predict parameters for the parameterization network.}
 	\label{fig:overview}
 \end{figure*}
-\subsection{Image based modeling}
-\subsection{Deep shape generation}
-3D shape is not canonical function which leads to multiple exploration in its representation for deep learning.
+3D reconstruction/modeling from image have been 
+ Especially, with the release of large-scale 3D shape datasets such as ShapeNet\cite{shapenetdata}, deep learning based approaches have achieved great progress.
+ 
+\subsection{General learning approaches}
+As far as we known, early works of learning approaches can be traced back to \cite{Hoiem2007} and \cite{learn3D2007}. More recent works like \cite{Su:2014} and \cite{jointimgshape} break down the problem to two stages, one is to retrieve shape components from a large dataset, the other is to assemble the components and deform the assembled shape to fit the observed image. However, shape retrieval from images itself
+is an ill-posed problem due to the loss of information in 3D-to-2D projection. To avoid such problem, \cite{imgrecon15} propose a solution that start reconstruction from a learned 3D deformable shape. 
+In \cite{imgrecon15}, images specify the shape variations and drive the shape deformation to target.
+
+These learning approaches are relatively early. For their systems to work, complicate pre-process on database are usually needed. A more ideal solution would be to directly learn 3D shapes
+from single images under an end-to-end framework. 
+
+\subsection{3D neural networks}
+Most recently, researchers have developed techniques to represent 3D shapes inside deep learning framework and developed a serious of 3D neural networks to predict 3D shapes from images. Unlike images, 3D shapes are not canonical functions. This leads to multiple exploration for their representation. Therefore, we group these works according to their 3D representation.
 
 \noindent\textbf{Volume occupancy}
-\cite{3DR2N2} proposed 3D-R2N2, a 3D recurrent neural network based on LSTM to infer a 3D volumetric function from a single view or multiple views.
+An intuitive way to extend the success of convolution network to 3D is to use volume occupancy of regular 3D grid to represent 3D shapes. Such 3D convolution was introduced by \cite{3dshapenet} and widely used in many works \cite{3DR2N2,learnobj} for 3D shape generation.
+
+The key disadvantage of such representation was the large memory consumption due to the raising of dimension when extend 2D grid to 3D. The most recent work of \cite{octreegen} use
+an octree representation for shape generation (similar representation is used in for 3D shape classification and segmentation by \cite{ocnn}), which allows to higher resolution outputs
+with limited memory.
 
 \noindent\textbf{Point cloud}
-\cite{PSGN} proposed an alternative approach with neural networks that regress unordered
-3D point sets for 3D shape generation. 
+\cite{PSGN} proposed neural networks that regress unordered
+3D point set for 3D shape generation. The point cloud representation
+do not consider local connections of the points, and thus the point positions have
+a very large degree of freedom. Consequently, it is difficult to reconstruct continue surface from the generated point cloud.
+
+Besides the problem of generation/reconstruction, techniques like \cite{PointNet,NIPS2017_7095,pointcnn} have been developed so that the network can take unordered 3D point set as input and extract geometric features from 3D point set.
+
 \noindent\textbf{Mesh}
-\subsection{Parameterization in deep learning}
- The idea that utilize parameterization in the representation of 3D shape have been explored by the works of \cite{surfnet}\cite{geoimg}. As detailed as their output can be, the proposed methods involves a non-trainable procedure for the creation of geometry image. These methods also require manifold surface as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contains meshes that are not manifold surfaces. Our method is trying to train a network that can predict the parameterization. We use point set which can easily be sampled from the non-manifold meshes as ground truth. 
-\begin{comment}
-\subsection{Learning to learn and filter prediction}
-It is not a new idea to learn neural networks that predict the parameters of another. It is one of the approaches found for \textit{learning to learn}.  A few authors \cite{schmidhuber1992learning,bertinetto2016learning,jia2016dynamic} , in particular, have proposed to apply such idea in their works. Our work explore this idea under total different motivations. Our motivations are a) to relate the input image to proposed parameterization network b) to handle the \textit{sampling variation} and \textit{semantic variation} separately. 
+Among all three representations, mesh is the most popular one in game and movie industries. In addtion to the vertex positions , the mesh representation also consider local structure of vertices. It is non-trivial to use mesh representation for 3D shape with end-to-end trainable neural networks. \cite{img2mesh} and \cite{endface} produce mesh by linear interpolating base meshes. Since it is only possible to choose/learn base meshes for specific class of object, these two networks can only generate mesh for specific class of object (the latter one is only used for human face).
 
-\subsection{Networks for shape generation from image}
-Recently, the network structure for shape generation from image is being actively exploring. One approach is to represent the shape as volumetric occupancy function. \cite{3DR2N2} proposed 3D-R2N2, a 3D recurrent neural network based on LSTM to infer a 3D volumetric function from a single view or multiple views. \cite{girdhar2016learning} proposed a network for single view shape generation by embedding the image and shape all together. \cite{NIPS2016_6096} applys the idea of VAE-GAN on the task of volumetric shape generation. \cite{NIPS2016_6206} uses only images contour as supervision for the shape generation and \cite{NIPS2016_6600} proposed a conditional generative network for unsupervised learning of shape generation. 
+\cite{3Drender} aims to make a differentiable approximation for 3D mesh rendering process, which would be much more significant if it can actually render gray image. In fact, the approximated renderer can only produce silhouette as output. When the it is used with mesh generation network, it can only take silhouette as supervision and hence does not perform well for complicated objects (car, airplane, etc.)
 
-These neural networks use voxel representations, which
-requires a large amount of memory and is inefficient respecting to common 3D transformations (i.e. rotation, affine transformation ). \cite{PSGN} proposed an alternative approach with neural networks that regress unordered
-3D point sets for 3D shape generation. 
+Our network produce mesh as output, but it draws a lot of experience from techniques designed for point cloud representation.
 
-Our network also use point set as ground truth but we actually represent the shape as a spatial distribution in the form of a spherical uniform distribution plus a predicted mapping, which is total different from all the above methods. 
-
-\subsection{Networks for shape deformation}
-An alternative way for shape generation is to deform from given template to target shape. \cite{deformflow} use precomputed deformation offsets as ground truth to train a 3D convolutional neural network that generates a deformation field as an output for 3D mesh editing. \cite{Huang:2015:SRV:2809654.2766890} generate shape according to image through template retrieval and
-deformation, which relies on jointly segmenting the 2D image and 3D templates and creating the 
-3D generation from deformed parts of the segmented templates. A recent work on arXiv, \cite{deformnet}, propose a method of retrieval plus deformation network for the shape generation task. It introduce a differentiable deformation layer and it takes features from both the input image and the input template.
-A even more recent work on arXiv, \cite{img2mesh}, propose a method that retrieve, deform and finally blend the mesh in dataset to target mesh. 
-Our method relates to the above methods in the way that our parameterization network deforms the samples from the surface of unit sphere to the target surface. Its framework can only handle images from a specific category, while our network takes images from multiple categories.  
-The above methods looking to start the deformation from good point set/mesh by retrieval. In such setting, the point set/mesh for retrieval serves as an external memory for the whole model. 
-Our method differs from these method in the way that our network start the learning from scratch. Our template, the unit sphere, contains no prior knowledge for any target shape. It only serves as a parameter domain for sampling.
-\end{comment}
+\subsection{Parameterization in learning approaches}
+ The idea that utilize parameterization in the representation of 3D shape have been explored by the works of \cite{surfnet,geoimg}. These methods involves a non-trainable procedure for the creation of geometry image. They also require manifold surface as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contains meshes that are not manifold surfaces. Our idea is to represent the 3D surface by the parameterization. Our proposed network predict a mapping from the parameter domain to target surface. It do not require manifold surface as supervision. It can be trained with point cloud as supervision but produce mesh as output.

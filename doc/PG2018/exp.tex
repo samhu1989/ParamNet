@@ -9,7 +9,13 @@ and testing are rendered in random angles to provide synthetic training data for
 stored as meshes, we re-sample the meshes into point sets. In order to capture only the shape surface, we uses the code from \cite{Wang-2017-OCNN} and execute ``virtual scan" for the re-sampling.
 \subsection{Comparing to state-of-the-art}
 In this subsection, we compare our approach with point set generation network (PSGN)\cite{PSGN} 
-with (\cite{3Drender})
+with (we use ball-pivoting\cite{ballpivot} to generate mesh for the point set).
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/res/res}
+	\caption{The comparison of visual results}
+	\label{fig:res}
+\end{figure*}
 \begin{table*}
 	\caption{Comparison with point set generation network on point set Chamfer Distance. }
 	\label{tab:seg}
@@ -71,7 +77,8 @@ with (\cite{3Drender})
 		train & 04468005 & 0.129 & 0.122 & 0.638 & 1.140 \\
 		ship  & 04530566 & 0.067 & 0.057 & 0.273 & 0.620 \\
 		washer &  04554684 & 0.205 & 0.203 & 0.482 & 1.957 \\
-		mean   &     -     & 0.297 & 0.298 & 0.834 & 1.043
+		\hline
+		mean   &     -     & 0.297 & 0.298 & 0.834 & 2.086
 	\end{tabular}
 \end{table*}
 
