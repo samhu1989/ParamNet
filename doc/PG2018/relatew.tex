@@ -15,6 +15,13 @@ In \cite{imgrecon15}, images specify the shape variations and drive the shape de
 These learning approaches are relatively early. For their systems to work, complicate pre-process on database are usually needed. A more ideal solution would be to directly learn 3D shapes
 from single images under an end-to-end framework. 
 
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/net/semnet}
+	\caption{Semantic network: The semantic network takes image as input and predict parameters for the \textit{K}-neighbor PointNet and the global scale operation in the parameterization network. The semantic network have separate decoders for each \textit{K}-neighbor PointNet and and the global scale operation.}
+	\label{fig:semnet}
+\end{figure*}
+
 \subsection{3D neural networks}
 Most recently, researchers have developed techniques to represent 3D shapes inside deep learning framework and developed a serious of 3D neural networks to predict 3D shapes from images. Unlike images, 3D shapes are not canonical functions. This leads to multiple exploration for their representation. Therefore, we group these works according to their 3D representation.
 

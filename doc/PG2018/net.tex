@@ -1,11 +1,12 @@
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/net/semnet}
-	\caption{Semantic network: The semantic network takes image as input and predict parameters for the \textit{K}-neighbor PointNet and the global scale operation in the parameterization network. The semantic network have separate decoders for each \textit{K}-neighbor PointNet and and the global scale operation.}
-	\label{fig:semnet}
-\end{figure*}
 \section{Network of \emph{parameterization prediction}}
 In this section, we first explain the general framework of our proposed network in Sec~\ref{subsec:overview}, and then we elaborate the details of its structure part by part in the following sections.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/net/k-n_pointnet}
+	\caption{The internal structure of \textit{K}-neighbor PointNet}
+	\label{fig:knpointnet}
+\end{figure}
 
 \subsection{Network overview}
 \label{subsec:overview}
@@ -14,17 +15,37 @@ Our original idea about network of \emph{parameterization prediction} was to use
 The parameterization network is built by stacking several \textit{K}-neighbor PointNet (explained in Sec~\ref{subsec:k-n_point_net}). Each \textit{K}-neighbor PointNet takes point set as input and predicts a offsets for each point and add them to the input points. In this way, the parameterization network can map/deform a randomly sampled point set to target shape. By using different randomly generated samples from the parameter domain in the training iterations, the parameterization network can learn to handle the \textit{sampling variation} that is introduced by using specific point set as ground truth. 
 
 The semantic network is built on convolution, deconvolution and fully connected layers, it takes image as input to predict the parameters (i.e.$\{P_1,P_2,P_3,P_4,P_5\}$ in Figure~\ref{fig:overview}) for the parameterization network. In this way, the semantic network relates the input image to the parameterization.
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/res/res}
+	\caption{The comparison of visual results}
+	\label{fig:res}
+\end{figure*}
+
 \subsection{Parameter domain}
 In the proposed framework, we use unit sphere surface as parameter domain. As shown in Figure~\ref{fig:overview}, at the beginning of the parameterization network $N=1024$ points are uniformly sampled from the parameter domain. Triangulation is also applied on these sampled points. The edge connections built by triangulation are later used in the Laplacian smooth layer and the edge length regularization term. These connections are also used to connect output points to mesh.
 \subsection{\textit{K}-neighbor PointNet for parameterization network} 
 \label{subsec:k-n_point_net}
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
 	\centering
-	\includegraphics[width=\linewidth]{img/net/k-n_pointnet}
-	\caption{The internal structure of \textit{K}-neighbor PointNet}
-	\label{fig:knpointnet}
-\end{figure}
+	\includegraphics[width=\linewidth]{img/abl/abl}
+	\caption{Visual result for ablation study: In some cases, the view angle is adjusted for better exposure of imperfection}
+	\label{fig:abl}
+\end{figure*}
+
+\begin{table*}
+	\caption{Ablation study with respect to different components}
+	\label{tab:ablation}
+	\centering
+	\begin{tabular}{c | c c c c c}
+		Models &  Full Model  & -Initialization & -Laplation smooth & -Edge length regularization & -Norm loss \\
+		\hline
+		Chamfer      & 0.297 & 0.424 & 0.394 & 0.405  & 0.390\\
+		EMD			 & 0.834 & 1.524 & 1.369 & 4.195  & 1.415
+	\end{tabular}
+\end{table*}
 
 An essential building block for our parameterization network is \textit{K}-neighbor PointNet. Figure~\ref{fig:knpointnet} shows the structure of \textit{K}-neighbor PointNet. \textit{K}-neighbor PointNet is inspired by and named after PointNet\cite{PointNet} and its follow-up PointNet++\cite{NIPS2017_7095}. In order to take unordered point set as input, \textit{K}-neighbor PointNet uses either point-wise operations on each point or symmetric functions on multiple points. As shown in Figure~\ref{fig:knpointnet}, the \textit{K}-neighbor search operation finds the $K$ neareast neighbor point for each point inside the $N$ input points and output the indexes tensor. We employed the Bitonic Sort\cite{bitonicsorter} for its implementation on GPU. Then the  \emph{gather} operation forge the tensor of \textit{K}-neighbor points based on these indexes and input points. This operation is tensorflow  Subtracting the original input points from \textit{K}-neighbor points we can get the local relative coordinates of \textit{K}-neighbor points. By concatenating \textit{K}-neighbor point coordinates and their local relative coordinates, we get the $N\times K\times6$ tensor as geometric features. These features go through a series of operations as shown in Figure~\ref{fig:knpointnet} to predict point-wise 3D offsets for each input point. Unlike the original PointNet\cite{PointNet}, who extracts maximum value among all point as feature vector for input point set, our \textit{K}-neighbor PointNet extract maximum value among every \textit{K}-neighborhood as feature vector for each point. This is shown by the \textit{K}-neighbor reduce max operation in Figure~\ref{fig:knpointnet}.
 
@@ -78,5 +99,18 @@ When start training from scratch, the proposed loss and network still can not pr
 \label{equ:init}
 l_{init} = \sum_\mathbf{x}||\mathbf{x} - \mathbf{y}||_2^2
 \end{equation}
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/fail/fail1}
+	\caption{Failure cases: In some cases, the view angle is adjusted for better exposure of imperfection}
+	\label{fig:fail1}
+\end{figure*}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/fail/fail2}
+	\caption{Failure case: In this case, the network have output an extra leg that doesn't exist for the dresser}
+	\label{fig:fail2}
+\end{figure}
 
 

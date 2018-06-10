@@ -11,12 +11,6 @@ stored as meshes, we re-sample the meshes into point sets. In order to capture o
 \subsection{Comparing to state-of-the-art}
 In this subsection, we compare our approach with point set generation network (PSGN)\cite{PSGN} 
 with (we use ball-pivoting\cite{ballpivot} to generate mesh for the point set).
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/res/res}
-	\caption{The comparison of visual results}
-	\label{fig:res}
-\end{figure*}
 \begin{table*}
 	\caption{Comparison with point set generation network on point set Chamfer Distance. }
 	\label{tab:seg}
@@ -83,43 +77,21 @@ with (we use ball-pivoting\cite{ballpivot} to generate mesh for the point set).
 	\end{tabular}
 \end{table*}
 \subsection{Ablation study}
-\begin{table*}
-	\caption{Ablation study with respect to different components}
-	\label{tab:ablation}
-	\centering
-	\begin{tabular}{c | c c c c c}
-		Models &  Full Model  & -Initialization & -Laplation smooth & -Edge length regularization & -Norm loss \\
-		\hline
-		Chamfer      & 0.297 & 0.424 & 0.394 & 0.405  & 0.390\\
-		EMD			 & 0.834 & 1.524 & 1.369 & 4.195  & 1.415
-	\end{tabular}
-\end{table*}
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/abl/abl}
-	\caption{Visual result for ablation study: In some cases, the view angle is adjusted for better exposure of imperfection}
-	\label{fig:abl}
-\end{figure*}
+In this subsection, we do ablation study to investigate the functionality of each components in our framework. The experiment results are shown in Table~\ref{tab:ablation} and 
+
 \noindent\textbf{Laplacian smooth}
-The Laplacian smooth force the output surface to have more regular local structure. When Laplacian smooth is removed as in Figure~\ref{fig:abl}, the output surface become much more rough and irregular.
+The Laplacian smooth force the output surface to have more regular local structure. When Laplacian smooth is removed, the output surface become much more rough and irregular as shown in Figure \ref{fig:abl} under the column of ``-Laplacian smooth".
 
 \noindent\textbf{Initialization}
-The Initialization step reset the network to a state that output surface without self-intersection. As shown in Figure~\ref{fig:abl},  severe triangle inversion and self-intersection happens when the initialization training is skipped.
+The initialization step reset the network to a state that output surface without self-intersection. As shown in Figure~\ref{fig:abl},  severe triangle inversion and self-intersection happens when the initialization training is skipped.
 
-\noindent\textbf{Edge Length Regularization}
+\noindent\textbf{Edge length regularization}
+The edge length regularization term in the loss is designed to discourage over stretched triangles by minimizing the variance of edge length. According to our observation, when edge length regularization term is removed from the loss, the 
+
+\noindent\textbf{Normal loss}
 
 \noindent\textbf{Number of \textit{K}-neighbor PointNet}
-\begin{table}
-	\caption{Ablation study with respect to number of \textit{K}-neighbor PointNet}
-	\label{tab:pointnet}
-	\centering
-	\begin{tabular}{c | c c c c}
-		Number of \textit{K}-neighbor PointNet &  2 & 3 & 4 & 5 \\
-		\hline
-		Chamfer      & 0.425 &  0.411 & 0.297 & 0.313 \\
-		EMD			 & 1.304 &  1.360 & 0.834 & 1.067
-	\end{tabular}
-\end{table}
+
 \begin{figure*}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/more_res/res}
@@ -127,15 +99,3 @@ The Initialization step reset the network to a state that output surface without
 	\label{fig:more_res}
 \end{figure*}
 \subsection{Limitations and future work}
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/fail/fail1}
-	\caption{Failure cases: In some cases, the view angle is adjusted for better exposure of imperfection}
-	\label{fig:fail1}
-\end{figure*}
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/fail/fail2}
-	\caption{Failure case: In this case, the network have output an extra leg that doesn't exist for the dresser}
-	\label{fig:fail2}
-\end{figure}
