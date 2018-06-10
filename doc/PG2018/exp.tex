@@ -1,4 +1,5 @@
 \section{Experiments}
+In this section, we evaluate our network through a series of experiments.
 \subsection{Experimental setup}
 %%===data===%%
 We train and evaluate our models on the ShapeNet\cite{shapenetdata}. Specifically, we use the ShapeNetCore55.v2 which contains over 50k of
@@ -100,8 +101,10 @@ with (we use ball-pivoting\cite{ballpivot} to generate mesh for the point set).
 	\label{fig:abl}
 \end{figure*}
 \noindent\textbf{Laplacian smooth}
+The Laplacian smooth force the output surface to have more regular local structure. When Laplacian smooth is removed as in Figure~\ref{fig:abl}, the output surface become much more rough and irregular.
 
 \noindent\textbf{Initialization}
+The Initialization step reset the network to a state that output surface without self-intersection. As shown in Figure~\ref{fig:abl},  severe triangle inversion and self-intersection happens when the initialization training is skipped.
 
 \noindent\textbf{Edge Length Regularization}
 
