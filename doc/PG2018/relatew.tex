@@ -5,8 +5,7 @@
 	\caption{The overview of the network: The proposed framework consists of two networks. One is the parameterization network that maps points sampled from parameter domain to target shape. The other is the semantic network that takes image as input and predict parameters for the parameterization network.}
 	\label{fig:overview}
 \end{figure*}
-3D reconstruction/modeling from image have been 
- Especially, with the release of large-scale 3D shape datasets such as ShapeNet\cite{shapenetdata}, deep learning based approaches have achieved great progress.
+3D reconstruction/modeling from single image have been well studied as the problem of \emph{shape from monocular cues} ( shading\cite{shapefromshadingsurvey}, defocus\cite{shapefromdf1,shapefromdf2}, texture\cite{Aloimonos1988}...). These methods usually only recover 2.5D surface from 2D image. Learning based approaches, especially deep learning methods can acquire more complicate prior by learning from dataset and recover much more complete 3D shape from a single image.
  
 \subsection{General learning approaches}
 As far as we known, early works of learning approaches can be traced back to \cite{Hoiem2007} and \cite{learn3D2007}. More recent works like \cite{Su:2014} and \cite{jointimgshape} break down the problem to two stages, one is to retrieve shape components from a large dataset, the other is to assemble the components and deform the assembled shape to fit the observed image. However, shape retrieval from images itself

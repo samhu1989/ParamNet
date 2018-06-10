@@ -1,3 +1,9 @@
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/net/semnet}
+	\caption{Semantic network: The semantic network takes image as input and predict parameters for the \textit{K}-neighbor PointNet and the global scale operation in the parameterization network. The semantic network have separate decoders for each \textit{K}-neighbor PointNet and and the global scale operation.}
+	\label{fig:semnet}
+\end{figure*}
 \section{Network of \emph{parameterization prediction}}
 In this section, we first explain the general framework of our proposed network in Sec~\ref{subsec:overview}, and then we elaborate the details of its structure part by part in the following sections.
 
@@ -33,21 +39,13 @@ Another essential building block for our parameterization network is the Laplaci
 Our ablation study shows that the Laplacian smooth significantly improves the regularity of the generated surface and makes the output mesh visually much more appealing. It also prevent self-intersection of the surface locally
 \subsection{Semantic network}
 \label{subsec:semnet}
-
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/net/semnet}
-	\caption{Semantic network: The semantic network takes image as input and predict parameters for the \textit{K}-neighbor PointNet and the global scale operation in the parameterization network. The semantic network have separate decoders for each \textit{K}-neighbor PointNet and and the global scale operation.}
-	\label{fig:semnet}
-\end{figure*}
-
 In our semantic network, we use convolution layers to extract semantic features from input image as shown in Figure~\ref{fig:semnet}.  Our semantic network adopt the U-shape structure that is similar to UNet\cite{unet}. To fit with our framework, we use separate decoder branches to predict different parameters parameterization network. These predicted parameters (i.e. $P_n=\{w_{n1},w_{n2},w_{n3},b_{n3},w_{n4},b_{n4},s_{n}\}$ ) are plugged into the parameterization network in the way shown in Figure~\ref{fig:overview}
 
 \subsection{Losses}
 The whole loss we use is shown in Eq.(\ref{equ:loss}), it is composed of the two terms as follows:
 \begin{equation}
 \label{equ:loss}
-l = l_c + l_2 + \lambda l_{reg} 
+l = l_c + \alpha l_2 + \beta l_{reg} + l_n
 \end{equation}
 
 \noindent{\textbf{Chamfer Loss}} The Chamfer distance is directly borrowed from \cite{PSGN}. This loss can drive the output point set to approach the target. As shown in Eq.(\ref{equ:chmf}). In Eq.(\ref{equ:chmf}), $\mathbf{x}$ are output points and $\mathbf{y}$ are the points from the groundtruth
@@ -57,17 +55,24 @@ l = l_c + l_2 + \lambda l_{reg}
 l_c = \sum_\mathbf{x} \min||\mathbf{x}-\mathbf{y}||_2^2+\sum_\mathbf{y} \min||\mathbf{x}-\mathbf{y}||_2^2
 \end{equation}
 
-\noindent{\textbf{L2 Regularization}} We use L2 regularization for the parameters in our semantic network as $l_2$ in (\ref{equ:loss}).
+\noindent{\textbf{L2 Regularization}} We use L2 regularization for the parameters in our semantic network. 
 
-\noindent{\textbf{Edge Length Regularization}} To discourage over stretched triangles in output mesh, we add a regularization term to minimize the variance of the edge length for the output mesh as shown in (\ref{equ:reg}). In \ref{equ:reg}, $\mathcal{E}$ is the set of edge, recorded as a set of paired vertex indexes (e.g. $(i,j)$).
+\noindent{\textbf{Edge Length Regularization}} To discourage over stretched triangles in output mesh, we add a regularization term to minimize the variance of the edge length for the output mesh as shown in (\ref{equ:reg}). In (\ref{equ:reg}), $\mathcal{E}$ is the set of edge, recorded as a set of paired vertex indexes (e.g. $(i,j)$).
 
 \begin{equation}
 \label{equ:reg}
 l_{reg} = \sum_{(i,j)\in\mathcal{E}}(||\mathbf{x}_i-\mathbf{x}_j||_2 - \frac{1}{|\mathcal{E}|}\sum_{(i,j)\in\mathcal{E} }||\mathbf{x}_i-\mathbf{x}_j||_2)^2
 \end{equation}
 
+\noindent{\textbf{Normal loss}} To encourage output surface to approach the groundtruth, instead of emphasizing only on the approaching of output vertices, we envolve normal into our loss. This loss is described in (\ref{equ:norm}). In (\ref{equ:norm}), the $n_{y_i}$ and $n_{y_j}$ are normals for vertices $\mathbf{y}_i$ and $\mathbf{y}_j$, and $\mathbf{y}_i$ and $\mathbf{y}_j$ are closest
+
+\begin{equation}
+\label{equ:norm}
+l_{n} = \sum_{(i,j)\in\mathcal{E}}||<\mathbf{x}_i-\mathbf{x}_j,\mathbf{n_{y_i}}>||^2 + ||<\mathbf{x}_i-\mathbf{x}_j,\mathbf{n_{y_j}}>||^2.
+\end{equation}
+
 \subsection{Network initialization}
-When start training from scratch, the proposed loss and network still can not prevent the network to output surface with severe global self-intersection. To alleviate this problem, we adopt a network initialization step to reset the parameterization network to start at a state that output surface without self-intersection. At this step we train the network with the loss shown in Eq.(\ref{equ:init}). The $\mathbf{y}$ used in Eq.(\ref{equ:init}) is not the points from groundtruth, but the points sampled from parameter domain with a 0.5 scale down. In other words, this step will reset the network so that the parameterization network will map from a sphere to a smaller sphere, when taking any image as input. We do this initialization by one epoch on the training data. 
+When start training from scratch, the proposed loss and network still can not prevent the network to output surface with severe global self-intersection. To alleviate this problem, we adopt a network initialization step to reset the parameterization network to start at a state that output surface without self-intersection. At this step we train the network with the loss shown in Eq.(\ref{equ:init}). The $\mathbf{y}$ used in Eq.(\ref{equ:init}) is not the points from groundtruth, but the points sampled from parameter domain with a 0.5 scale down. In other words, this step will reset the network so that the parameterization network will map from a sphere to a smaller sphere, when taking any image as input. We do this training of initialization by one epoch on the training data. 
 
 \begin{equation}
 \label{equ:init}
