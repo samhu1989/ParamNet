@@ -31,7 +31,7 @@ In the proposed framework, we use unit sphere surface as parameter domain. As sh
 \begin{figure*}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/abl/abl}
-	\caption{Visual result for ablation study: In some cases, the view angle is adjusted for better exposure of imperfection}
+	\caption{Visual result for ablation study: In some cases, the view angle is adjusted for better exposure of imperfection. The black regions in the meshes are regions with triangle i}
 	\label{fig:abl}
 \end{figure*}
 
@@ -85,7 +85,7 @@ l_c = \sum_\mathbf{x} \min||\mathbf{x}-\mathbf{y}||_2^2+\sum_\mathbf{y} \min||\m
 l_{reg} = \sum_{(i,j)\in\mathcal{E}}(||\mathbf{x}_i-\mathbf{x}_j||_2 - \frac{1}{|\mathcal{E}|}\sum_{(i,j)\in\mathcal{E} }||\mathbf{x}_i-\mathbf{x}_j||_2)^2
 \end{equation}
 
-\noindent{\textbf{Normal loss}} To better guide surface to approach the groundtruth, instead of emphasizing only on the approaching of output vertices, we envolve normal into our loss. This loss is described in (\ref{equ:norm}). In (\ref{equ:norm}), the $n_{y_i}$ and $n_{y_j}$ are normals for vertices $\mathbf{y}_i$ and $\mathbf{y}_j$, and $\mathbf{y}_i$ and $\mathbf{y}_j$ are respectively closest vertices to $\mathbf{x}_i$ and $\mathbf{x}_j$ in the groundtruth. They are found on calculating Chamfer loss (\ref{equ:chmf}). This loss term encourage the edges to remain perpendicular to the normals of its two end points.
+\noindent{\textbf{Normal loss}} To better guide surface to approach the groundtruth, instead of emphasizing only on the approaching of output vertices, we envolve normal into our loss. This loss is described in (\ref{equ:norm}). In (\ref{equ:norm}), the $n_{y_i}$ and $n_{y_j}$ are normals for vertices $\mathbf{y}_i$ and $\mathbf{y}_j$. $\mathbf{y}_i$ and $\mathbf{y}_j$ are respectively closest vertices to $\mathbf{x}_i$ and $\mathbf{x}_j$ in the groundtruth. They are found on calculating Chamfer loss (\ref{equ:chmf}). This Normal loss term encourages the edges to remain perpendicular to the corresponding normals of its two end points.
 
 \begin{equation}
 \label{equ:norm}
@@ -112,5 +112,16 @@ l_{init} = \sum_\mathbf{x}||\mathbf{x} - \mathbf{y}||_2^2
 	\caption{Failure case: In this case, the network have output an extra leg that doesn't exist for the dresser}
 	\label{fig:fail2}
 \end{figure}
+\begin{table}
+	\caption{Ablation study with respect to number of \textit{K}-neighbor PointNet}
+	\label{tab:pointnet}
+	\centering
+	\begin{tabular}{c | c c c c}
+		Number of \textit{K}-n PointNet &  2 & 3 & 4 & 5 \\
+		\hline
+		Chamfer      & 0.425 &  0.411 & 0.297 & 0.313 \\
+		EMD			 & 1.304 &  1.360 & 0.834 & 1.067
+	\end{tabular}
+\end{table}
 
 

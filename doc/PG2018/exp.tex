@@ -1,3 +1,9 @@
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/more_res/res}
+	\caption{Failure cases: In some cases, the view angle is adjusted for better exposure of imperfection}
+	\label{fig:more_res}
+\end{figure*}
 \section{Experiments}
 In this section, we evaluate our network through a series of experiments.
 \subsection{Experimental setup}
@@ -77,25 +83,22 @@ with (we use ball-pivoting\cite{ballpivot} to generate mesh for the point set).
 	\end{tabular}
 \end{table*}
 \subsection{Ablation study}
-In this subsection, we do ablation study to investigate the functionality of each components in our framework. The experiment results are shown in Table~\ref{tab:ablation} and 
+In this subsection, we do ablation study to investigate the functionality of each components in our framework. The evaluation are shown in Table~\ref{tab:ablation} and Table~\ref{tab:} 
 
 \noindent\textbf{Laplacian smooth}
-The Laplacian smooth force the output surface to have more regular local structure. When Laplacian smooth is removed, the output surface become much more rough and irregular as shown in Figure \ref{fig:abl} under the column of ``-Laplacian smooth".
+The Laplacian smooth force the output surface to have more regular local structure. When Laplacian smooth is removed, the output surface become much more rough as shown in Figure \ref{fig:abl} under the column of ``-Laplacian smooth".
 
 \noindent\textbf{Initialization}
-The initialization step reset the network to a state that output surface without self-intersection. As shown in Figure~\ref{fig:abl},  severe triangle inversion and self-intersection happens when the initialization training is skipped.
+The initialization step reset the network to a state that output surface without self-intersection. As shown in Figure~\ref{fig:abl} under the column of ``-Initialization",  severe triangle flipping and self-intersection happens when the initialization training is skipped.
 
 \noindent\textbf{Edge length regularization}
-The edge length regularization term in the loss is designed to discourage over stretched triangles by minimizing the variance of edge length. According to our observation, when edge length regularization term is removed from the loss, the 
+The edge length regularization term in the loss is designed to discourage over stretched triangles by minimizing the variance of edge length. According to our observation, when edge length regularization term is removed from the loss, the network tend to produce mesh that has  more large triangles as shown by the airplane example in Figure~\ref{fig:abl} under column ``-Edge length regularization ". Without such suppression for triangle over-stretching, the output become more easily to have self-intersection and triangle flipping as shown by the chair example in Figure~\ref{fig:abl} under column ``-Edge length regularization ".
 
 \noindent\textbf{Normal loss}
+The normal loss suppress triangle flipping by using the normal from groundtruth to guide the learning. 
+
 
 \noindent\textbf{Number of \textit{K}-neighbor PointNet}
 
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/more_res/res}
-	\caption{Failure cases: In some cases, the view angle is adjusted for better exposure of imperfection}
-	\label{fig:more_res}
-\end{figure*}
+
 \subsection{Limitations and future work}
