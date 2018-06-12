@@ -1,6 +1,14 @@
 \begin{abstract}
-	We propose an end-to-end deep learning framework that maps from unit sphere surface to target surface, given a single color image. Previous methods usually represent a 3D shape in volume or point cloud, and it is non-trivial to convert them to mesh models which are ready for wider application. Unlike the existing methods, our network represents 3D shape by a mapping from a fixed parameter domain. In our framework, the mapping is progressively carried out by the parameterization network, given parameters that semantic network predicted from a single color image. Our framework can directly generate mesh as output and it also allows us to integrate mesh based operation (e.g. Laplacian smooth) and mesh related losses into the network. Experiments show that our method not only qualitatively
-	produces mesh model more visually appealing, but also achieves comparable 3D shape estimation error and even lower compared to the state-of-the-art.
+	We propose an end-to-end deep learning framework that maps from a unit sphere surface to the target surface, given a single color image. 
+	%Previous methods usually represent a 3D shape in volume or point cloud, and it is non-trivial to convert them to mesh models which are ready for wider application. 
+	While mesh \cxj{or surface} models are widely used in many applications, it is challenging to apply the successful deep neural networks to directly produce surface models.  
+	\cxj{Are we the first to directly produce a mesh model from an image using DNN? }
+	Unlike the existing methods that use volumetric or point representations, our method represents a 3D shape by a mapping from a fixed parameter domain. 
+	%
+	In our framework, the mapping is progressively carried out by the \emph{parameterization network}, given parameters that are predicted by the \emph{semantic network} from a single color image. 
+	%
+	By integrating mesh-based operation (e.g. Laplacian smooth) and mesh related losses into the network, our framework directly outputs high-quality meshes.
+	Experiments show that our method not only produces mesh models that are more visually appealing, but also achieves comparable 3D shape estimation errors compared to the state of the art.
 	%-------------------------------------------------------------------------
 	%  ACM CCS 1998
 	%  (see http://www.acm.org/about/class/1998)
@@ -9,7 +17,7 @@
 	% \end{classification}
 	%-------------------------------------------------------------------------
 	%  ACM CCS 2012
-	(see http://www.acm.org/about/class/class/2012)
+	%(see http://www.acm.org/about/class/class/2012)
 	%The tool at \url{http://dl.acm.org/ccs.cfm} can be used to generate
 	% CCS codes.
 	%Example:
