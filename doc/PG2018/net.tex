@@ -1,15 +1,13 @@
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/res/res}
+	\caption{The comparison of visual results}
+	\label{fig:res}
+\end{figure*}
 \section{Our Method}
 \label{sec:net}
 
-
 In this section, we first explain the general framework of our proposed network, and then we elaborate the structure details part by part.
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/net/k-n_pointnet}
-	\caption{The internal structure of \textit{K}-neighbor PointNet.}
-	\label{fig:knpointnet}
-\end{figure}
 
 \subsection{Network overview}
 \label{subsec:overview}
@@ -20,50 +18,40 @@ Our original idea about the \emph{parameterization prediction} network was to us
 In the proposed framework shown in Figure~\ref{fig:overview}, the mapping is actually expressed by the parameterization network. 
 Instead of directly predicting the mapping, the semantic network predicts parameters for the parameterization network. The entire framework is end-to-end trainable.
 
-The parameterization network is built by stacking several \textit{K}-neighbor PointNet (explained in Sec~\ref{subsec:k-n_point_net}). 
+The parameterization network is built by stacking several \textit{K}-neighbor PointNet (explained in Sec~\ref{subsec:paramnet}). 
 Each \textit{K}-neighbor PointNet takes 3D point set as input and predicts a offset for each point. 
 In this way, the parameterization network actually maps a randomly sampled point set to the target shape.
 
 The semantic network is built on convolution, deconvolution and fully connected layers. It takes a single image as input to predict the parameters (i.e.$\{P_l\}$ for each layer in Figure~\ref{fig:overview}) for the parameterization network. 
 In this way, the semantic network links the input image and the surface parameterization.
 
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/res/res}
-	\caption{The comparison of visual results}
-	\label{fig:res}
-\end{figure*}
-
 \subsection{Parameterization Network}
+\label{subsec:paramnet}
 In the proposed framework, we use unit sphere surface as parameter domain.
-As shown in Figure~\ref{fig:overview}, at the beginning of the parameterization network $N=1024$ points are uniformly sampled from the parameter domain. Triangulation is applied on these sampled points. 
+As shown in Figure~\ref{fig:overview}, at the beginning of the parameterization network $N=1024$ points are uniformly sampled from the parameter domain. (Here we choose $N=1024$ to be same as in \cite{PSGN}. More points can be used to express more fine details and for our framework increasing $N$ do not require the increasing of network parameter.)
+Triangulation is applied on these sampled points. 
 The edge connections built by triangulation are later used in the Laplacian smooth layer and the edge length regularization term. 
 These connections are also used to connect output points to mesh.
-\cxj{So the topology is preserved throughout the parameterization network. The goal of topology preservation is to avoid face flipping? }
  
-\subsection{\textit{K}-neighbor PointNet for parameterization network} 
-\label{subsec:k-n_point_net}
-
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/abl/abl}
-	\caption{Visual result for ablation study: In some cases, the view angle is adjusted for better exposure of imperfection. The black regions in the meshes are regions with flipped triangles}
-	\label{fig:abl}
-\end{figure*}
-
-\begin{table*}
-	\caption{Ablation study with respect to different components}
-	\label{tab:ablation}
-	\centering
-	\begin{tabular}{c | c c c c c}
-		Models &  Full Model  & -Initialization & -Laplation smooth & -Edge length regularization & -Norm loss \\
-		\hline
-		Chamfer      & 0.297 & 0.424 & 0.394 & 0.405  & 0.390\\
-		EMD			 & 0.834 & 1.524 & 1.369 & 4.195  & 1.415
-	\end{tabular}
-\end{table*}
-
-An essential block is the \textit{K}-neighbor PointNet \cxj{for what?}
+ \begin{figure*}[htbp]
+ 	\centering
+ 	\includegraphics[width=\linewidth]{img/abl/abl}
+ 	\caption{Visual result for ablation study: In some cases, the view angle is adjusted for better exposure of imperfection. The black regions in the meshes are regions with flipped triangles}
+ 	\label{fig:abl}
+ \end{figure*}
+ 
+ \begin{table*}
+ 	\caption{Ablation study with respect to different components}
+ 	\label{tab:ablation}
+ 	\centering
+ 	\begin{tabular}{c | c c c c c}
+ 		Models &  Full Model  & -Initialization & -Laplation smooth & -Edge length regularization & -Norm loss \\
+ 		\hline
+ 		Chamfer      & 0.297 & 0.424 & 0.394 & 0.405  & 0.390\\
+ 		EMD			 & 0.834 & 1.524 & 1.369 & 4.195  & 1.415
+ 	\end{tabular}
+ \end{table*}
+\noindent\textbf{\textit{K}-neighbor PointNet for parameterization network}} An essential block in parameterization network is the \textit{K}-neighbor PointNet.
 %
 Figure~\ref{fig:knpointnet} shows its structure. 
 \textit{K}-neighbor PointNet is inspired by and named after PointNet\cite{PointNet} and its follow-up PointNet++\cite{NIPS2017_7095}. 
@@ -71,25 +59,17 @@ Figure~\ref{fig:knpointnet} shows its structure.
 In order to take unordered point set as input, \textit{K}-neighbor PointNet uses either point-wise operations on each point or symmetric functions on multiple points. 
 As shown in Figure~\ref{fig:knpointnet}, the \textit{K}-neighbor search operation finds the $K$ nearest neighboring points for each point inside the $N$ input points, and outputs the indexes tensor. 
 We employed the Bitonic Sort\cite{bitonicsorter} for its GPU implementation. 
-Then the \emph{gather} operation forges the tensor of \textit{K}-neighbor points based on these indexes and input points. \cxj{what do you mean here?}
+Then the \emph{gather} operation re-organize the input points based on these indexes and forge the tensor of ``\textit{K}-neighbor points" as shown in Figure~\ref{fig:knpointnet}. In the tensor of ``\textit{K}-neighbor points", the coordinates of \textit{K}-neighbor
+points for the $N$ input points are placed togather and results in a tensor with shape of $N\timesK\times3$ 
 %
-This operation is available tensorflow \cxj{?}
+The implementation for \emph{gather} operation is available in tensorflow.
 Subtracting the original input points from \textit{K}-neighbor points we can get the local relative coordinates of \textit{K}-neighbor points. 
 By concatenating \textit{K}-neighbor point coordinates and their local relative coordinates, we get the $N\times K\times6$ tensor as geometric features. 
 %
 These features go through a series of operations as shown in Figure~\ref{fig:knpointnet} to predict point-wise 3D offsets for each input point. Unlike the original PointNet\cite{PointNet}, who extracts maximum value among all point as feature vector for input point set, our \textit{K}-neighbor PointNet extract maximum value among every \textit{K}-neighborhood as feature vector for each point. This is shown by the \textit{K}-neighbor reduce max operation in Figure~\ref{fig:knpointnet}.
-
-\cxj{The main idea here is: why do you use parameters for the PointNet to predict offsets?}
  
-\subsection{Laplacian Smoothing}
-Another essential building block for our parameterization network is the Laplacian smoothing layer. 
-\cxj{What is the goal of this layer?}
-%
-\mdf{While most objects have locally smooth surfaces, we apply a \textbf{Laplacian smoothing layer} to the deformed mesh in each block to improve the visual quality of the predicted mesh. }
-
-\comments{
-Mesh based Laplacian smooth is commonly used in mesh processing. 
-The Laplacian smoothing layer applys the mesh based Laplacian smooth operation for each point in the point set as in (\ref{equ:lpl}). The mesh is constructed by triangulation on the sample points from parameter domain (i.e. the unit sphere surface).} 
+\noindent\textbf{Laplacian Smoothing}
+Another essential building block for our parameterization network is the Laplacian smoothing layer. Laplacian smoothing is a traditional mesh based operation that is is commonly used in mesh processing. We integrate it into our network because most objects have locally smooth surfaces. By applying a Laplacian smoothing to the mapped/deformed surface after each \textit{K}-neighbor PointNet, we improve the visual quality of the produced mesh.
 
 The new position of each vertex $\mathbf{x}^{*}$ in the smoothed mesh is computed as Eq.~(\ref{equ:lpl}), where $\mathcal{N}(\mathbf{x})$ represents the one-ring neighborhood of vertex $\mathbf{x}$. 
 This Laplacian smoothing operation is local linear and therefore differentiable.
@@ -99,18 +79,14 @@ This Laplacian smoothing operation is local linear and therefore differentiable.
 \label{equ:lpl}
 \end{equation}
 
-Our ablation study shows that the Laplacian smooth significantly improves the regularity of the generated surface and makes the output mesh visually much more appealing. It also prevent self-intersection of the surface locally.
-\cxj{The results does not show self-intersections when you remove Laplacian smoothing layer.}
-
+Our ablation study shows that the Laplacian smooth significantly improves the regularity of the generated surface and makes the output mesh visually more appealing.
 
 \subsection{Semantic Network}
 \label{subsec:semnet}
-\cxj{Learn parameters for PointNet in each layer or use the same weights for the five PointNets?}
 %
 In our semantic network, we use convolution layers to extract semantic features from the input image, as shown in Figure~\ref{fig:semnet}.  
 Our semantic network adopts the U-shape structure that is similar to UNet\cite{unet}. 
-To fit with our parameterization framework, we use separate decoder branches to predict different parameters for each block in our parameterization network. These predicted parameters (i.e. $P_n=\{\mathbf{W}_{n1},\mathbf{W}_{n2},\mathbf{W}_{n3},\mathbf{b}_{n3},\mathbf{W}_{n4},\mathbf{b}_{n4},s_{n}\}$ ) are plugged into the parameterization network in the way shown in Figure~\ref{fig:overview}.
-\cxj{what is $s_{n}$?}
+To fit with our parameterization framework, we use five separate decoder branches to predict different parameters for each block in our parameterization network. These predicted parameters (i.e. $P_n=\{\mathbf{W}_{n1},\mathbf{W}_{n2},\mathbf{W}_{n3},\mathbf{b}_{n3},\mathbf{W}_{n4},\mathbf{b}_{n4},s_{n}\}$ ) are plugged into the parameterization network in the way shown in Figure~\ref{fig:overview}.
 
 \subsection{Loss Function}
 
@@ -121,21 +97,19 @@ It is composed of four terms: Chamfer loss $L_{chmf}$, L2 regularization $L_{reg
 L(M_p, M_g ) = L_{chmf} + L_{norm} +\alpha L_{edge}+ \beta L_{reg}.
 \end{equation}
 
-We directly borrow the Chamfer distance from \cite{PSGN} as the Chamfer loss to measure the shape differences between the predicted mesh $M_p$ and the ground truth \mdf{points or mesh} $M_g$, as defined in Eq.(\ref{equ:chmf}).
+We directly borrow the Chamfer distance from \cite{PSGN} as the Chamfer loss to measure the shape differences between the predicted mesh $M_p$ and the ground truth points $M_g$, as defined in Eq.(\ref{equ:chmf}).
 %
 %\noindent{\textbf{Chamfer loss}} The Chamfer distance is directly borrowed from \cite{PSGN}. This loss can drive the output point set to approach the target. As shown in Eq.(\ref{equ:chmf}). 
-In Eq.(\ref{equ:chmf}), $\mathbf{x}$ are output points and $\mathbf{y}$ are the points from the ground truth.
+In Eq.(\ref{equ:chmf}), $\mathbf{x}$ are vertices on output mesh and $\mathbf{y}$ are the points from the ground truth.
 
 \begin{equation}
 \label{equ:chmf}
 L_{chmf} = \sum_{\mathbf{x}\in M_p} \min_{\mathbf{y} \in M_g}||\mathbf{x}-\mathbf{y}||_2^2 + 
 \sum_{\mathbf{y} \in M_g} \min_{\mathbf{x}\in M_p}||\mathbf{x}-\mathbf{y}||_2^2,
 \end{equation}
-where $\mathbf{x}$ are output vertexes on the predicted mesh and $\mathbf{y}$ are the points from the groundtruth point clouds.
+where $\mathbf{x}$ are vertices of output mesh and $\mathbf{y}$ are the points from the groundtruth point clouds.
 
-\cxj{Exlain the groundtruth data first. How do you compare the predicted mesh and the groundtruth point clouds.}
-
-Besides of the distance of vertexes, we use the {\textbf{Normal loss}} $L_{norm}$ to better guide the predicted surface to approach the groundtruth.
+Besides of the distance of vertices, we use the {\textbf{Normal loss}} $L_{norm}$ to better guide the predicted surface to approach the groundtruth.
 %, instead of emphasizing only on the approaching of output vertices, we envolve normal into our loss. 
 As defined in Eq.~(\ref{equ:norm}), the $\mathbf{n}_{i}$ and $\mathbf{n}_{j}$ are the normals at vertices $\mathbf{y}_i$ and $\mathbf{y}_j$. 
 $\mathbf{y}_i$ and $\mathbf{y}_j$ are respectively closest vertices to $\mathbf{x}_i$ and $\mathbf{x}_j$ in the groundtruth. 
@@ -149,10 +123,9 @@ L_{norm} = \sum_{(i,j)\in\mathcal{E}}\big((\mathbf{x}_i-\mathbf{x}_j)\cdot\mathb
 
 %\noindent{\textbf{Edge Length Regularization}} 
 To discourage over stretched triangles in the output mesh, we add an \textbf{Edge Length Regularization} term to minimize the variance of the edge lengths for the output mesh.
-As defined in (\ref{equ:edgereg}), $\mathcal{E}$ is the set of edges, recorded as a set of paired vertex indexes (e.g. $(i,j)$).\cxj{what's this...}
+As defined in (\ref{equ:edgereg}), $\mathcal{E}$ is the set of edges, recorded as a set of paired vertex indexes (i.e. $(i,j)$).
 
-The \textbf{L2 Regularization} loss $L_{reg}$ is applied for the parameters in our semantic network. 
-\cxj{$L_{reg}$() of what?}
+The \textbf{L2 Regularization} loss $L_{reg}$ is applied for the parameters in our semantic network.
 
 
 \begin{equation}
@@ -163,7 +136,6 @@ L_{edge} = \sum_{(i,j)\in\mathcal{E}}(\mathbf{x}_i-\mathbf{x}_j||_2 - \frac{1}{|
 
 
 \subsection{Training} 
-
 \noindent \textbf{Dataset.}
 %%===data===%%
 We train and evaluate our models on the ShapeNet\cite{shapenetdata}. Specifically, we use the ShapeNetCore55.v2 which contains over 50k manually created and cleaned 3D CAD models in 55 category.
@@ -173,15 +145,13 @@ For the training/validation/testing split, we follow the CSV file provided by th
 The 3D CAD objects are stored as meshes, and we re-sample the meshes into point sets. 
 In order to capture only the shape surface, we uses the code from~\cite{ocnn} and execute ``virtual scan" for the re-sampling.
 
-\noindent \textbf{Network Parameters}
-\cxj{Discuss how many layers, how many neighbors, kernal sizes and so on.}
-
+\noindent \textbf{Network Super Parameters}
+Unless otherwise stated, the network super parameters are chosen as follows for implementation of our framework presented in this paper. We use four \textit{K}-neighbor PointNet, whose $K=16$. 
 
 \noindent \textbf{Network Initialization.}
 Even with the well-designed loss functions, the proposed network might output surfaces with severe global self-intersection, when we train it from scratch.
 %
-To alleviate this problem, we adopt a \emph{network initialization} step to reset the parameterization network to start from a state that outputs surface without self-intersection. \cxj{confusing here.}
-\cxj{For any input image, we first expect the network to produce a smaller sphere surface (radious=0.5), instead of predicting a shape to approach the ground truth.}
+To alleviate this problem, we adopt a \emph{network initialization} step to reset the parameterization network to start from a state that produce surface without self-intersection. In other words, for any input image, we first expect the network to map the parameter domain to a smaller sphere surface (radious=0.5), instead of predicting a shape to approach the ground truth.
 Thus, the loss function for this initialization step is defined as:
 \begin{equation}
 \label{equ:init}
@@ -192,7 +162,9 @@ L_{init} = \sum_{\mathbf{x}\in M_p}\min_{\mathbf{y}\in S_{0.5}}||\mathbf{x} - \m
 We do this training of initialization by one epoch on the training data. 
 
 
-\cxj{Training parameters: batch size, learning rate, training times and so on.}
+\noindent \textbf{Training configuration}
+Unless otherwise stated, our networks are trained with following configuration.
+: batch size, learning rate, training times and so on.}
 
 
 

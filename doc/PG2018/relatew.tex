@@ -1,9 +1,9 @@
-\section{Related work}
+\section{Related Work}
 3D reconstruction and modeling from a single image has been extensively studied as the problem of \emph{shape from monocular cues}, including shadings~\cite{shapefromshadingsurvey}, focuses~\cite{shapefromdf1,shapefromdf2}, and textures~\cite{Aloimonos1988}. 
 These methods usually recover 2.5D surfaces from 2D images. 
 Learning-based approaches, especially deep learning methods, can acquire more complicate priors by learning from datasets and recover much more complete 3D shape from a single image.
  
-\subsection{General learning approaches}
+\subsection{General Learning Approaches}
 As far as we known, early work of learning approaches can be traced back to \cite{Hoiem2007} and \cite{learn3D2007}. These methods learn to segment and classify regions in image and finally produce 3D scene by folding the 2D image.
 %
 More recent techniques break down the problem to two stages\cite{Su:2014,jointimgshape}. One is to retrieve shape components from a large dataset, and the other is to assemble the components and deform the assembled shape to fit the observed image. These methods need to segment the shape into components for the database.
@@ -14,6 +14,27 @@ However, shape retrieval from images itself is an challenging problem due to the
 %These learning approaches are relatively early.
 %A more ideal solution would be to directly learn 3D shapes from single images under an end-to-end framework. 
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/net/k-n_pointnet}
+	\caption{The internal structure of \textit{K}-neighbor PointNet.}
+	\label{fig:knpointnet}
+\end{figure}
+
+
+
+\subsection{3D Neural Networks}
+Most recently, researchers have developed techniques to represent 3D shapes inside deep learning frameworks.%, and developed a serious of 3D neural networks to predict 3D shapes from images. 
+Unlike images, 3D shapes are not canonical functions on well-organized grids. 
+This leads to exploration on various representations of 3D shapes.
+
+\noindent\textbf{Volume Occupancy} 
+An intuitive way to apply convolutional network in 3D is to use volume occupancy of regular 3D grids to represent 3D shapes~\cite{3dshapenet}, and it is subsequently use for 3D shape generation~\cite{3DR2N2,learnobj}.
+%
+The main disadvantage of volumetric representation was the large memory consumption due to the raising of dimension when extending 2D grids to 3D. 
+Octree representation is proposed to support higher resolution outputs with limited memory, and used for shape generation~\cite{octreegen} and shape analysis~\cite{ocnn}.
+%The most recent work of use an octree representation for shape generation (similar representation is used in for 3D shape classification and segmentation by \cite{ocnn}), which allows to higher resolution outputswith limited memory.
+
 \begin{figure*}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/net/semnet}
@@ -21,23 +42,12 @@ However, shape retrieval from images itself is an challenging problem due to the
 	\label{fig:semnet}
 \end{figure*}
 
-\subsection{3D neural networks}
-Most recently, researchers have developed techniques to represent 3D shapes inside deep learning frameworks.%, and developed a serious of 3D neural networks to predict 3D shapes from images. 
-Unlike images, 3D shapes are not canonical functions on well-organized grids. 
-This leads to exploration on various representations of 3D shapes.
-
-\noindent\textbf{Volume occupancy} 
-An intuitive way to apply convolutional network in 3D is to use volume occupancy of regular 3D grids to represent 3D shapes~\cite{3dshapenet}, and it is subsequently use for 3D shape generation~\cite{3DR2N2,learnobj}.
-%
-The main disadvantage of volumetric representation was the large memory consumption due to the raising of dimension when extending 2D grids to 3D. 
-Octree representation is proposed to support higher resolution outputs with limited memory, and used for shape generation~\cite{octreegen} and shape analysis~\cite{ocnn}.
-%The most recent work of use an octree representation for shape generation (similar representation is used in for 3D shape classification and segmentation by \cite{ocnn}), which allows to higher resolution outputswith limited memory.
-
-\noindent\textbf{Point clouds} 
+\noindent\textbf{Point Clouds} 
 Compared to regular 3D grids, point clouds is not limited by fixed local connections.
 Many networks have been proposed to take unordered 3D point sets as input and extract geometric features from 3D point set for classification or segmentation~\cite{PointNet,NIPS2017_7095,pointcnn}.
 %
 The first attempt to generate a set of discrete points from a single image using neural networks was made by \cite{PSGN}, however, it is non-trivial to construct continuous surface models from the predicted point sets. Since the local variation of point positions are not continues in the predicted point sets.
+
 %
 \comments{
 \cite{PSGN} proposed neural networks that regress unordered
@@ -46,7 +56,6 @@ do not consider local connections of the points, and thus the point positions ha
 a very large degree of freedom. Consequently, it is difficult to reconstruct continue surface from the generated point cloud.}
 
 \noindent\textbf{Meshes}
-%Among all three representations, 
 Meshes are widely used in game and movie industries. Spherical parameterization techniques like \cite{HuAHSP2018} have been well studied and 
 In addition to vertex positions, the mesh representation contains local structure of vertices. 
 However, the mesh representation is not well supported in current neural networks.
@@ -55,9 +64,7 @@ To generate mesh models by using neural networks, composition weights of a serie
 Since it is only possible to choose/learn base meshes for specific class of object, these two networks only generates meshes for a specific class of object, such as face.
 %(the latter one is only used for human face).
 %
-\cite{3Drender} aims to make a differentiable approximation for 3D mesh rendering process, which would be much more significant if it could render gray image. 
-In fact, the approximated renderer can only produce silhouettes as output. 
-When it is used for mesh generation, it only take silhouette as supervision, hence does not perform well for complicated objects, such as cars, airplanes, etc.
+\cite{3Drender} aims to make a differentiable approximation for 3D mesh rendering process, which we believe is a significant step for both graphics and vision community. However, in its application for mesh generation, it only take silhouette as supervision, hence does not perform well for complicated objects, such as cars, airplanes, etc.
 %
 In comparison, our network draws a lot of experiences from techniques designed for point cloud representation, and it directly produces meshes as output.
 %but it .
@@ -70,5 +77,6 @@ In comparison, we represent 3D surfaces by surface parameterization.
 Our proposed network predicts a mapping from the parameter domain to the target surface. Manifold surfaces are not necessary as supervision.
 Out network can be trained with point clouds as supervision, but it directly produces mesh models.
 
-\subsection{Learning to learn and filter prediction}
+\subsection{Learning to Learn and Filter Prediction}
 It is not a new idea to learn neural network that predict the network parameters of another. It is one of the approaches found for \textit{learning to learn}. A few methods \cite{schmidhuber1992learning,bertinetto2016learning,jia2016dynamic} , in particular, have been proposed to apply such idea in their work. Our framework adopt this idea to separate the semantic feature space and the 3D shape space. In this way, the learned shape operation becomes more interpretable. In other words, the effect of learned shape operation can be directly visualized by the intermediate result of the parameterization network as shown in Figure~\ref{fig:overview}. Such separation also makes it more intuitive to add traditional shape operations (e.g. Laplacian smooth) to the network. 
+
