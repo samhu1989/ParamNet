@@ -45,13 +45,13 @@ These connections are also used to connect output points to mesh.
  	\label{tab:ablation}
  	\centering
  	\begin{tabular}{c | c c c c c}
- 		Models &  Full Model  & -Initialization & -Laplation smooth & -Edge length regularization & -Norm loss \\
+ 		Models &  Full Model & -Laplation smooth & -Initialization & -Edge length regularization & -Norm loss \\
  		\hline
- 		Chamfer      & 0.297 & 0.424 & 0.394 & 0.405  & 0.390\\
- 		EMD			 & 0.834 & 1.524 & 1.369 & 4.195  & 1.415
+ 		Chamfer      & 0.297  & 0.394 & 0.424 & 0.405  & 0.390\\
+ 		EMD			 & 0.834  & 1.369 & 1.524 & 4.195  & 1.415
  	\end{tabular}
  \end{table*}
-\noindent\textbf{\textit{K}-neighbor PointNet for parameterization network}} An essential block in parameterization network is the \textit{K}-neighbor PointNet.
+\noindent\textbf{\textit{K}-neighbor PointNet for parameterization network} An essential block in parameterization network is the \textit{K}-neighbor PointNet.
 %
 Figure~\ref{fig:knpointnet} shows its structure. 
 \textit{K}-neighbor PointNet is inspired by and named after PointNet\cite{PointNet} and its follow-up PointNet++\cite{NIPS2017_7095}. 
@@ -60,7 +60,7 @@ In order to take unordered point set as input, \textit{K}-neighbor PointNet uses
 As shown in Figure~\ref{fig:knpointnet}, the \textit{K}-neighbor search operation finds the $K$ nearest neighboring points for each point inside the $N$ input points, and outputs the indexes tensor. 
 We employed the Bitonic Sort\cite{bitonicsorter} for its GPU implementation. 
 Then the \emph{gather} operation re-organize the input points based on these indexes and forge the tensor of ``\textit{K}-neighbor points" as shown in Figure~\ref{fig:knpointnet}. In the tensor of ``\textit{K}-neighbor points", the coordinates of \textit{K}-neighbor
-points for the $N$ input points are placed togather and results in a tensor with shape of $N\timesK\times3$ 
+points for the $N$ input points are placed togather and results in a tensor with shape of $N\times K\times3$ 
 %
 The implementation for \emph{gather} operation is available in tensorflow.
 Subtracting the original input points from \textit{K}-neighbor points we can get the local relative coordinates of \textit{K}-neighbor points. 
@@ -94,7 +94,7 @@ The whole loss we use is defined in Eq.~(\ref{equ:loss}).
 It is composed of four terms: Chamfer loss $L_{chmf}$, L2 regularization $L_{reg}$, Edge length regularization $L_{edge}$, and a normal loss $L_{norm}$.
 \begin{equation}
 \label{equ:loss}
-L(M_p, M_g ) = L_{chmf} + L_{norm} +\alpha L_{edge}+ \beta L_{reg}.
+L(M_p, M_g ) = L_{chmf} + L_{norm} + L_{edge}+ \alpha L_{reg}.
 \end{equation}
 
 We directly borrow the Chamfer distance from \cite{PSGN} as the Chamfer loss to measure the shape differences between the predicted mesh $M_p$ and the ground truth points $M_g$, as defined in Eq.(\ref{equ:chmf}).
@@ -139,16 +139,17 @@ L_{edge} = \sum_{(i,j)\in\mathcal{E}}(\mathbf{x}_i-\mathbf{x}_j||_2 - \frac{1}{|
 \noindent \textbf{Dataset.}
 %%===data===%%
 We train and evaluate our models on the ShapeNet\cite{shapenetdata}. Specifically, we use the ShapeNetCore55.v2 which contains over 50k manually created and cleaned 3D CAD models in 55 category.
-The images for training and testing are rendered in random angles to provide synthetic training data for the model. 
+The images for training and testing are rendered in 16 random angles to provide synthetic training data for the model. 
 In total, 51,856 shape models are covered. 
 For the training/validation/testing split, we follow the CSV file provided by the ShapeNet website and resulted in 36,622/5,110/10,124 shapes. 
 The 3D CAD objects are stored as meshes, and we re-sample the meshes into point sets. 
 In order to capture only the shape surface, we uses the code from~\cite{ocnn} and execute ``virtual scan" for the re-sampling.
+For each view angles, we sample 2 different point samples as ground truth for training and testing. In other words, for each CAD model we generate 32 pairs of image and point set as our data in training/validation/testing.
 
 \noindent \textbf{Network Super Parameters}
 Unless otherwise stated, the network super parameters are chosen as follows for implementation of our framework presented in this paper. We use four \textit{K}-neighbor PointNet, whose $K=16$. 
 
-\noindent \textbf{Network Initialization.}
+\noindent \textbf{Network Initialization}
 Even with the well-designed loss functions, the proposed network might output surfaces with severe global self-intersection, when we train it from scratch.
 %
 To alleviate this problem, we adopt a \emph{network initialization} step to reset the parameterization network to start from a state that produce surface without self-intersection. In other words, for any input image, we first expect the network to map the parameter domain to a smaller sphere surface (radious=0.5), instead of predicting a shape to approach the ground truth.
@@ -161,12 +162,11 @@ L_{init} = \sum_{\mathbf{x}\in M_p}\min_{\mathbf{y}\in S_{0.5}}||\mathbf{x} - \m
 %In other words, this step will reset the network so that the parameterization network will map from a sphere to a smaller sphere, when taking any image as input. 
 We do this training of initialization by one epoch on the training data. 
 
-
 \noindent \textbf{Training configuration}
-Unless otherwise stated, our networks are trained with following configuration.
-: batch size, learning rate, training times and so on.}
-
-
+Unless otherwise stated, our networks are trained with following configurations.
+We use Adam optimizer\cite{adam} with learning rate of $3e-5$. We use $\alpha=1e-5$ for training loss.  
+We use 32 as size for mini-batch. For each training iteration, we re-sample $N=1024$ points from the parameter domain and do triangulation with them. These sampled points are shared inside a mini-batch and therefore triangulation is also shared across the mini-batch.  For comparison, our network and \cite{PSGN} are both trained 8 epochs on the training data.
+Typically, it takes four and a half day to train our network on 4 Tesla K80. 
 
 \begin{figure}[htbp]
 	\centering
@@ -188,7 +188,9 @@ Unless otherwise stated, our networks are trained with following configuration.
 		Number of \textit{K}-n PointNet &  2 & 3 & 4 & 5 \\
 		\hline
 		Chamfer      & 0.425 &  0.411 & 0.297 & 0.313 \\
-		EMD			 & 1.304 &  1.360 & 0.834 & 1.067
+		EMD			 & 1.304 &  1.360 & 0.834 & 1.067 \\
+		\hline
+		Training Time& 3d20h &   4d2h   & 4d10h & 4d23h
 	\end{tabular}
 \end{table}
 
