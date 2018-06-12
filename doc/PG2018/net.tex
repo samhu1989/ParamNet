@@ -7,7 +7,7 @@ In this section, we first explain the general framework of our proposed network,
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/net/k-n_pointnet}
-	\caption{The internal structure of \textit{K}-neighbor PointNet. \cxj{swith order of semantic network and KN PointNet.}}
+	\caption{The internal structure of \textit{K}-neighbor PointNet.}
 	\label{fig:knpointnet}
 \end{figure}
 
@@ -17,22 +17,15 @@ Our original idea about the \emph{parameterization prediction} network was to us
 %
 %\cxj{There are five blocks/layers in our network. For each block, the semenatic network estimate a K-dimentional vector as the weights to intepolate K-neighbors. The parameterization network translates each vertex according the estimated parameters locally and then smoothes the mesh.}
 
-
 In the proposed framework shown in Figure~\ref{fig:overview}, the mapping is actually expressed by the parameterization network. 
-Instead of directly predicting the mapping, the semantic network predicts parameters for the parameterization network, making the entire network end-to-end trainable.
+Instead of directly predicting the mapping, the semantic network predicts parameters for the parameterization network. The entire framework is end-to-end trainable.
 
 The parameterization network is built by stacking several \textit{K}-neighbor PointNet (explained in Sec~\ref{subsec:k-n_point_net}). 
-Each \textit{K}-neighbor PointNet takes \cxj{the entire point set or K-neighboring points?} as input and predicts a offset for each point. 
-In this way, the parameterization network actually deforms a randomly sampled point set to the target shape.
-\cxj{So it look more like a Deformation Network. } 
-%
-By using different randomly generated samples from the parameter domain in the training iterations, the parameterization network can learn to handle the \textit{sampling variation} that is introduced by using specific point set as ground truth. 
-\cxj{What do you mean exactly by "learn to handle"?}
+Each \textit{K}-neighbor PointNet takes 3D point set as input and predicts a offset for each point. 
+In this way, the parameterization network actually maps a randomly sampled point set to the target shape.
 
 The semantic network is built on convolution, deconvolution and fully connected layers. It takes a single image as input to predict the parameters (i.e.$\{P_l\}$ for each layer in Figure~\ref{fig:overview}) for the parameterization network. 
 In this way, the semantic network links the input image and the surface parameterization.
-
-\cxj{Explain the meaning of the parameters of each layer and what role it plays in the K-neighbor PointNet.}
 
 \begin{figure*}[htbp]
 	\centering
@@ -42,16 +35,14 @@ In this way, the semantic network links the input image and the surface paramete
 \end{figure*}
 
 \subsection{Parameterization Network}
-In the proposed framework, we use unit sphere surface as parameter domain. 
-\cxj{I would not say the sphere surface is a parameters domain...}
+In the proposed framework, we use unit sphere surface as parameter domain.
 As shown in Figure~\ref{fig:overview}, at the beginning of the parameterization network $N=1024$ points are uniformly sampled from the parameter domain. Triangulation is applied on these sampled points. 
 The edge connections built by triangulation are later used in the Laplacian smooth layer and the edge length regularization term. 
 These connections are also used to connect output points to mesh.
 \cxj{So the topology is preserved throughout the parameterization network. The goal of topology preservation is to avoid face flipping? }
  
-
-%\subsection{\textit{K}-neighbor PointNet for parameterization network} 
-%\label{subsec:k-n_point_net}
+\subsection{\textit{K}-neighbor PointNet for parameterization network} 
+\label{subsec:k-n_point_net}
 
 \begin{figure*}[htbp]
 	\centering
@@ -82,7 +73,7 @@ As shown in Figure~\ref{fig:knpointnet}, the \textit{K}-neighbor search operatio
 We employed the Bitonic Sort\cite{bitonicsorter} for its GPU implementation. 
 Then the \emph{gather} operation forges the tensor of \textit{K}-neighbor points based on these indexes and input points. \cxj{what do you mean here?}
 %
-This operation is tensorflow \cxj{?}
+This operation is available tensorflow \cxj{?}
 Subtracting the original input points from \textit{K}-neighbor points we can get the local relative coordinates of \textit{K}-neighbor points. 
 By concatenating \textit{K}-neighbor point coordinates and their local relative coordinates, we get the $N\times K\times6$ tensor as geometric features. 
 %
