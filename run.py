@@ -202,10 +202,11 @@ def train(setttings={}):
                         i += 1;
                 summary,loss,step = sess.run([net_dict['sum'],net_dict['chmf'],net_dict['step']],feed_dict=feed);
                 valid_writer.add_summary(summary,step);
+                n_epoch = step // len(train_fetcher.Dir);
                 if step % 200 == 0:
-                    saver.save(sess,'%s/'%dumpdir+"model_epoch%d.ckpt"%train_fetcher.EpochCnt);
+                    saver.save(sess,'%s/'%dumpdir+"model_epoch%d.ckpt"%n_epoch);
                 epoch_len = len(train_fetcher.Dir);
-                print "Epoch:",train_fetcher.EpochCnt,"GT_PTS_NUM",GT_PTS_NUM,"step:",step,"/",epoch_len,"learning rate:",lrate;
+                print "Epoch:",n_epoch,"GT_PTS_NUM",GT_PTS_NUM,"step:",step,"/",epoch_len,"learning rate:",lrate;
                 if step > 8*len(train_fetcher.Dir):
                     break;
         finally:
