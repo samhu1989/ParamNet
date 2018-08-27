@@ -6,6 +6,7 @@ from PIL import Image;
 import time;
 import struct;
 from scipy.spatial import ConvexHull;
+from scipy.spatial import Delaunay;
 import scipy;
 YIQ2RGB = np.array([[1.0,0.9469,0.6236],[1.0,-0.2748,-0.6357],[1.0,-1.1,1.7]],dtype=np.float32);
 
@@ -121,6 +122,17 @@ def randsphere4(m=None):
     pts[:,0] *= scale;
     pts[:,1] *= scale;
     return pts;
+
+def randpatch(m=None):
+    pts = np.zeros([m,2],np.float32);
+    n = np.linspace(1,m,m);
+    n += np.random.normal();
+    pts[:,0] = (n / float(m)).astype(np.float32);
+    tmp = 0.5*(np.sqrt(5)-1)*n;
+    pts[:,1] = ( tmp - np.floor(tmp) ).astype(np.float32);
+    return pts;
+    
+    
     
 
 def getface(tri_lst):
@@ -324,3 +336,52 @@ def rand_sphere_nointerp(n,m=None):
     data_dict['lplidx'].append(lplidx);
     data_dict['lplw'].append(lplw);
     return data_dict;
+
+def rand_sphere_grid(n,m=None):
+    pts = np.zeros([n,m,3],np.float32);
+    sphere = randsphere4(m);
+    for i in range(n):
+        pts[i,:,:] = sphere;
+    hulllst = triangulateSphere(sphere.reshape([1,-1,3]));
+    flst = [];
+    flst.append(hulllst[0].simplices);
+    data_dict = {};
+    _,eidx = edge_interp(sphere,flst[-1]);
+    data_dict['xgrid'] = pts;
+    data_dict['eidx'] = [];
+    data_dict['eidx'].append(eidx);
+    data_dict['fidx'] = flst;
+    data_dict['lplidx'] = [];
+    data_dict['lplw'] = [];
+    lplidx,lplw = laplace(int(sphere.shape[0]),flst[-1]);
+    data_dict['lplidx'].append(lplidx);
+    data_dict['lplw'].append(lplw);
+    return data_dict;
+
+def rand_patch_grid(n,m):
+    pts = np.zeros([n,m,2],np.float32);
+    patch = randpatch(m);
+    for i in range(n):
+        pts[i,:,:] = patch;
+    tri = Delaunay(patch);
+    flst = [];
+    flst.append(tri.simplices.copy());
+    data_dict = {};
+    _,eidx = edge_interp(patch,flst[-1]);
+    data_dict['xgrid'] = pts;
+    data_dict['eidx'] = [];
+    data_dict['eidx'].append(eidx);
+    data_dict['fidx'] = flst;
+    data_dict['lplidx'] = [];
+    data_dict['lplw'] = [];
+    lplidx,lplw = laplace(int(patch.shape[0]),flst[-1]);
+    data_dict['lplidx'].append(lplidx);
+    data_dict['lplw'].append(lplw);
+    return data_dict;
+    
+def rand_grid(n,m,dim):
+    if dim == 3:
+        return rand_sphere_grid(n,m);
+    if dim == 2:
+        return rand_patch_grid(n,m);
+        

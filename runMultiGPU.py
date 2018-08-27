@@ -83,7 +83,8 @@ def train(settings={}):
                     feed_all.update(util.generate_feed(data_dict,net_dict_lst[i],lrate));
                 _,step,summary = sess.run([train_op,net_dict_lst[0]['step'],net_dict_lst[0]['sum']],feed_dict=feed_all);
                 train_writer.add_summary(summary,gpu_num*step);
-                n_epoch = (gpu_num*step) // len(train_fetcher.Dir);
+                epoch_len = len(train_fetcher.Dir);
+                n_epoch = (gpu_num*step) // epoch_len;
                 if step*gpu_num > 8*len(train_fetcher.Dir):
                     saver.save(sess,'%s/'%dumpdir+"model_epoch%d.ckpt"%n_epoch);
                     break;
@@ -94,6 +95,7 @@ def train(settings={}):
                     feed = util.generate_feed(data_dict,net_dict_lst[0],lrate);
                     summary,loss,step = sess.run([net_dict_lst[0]['sum'],net_dict_lst[0]['chmf'],net_dict_lst[0]['step']],feed_dict=feed);
                     valid_writer.add_summary(summary,step);
+
                 print "Epoch:",n_epoch,"GT_PTS_NUM",GT_PTS_NUM,"step:",step*gpu_num,"/",epoch_len,"learning rate:",lrate;
         finally:
             train_fetcher.shutdown();
