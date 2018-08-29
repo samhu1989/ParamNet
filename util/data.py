@@ -5,6 +5,8 @@ import h5py;
 import numpy as np;
 import random;
 import os;
+import sys;
+from .sampling import *;
 class DataFetcher(threading.Thread):
     def __init__(self):
         super(DataFetcher,self).__init__()
@@ -19,12 +21,12 @@ class DataFetcher(threading.Thread):
         self.stopped = False;
         self.Dir = [];
         self.useMix = True;
-        self.randfunc="util.rand_n_sphere(self.BATCH_SIZE,PTS_NUM)";
+        self.randfunc="rand_n_sphere(self.BATCH_SIZE,PTS_NUM)";
     
     def shuffleDir(self):
         random.shuffle(self.Dir);
         
-    def workMix(self):
+    def workMix(self,verb=False):
         q = [];
         files = [];
         cnt = 0;
@@ -32,6 +34,8 @@ class DataFetcher(threading.Thread):
         PTS_DENSE_NUM = None;
         VIEW_NUM = None;
         while cnt < self.BATCH_SIZE:
+            if verb:
+                print >>sys.stderr,'reading ',cnt,'/',self.BATCH_SIZE;
             datapath = self.Dir[self.Cnt];
             f = h5py.File(datapath,"r");
             fdense = None;
@@ -56,9 +60,9 @@ class DataFetcher(threading.Thread):
             else:
                 assert VIEW_NUM == int(yGTIn.shape[0]);
             if not np.isfinite(x2DIn).all():
-                print datapath," contain invalid data in x2D";
+                print >>sys.stderr,datapath," contain invalid data in x2D";
             elif not np.isfinite(yGTIn).all():
-                print datapath," contain invalid data in yGT";
+                print >>sys.stderr,datapath," contain invalid data in yGT";
             else:
                 files.append((f,fdense));
                 cnt += 1;
@@ -67,6 +71,8 @@ class DataFetcher(threading.Thread):
                 self.Cnt = 0;
                 self.EpochCnt += 1;
         for i in range(VIEW_NUM):
+            if verb:
+                print >>sys.stderr,'allocating ',i,'/',VIEW_NUM;
             x2D = np.zeros([self.BATCH_SIZE,self.HEIGHT,self.WIDTH,4]);
             rand = eval(self.randfunc);
             yGT = np.zeros([self.BATCH_SIZE,PTS_NUM,3]);
@@ -81,6 +87,8 @@ class DataFetcher(threading.Thread):
             q.append(data_dict);
         fi = 0;
         for f,fdense in files:
+            if verb:
+                print >>sys.stderr,'reading dense', fi,'/',len(files) ;
             x2DIn = f["IMG"][...];
             yGTIn = f["PV"][...];
             yGTDense = None;
@@ -94,10 +102,12 @@ class DataFetcher(threading.Thread):
                     q[i]['yGTdense'][fi,...] = yGTDense[i//2,...];
                     q[i]['ynGT'][fi,...] = ynGTDense[i//2,...];
             f.close();
+            if fdense:
+                fdense.close();
             fi += 1;
         return q;
     
-    def workNoMix(self):
+    def workNoMix(self,verb=False):
         q = [];
         tag = [];
         datapath = self.Dir[self.Cnt];
@@ -149,17 +159,25 @@ class DataFetcher(threading.Thread):
     
     def run(self):
         while not self.stopped:
+            if self.Data.empty():
+                verb = False;
+            else:
+                verb = False;
             if self.Dir is not None:
                 q = [];
                 tags = [];
                 if self.useMix:
-                    q = self.workMix();
+                    q = self.workMix(verb);
                 else:
-                    q,tags = self.workNoMix();
+                    q,tags = self.workNoMix(verb);
+                if verb:
+                    print >>sys.stderr,'putting into data';
                 for v in q:
                     self.Data.put(v);
                 for tag in tags:
                     self.DataTag.put(tag);
+                if verb:
+                    print >>sys.stderr,'Done put into data';
     
     def fetch(self):
         if self.stopped:

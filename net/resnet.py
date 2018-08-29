@@ -52,10 +52,9 @@ def naive(inputs,
           scope='shortcut')
 
     residual = resnet_utils.conv2d_same(
-        residual, depth, 3, stride, rate=rate, scope='conv1')
+        inputs, depth, 3, stride, rate=rate, scope='conv1')
     residual = layers.conv2d(
-        residual, depth, [3, 3], stride, activation_fn=None, scope='conv2')
-
+        residual, depth, [3, 3], stride=1, activation_fn=None, scope='conv2')
     output = nn_ops.relu(shortcut + residual)
 
     return utils.collect_named_outputs(outputs_collections, sc.name, output)
@@ -118,13 +117,12 @@ def resnet_v1_18(inputs,
                  output_stride=None,
                  reuse=None,
                  scope='resnet_v1_18'):
-  """ResNet-18 model of [1]. See resnet_v1() for arg and return description."""
-  blocks = [
-      resnet_v1_block('block1', base_depth=64, num_units=2, stride=2),
-      resnet_v1_block('block2', base_depth=128, num_units=2, stride=2),
-      resnet_v1_block('block3', base_depth=256, num_units=2, stride=2),
-      resnet_v1_block('block4', base_depth=512, num_units=2, stride=1),
-  ];
+    blocks = [
+        resnet_v1_block('block1', base_depth=64, num_units=2, stride=2),
+        resnet_v1_block('block2', base_depth=128, num_units=2, stride=2),
+        resnet_v1_block('block3', base_depth=256, num_units=2, stride=2),
+        resnet_v1_block('block4', base_depth=512, num_units=2, stride=1)
+      ];
     return resnet_v1(
       inputs,
       blocks,
@@ -134,4 +132,4 @@ def resnet_v1_18(inputs,
       output_stride,
       include_root_block=True,
       reuse=reuse,
-      scope=scope)
+      scope=scope);

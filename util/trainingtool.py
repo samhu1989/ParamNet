@@ -5,6 +5,8 @@ import sys;
 sys.path.append('..');
 import net;
 from .io import listdir;
+from .safety import safe_guard;
+import datetime;
 
 def assign_from_checkpoint_fn(model_path, var_list, ignore_missing_vars=False,
                               reshape_variables=False):
@@ -44,7 +46,7 @@ def average_gradients(tower_grads):
         grads = []
         for g, _ in grad_and_vars:
             # Add 0 dimension to the gradients to represent the tower.
-            expanded_g = tf.expand_dims(g, 0)
+            expanded_g = tf.expand_dims(g, 0);
             # Append on a 'tower' dimension which we will average over below.
             grads.append(expanded_g)
         # Average over the 'tower' dimension.
@@ -53,7 +55,7 @@ def average_gradients(tower_grads):
         # Keep in mind that the Variables are redundant because they are shared
         # across towers. So .. we will just return the first tower's pointer to
         # the Variable.
-        v = grad_and_vars[0][1]
+        v = grad_and_vars[0][1];
         grad_and_var = (grad, v)
         average_grads.append(grad_and_var)
     return average_grads;
@@ -69,6 +71,7 @@ def generate_feed(data_dict,net_dict,istrain,lrate):
         net_dict['yGT']:yGT,
         net_dict['ixGrid']:x3D,
         net_dict['ix2D']:x2D,
+        net_dict['isTrain']:istrain,
         net_dict['lr']:lrate
     };
     if 'eidx' in data_dict.keys():
@@ -89,6 +92,7 @@ def generate_feed(data_dict,net_dict,istrain,lrate):
 def build(settings={}):
     gpu_num = len( os.environ['CUDA_VISIBLE_DEVICES'].split(',') );
     settings['dev']='/gpu:0';
+    net_dict_lst = [];
     net_dict_lst.append(net.build_model(settings['net'],settings));
     train_op = net_dict_lst[-1]['opt'+settings['loss']];
     if gpu_num > 1:
@@ -101,7 +105,7 @@ def build(settings={}):
         for i in range(1,gpu_num):
             settings['dev'] = '/gpu:%d'%i;
             settings['reuse'] = True;
-            net_dict_lst.append(net.build_model(net_name,settings));
+            net_dict_lst.append(net.build_model(settings['net'],settings));
             with tf.device(settings['dev']):
                 grads = opt.compute_gradients(net_dict_lst[0][settings['loss']]);
             tower_grads.append(grads);
@@ -109,6 +113,7 @@ def build(settings={}):
             avg_grads = average_gradients(tower_grads);
         with tf.device( '/cpu:0' ):
             train_op = opt.apply_gradients(avg_grads,global_step = net_dict_lst[0][settings['step']]);
+    print(settings['net']+' built on %d gpus'%gpu_num);
     return net_dict_lst,train_op;
 
 def generate_fetcher(settings,subpath,shuffle=True):
@@ -126,35 +131,45 @@ def train(settings={}):
     if not os.path.exists(settings['dump']):
         os.mkdir(settings['dump']);
     net_dicts,train_op = build(settings);
+    gpu_num = len( net_dicts );
     
     train_fetcher = generate_fetcher(settings,'train');
-    valid_fetcher = generate_fetcher(settings,'valid');
+    valid_fetcher = generate_fetcher(settings,'val');
     
     if 'rand' in net_dicts[0].keys():
         train_fetcher.randfunc=net_dicts[0]['rand'];
-        val_fetcher.randfunc=net_dicts[0]['rand'];
-    
-    config=tf.ConfigProto();
-    config.gpu_options.allow_growth = True;
-    config.allow_soft_placement = True;
-    saver = tf.train.Saver();
-    lrate = 3e-5;
-    
-    with tf.Session(config=config) as sess:
-        sess.run(tf.global_variables_initializer());
-        train_writer = tf.summary.FileWriter(settings['dump']+os.sep+'train',graph=sess.graph);
-        valid_writer = tf.summary.FileWriter(settings['dump']+os.sep+'valid',graph=sess.graph)
-        ckpt = tf.train.get_checkpoint_state(settings['dump']+os.sep);
-        if ckpt and ckpt.model_checkpoint_path:
-            assign = assign_from_checkpoint_fn(ckpt.model_checkpoint_path,tf.all_variables(),True);
-            assign(sess);
-        try:
-            train_fetcher.start();
-            val_fetcher.start();
+        valid_fetcher.randfunc=net_dicts[0]['rand'];
+        
+    try:
+        #start fetching data into memory
+        train_fetcher.start();
+        valid_fetcher.start();
+        #define session
+        config=tf.ConfigProto();
+        config.gpu_options.allow_growth = True;
+        config.allow_soft_placement = True;
+        
+        lrate = 3e-5;    
+        with tf.Session(config=config) as sess:
+            #restore and save model 
+            sess.run(tf.global_variables_initializer());
+            ckpt = tf.train.get_checkpoint_state(settings['dump']+os.sep);
+            if ckpt and ckpt.model_checkpoint_path:
+                assign = assign_from_checkpoint_fn(ckpt.model_checkpoint_path,tf.global_variables(),True);
+                assign(sess);
+            saver = tf.train.Saver();
+            #summary writer
+            train_writer = tf.summary.FileWriter(settings['dump']+os.sep+'train',graph=sess.graph);
+            valid_writer = tf.summary.FileWriter(settings['dump']+os.sep+'valid',graph=sess.graph);
+            #start iteration
             step = sess.run(net_dicts[0][settings['step']]);
             print >> sys.stderr,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S");
             while step*gpu_num < settings['epoch_num']*len(train_fetcher.Dir):
-                feed_all = {}; 
+                cnt = gpu_num*step;
+                epoch_len = len(train_fetcher.Dir);
+                n_epoch = cnt // epoch_len;
+                print >> sys.stderr,"Start Step:",cnt,"/",epoch_len;
+                feed_all = {};
                 for i in range(gpu_num):
                     data_dict = train_fetcher.fetch();
                     yGT = data_dict['yGTdense']; 
@@ -166,16 +181,9 @@ def train(settings={}):
                         net_dicts[0][settings['step']],
                         net_dicts[0]['sum']
                     ],feed_dict=feed_all);
-                
-                cnt = gpu_num*step;
                 train_writer.add_summary(summary,cnt);
-                epoch_len = len(train_fetcher.Dir);
-                n_epoch = cnt // epoch_len;
-                if cnt%200 == 0:
-                    safe_guard();
-                    print >> sys.stderr,"Epoch:",n_epoch,"GT_PTS_NUM",GT_PTS_NUM,"step:",cnt,"/",epoch_len,"learning rate:",lrate;
-                if cnt % 400 == 0:
-                    data_dict = val_fetcher.fetch();
+                if step % (6//gpu_num) == 0:
+                    data_dict = valid_fetcher.fetch();
                     feed = generate_feed(data_dict,net_dicts[0],False,lrate);
                     summary,loss,step = sess.run(
                         [
@@ -184,16 +192,20 @@ def train(settings={}):
                             net_dicts[0][settings['step']]
                         ],feed_dict=feed);
                     valid_writer.add_summary(summary,cnt);
+                    print >> sys.stderr,"Done Valid:",cnt,"/",epoch_len;
+                if cnt % 400 == 0:
+                    safe_guard();
                     saver.save(sess,settings['dump']+os.sep+settings['net']+'_epoch_%d'%n_epoch);
-                print "Epoch:",n_epoch,"GT_PTS_NUM",GT_PTS_NUM,"step:",cnt,"/",epoch_len,"learning rate:",lrate;
+                print >> sys.stderr,"Done Step:",cnt,"/",epoch_len,"Epoch:",n_epoch,"GT_PTS_NUM",GT_PTS_NUM,"learning rate:",lrate;
             saver.save(sess,settings['dump']+os.sep+settings['net']+'_epoch_%d'%n_epoch);
             print >> sys.stderr,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S");
-        except Exception,e:
-            print(e);
-            train_fetcher.shutdown();
-            valid_fetcher.shutdown();
-        else:
-            print("Done Training");
+    except Exception,e:
+        print("Exception Raised");
+        print(e);
+        train_fetcher.shutdown();
+        valid_fetcher.shutdown();
+    else:
+        print("Done Training");
     return;
 
 def test(settings={}):
