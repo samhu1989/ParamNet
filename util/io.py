@@ -2,7 +2,6 @@ import numpy as np;
 from PIL import Image;
 import os;
 import tensorflow as tf;
-from tensorflow.python import pywrap_tensorflow;
 
 def listdir(dir_,suffix=None):
     lst = os.listdir(dir_);

@@ -7,6 +7,7 @@ import random;
 import os;
 import sys;
 from .sampling import *;
+import time;
 class DataFetcher(threading.Thread):
     def __init__(self):
         super(DataFetcher,self).__init__()
@@ -70,11 +71,19 @@ class DataFetcher(threading.Thread):
             if self.Cnt >= len(self.Dir):
                 self.Cnt = 0;
                 self.EpochCnt += 1;
+        rand = eval(self.randfunc);
         for i in range(VIEW_NUM):
+            t0 = None;
+            t1 = None;
+            t2 = None;
             if verb:
                 print >>sys.stderr,'allocating ',i,'/',VIEW_NUM;
+                t0 = time.time();
             x2D = np.zeros([self.BATCH_SIZE,self.HEIGHT,self.WIDTH,4]);
-            rand = eval(self.randfunc);
+            if verb:
+                t1 = time.time();
+            if verb:
+                t2 = time.time();
             yGT = np.zeros([self.BATCH_SIZE,PTS_NUM,3]);
             data_dict = {};
             data_dict['x2D'] = x2D;
@@ -85,6 +94,8 @@ class DataFetcher(threading.Thread):
                 data_dict['yGTdense'] = yGTdense;
                 data_dict['ynGT'] = yGTdense.copy();
             q.append(data_dict);
+            if verb:
+                print >>sys.stderr,t2 - t1 , '/' , time.time() - t0 , ' for one allocating';
         fi = 0;
         for f,fdense in files:
             if verb:
@@ -131,9 +142,9 @@ class DataFetcher(threading.Thread):
         num = VIEW_NUM // self.BATCH_SIZE;
         assert num*self.BATCH_SIZE==VIEW_NUM,"self.BATCH_SIZE is not times of VIEW_NUM in dataset";
         data_dict = {};
+        rand = eval(self.randfunc);
         for i in range(num):
             x2D = np.zeros([self.BATCH_SIZE,self.HEIGHT,self.WIDTH,4]);
-            rand = eval(self.randfunc);
             yGT = np.zeros([self.BATCH_SIZE,PTS_NUM,3]);
             data_dict={};
             data_dict['x2D'] = x2D;
@@ -160,23 +171,29 @@ class DataFetcher(threading.Thread):
     def run(self):
         while not self.stopped:
             if self.Data.empty():
+                #verb = True;#for debug
                 verb = False;
             else:
                 verb = False;
             if self.Dir is not None:
                 q = [];
                 tags = [];
+                t0 = None;
+                if verb:
+                    t0 = time.time();
+                    print >>sys.stderr,'Preparing data';
                 if self.useMix:
                     q = self.workMix(verb);
                 else:
                     q,tags = self.workNoMix(verb);
                 if verb:
-                    print >>sys.stderr,'putting into data';
+                    print >>sys.stderr,'Putting into data';
                 for v in q:
                     self.Data.put(v);
                 for tag in tags:
                     self.DataTag.put(tag);
                 if verb:
+                    print >>sys.stderr,'Time used',time.time() - t0;
                     print >>sys.stderr,'Done put into data';
     
     def fetch(self):

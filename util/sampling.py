@@ -8,6 +8,7 @@ import struct;
 from scipy.spatial import ConvexHull;
 from scipy.spatial import Delaunay;
 import scipy;
+import sys;
 YIQ2RGB = np.array([[1.0,0.9469,0.6236],[1.0,-0.2748,-0.6357],[1.0,-1.1,1.7]],dtype=np.float32);
 
 def sphere_to_YIQ(ipts):
@@ -131,9 +132,6 @@ def randpatch(m=None):
     tmp = 0.5*(np.sqrt(5)-1)*n;
     pts[:,1] = ( tmp - np.floor(tmp) ).astype(np.float32);
     return pts;
-    
-    
-    
 
 def getface(tri_lst):
     f = [];
@@ -203,6 +201,44 @@ def edge_interp(pts,fidx):
         eidx[i,0]=p[0];
         eidx[i,1]=p[1];
     return rfidx,eidx;
+
+def edge_index_old(fidx):
+    edge_dict = {};
+    eidx_lst = [];
+    for i in range(int(fidx.shape[0])):
+        fidx0 = fidx[i,0];
+        fidx1 = fidx[i,1];
+        fidx2 = fidx[i,2];
+        if not "%d_%d"%(fidx0,fidx1) in edge_dict.keys():
+            edge_dict["%d_%d"%(fidx0,fidx1)] = len(eidx_lst);
+            edge_dict["%d_%d"%(fidx1,fidx0)] = len(eidx_lst);
+            eidx_lst.append((fidx0,fidx1));
+        if not "%d_%d"%(fidx1,fidx2) in edge_dict.keys():
+            edge_dict["%d_%d"%(fidx1,fidx2)] = len(eidx_lst);
+            edge_dict["%d_%d"%(fidx2,fidx1)] = len(eidx_lst);
+            eidx_lst.append((fidx1,fidx2));
+        if not "%d_%d"%(fidx2,fidx0) in edge_dict.keys():
+            edge_dict["%d_%d"%(fidx2,fidx0)] = len(eidx_lst);
+            edge_dict["%d_%d"%(fidx0,fidx2)] = len(eidx_lst);
+            eidx_lst.append((fidx2,fidx0));
+    eidx = np.zeros([len(eidx_lst),2],dtype=np.int32);
+    for i,p in enumerate(eidx_lst):
+        eidx[i,0]=p[0];
+        eidx[i,1]=p[1];
+    return eidx;
+
+def edge_index(fidx):
+    eidx = np.zeros([int(fidx.shape[0]),6],dtype=np.int32);
+    eidx[:,0:3] = fidx;
+    eidx[:,3:5] = fidx[:,1:3];
+    eidx[:,5] = fidx[:,0];
+    eidx = eidx.reshape([3*int(fidx.shape[0]),2]);
+    vmin = np.minimum(eidx[:,0],eidx[:,1]);
+    vmax = np.maximum(eidx[:,0],eidx[:,1]);
+    eidx[:,0] = vmin;
+    eidx[:,1] = vmax;
+    eidx = np.unique(eidx,axis=0);
+    return eidx;
 
 def rand_sphere_interp(n,m=None,level=3):
     if m is None:
@@ -324,7 +360,7 @@ def rand_sphere_nointerp(n,m=None):
     flst = [];
     flst.append(hulllst[0].simplices);
     data_dict = {};
-    _,eidx = edge_interp(sphere,flst[-1]);
+    eidx = edge_index(flst[-1]);
     data_dict['x3D'] = pts;
     data_dict['x3D_final'] = pts;
     data_dict['eidx'] = [];
@@ -338,24 +374,30 @@ def rand_sphere_nointerp(n,m=None):
     return data_dict;
 
 def rand_sphere_grid(n,m=None):
+    #t0 = time.time();
     pts = np.zeros([n,m,3],np.float32);
     sphere = randsphere4(m);
     for i in range(n):
         pts[i,:,:] = sphere;
     hulllst = triangulateSphere(sphere.reshape([1,-1,3]));
+    t1 = time.time();
     flst = [];
     flst.append(hulllst[0].simplices);
     data_dict = {};
-    _,eidx = edge_interp(sphere,flst[-1]);
+    eidx = edge_index(flst[-1]);
+    #t2 = time.time();
+    lplidx,lplw = laplace(int(sphere.shape[0]),flst[-1]);
+    #t3 = time.time();
     data_dict['xgrid'] = pts;
     data_dict['eidx'] = [];
     data_dict['eidx'].append(eidx);
     data_dict['fidx'] = flst;
     data_dict['lplidx'] = [];
     data_dict['lplw'] = [];
-    lplidx,lplw = laplace(int(sphere.shape[0]),flst[-1]);
     data_dict['lplidx'].append(lplidx);
     data_dict['lplw'].append(lplw);
+    #t4 = time.time();
+    #print >> sys.stderr,t1 - t0 ,'-' ,t2-t1,'-',t3-t2,'-',t4-t3;
     return data_dict;
 
 def rand_patch_grid(n,m):
@@ -367,7 +409,7 @@ def rand_patch_grid(n,m):
     flst = [];
     flst.append(tri.simplices.copy());
     data_dict = {};
-    _,eidx = edge_interp(patch,flst[-1]);
+    eidx = edge_index(flst[-1]);
     data_dict['xgrid'] = pts;
     data_dict['eidx'] = [];
     data_dict['eidx'].append(eidx);
@@ -378,10 +420,9 @@ def rand_patch_grid(n,m):
     data_dict['lplidx'].append(lplidx);
     data_dict['lplw'].append(lplw);
     return data_dict;
-    
+
 def rand_grid(n,m,dim):
     if dim == 3:
         return rand_sphere_grid(n,m);
     if dim == 2:
-        return rand_patch_grid(n,m);
-        
+        return rand_patch_grid(n,m);    

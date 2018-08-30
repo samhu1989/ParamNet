@@ -7,6 +7,7 @@ import net;
 from .io import listdir;
 from .safety import safe_guard;
 import datetime;
+from tensorflow.python import pywrap_tensorflow;
 
 def assign_from_checkpoint_fn(model_path, var_list, ignore_missing_vars=False,
                               reshape_variables=False):
