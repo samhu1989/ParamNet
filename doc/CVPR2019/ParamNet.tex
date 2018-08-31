@@ -1,0 +1,72 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{cvpr}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage[titletoc]{appendix}
+
+\newcommand{\comments}[1]{}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+
+% \cvprfinalcopy % *** Uncomment this line for the final submission
+
+\def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+\ifcvprfinal\pagestyle{empty}\fi
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{ParamNets: Configurations of Parameterization Network for Shape Generation from Single Image}
+
+\author{Siyu Hu\\
+Institution1\\
+Institution1 address\\
+{\tt\small sy891228@mail.ustc.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+\and
+Xuejin Chen\\
+Institution2\\
+First line of institution2 address\\
+{\tt\small secondauthor@i2.org}
+}
+
+\maketitle
+%\thispagestyle{empty}
+%-------------------------------------------------------------------------
+\input{abstract} 
+%-------------------------------------------------------------------------
+\input{intro}
+%-------------------------------------------------------------------------
+\input{relatew}
+%-------------------------------------------------------------------------
+\input{net}
+%-------------------------------------------------------------------------
+\input{exp}
+%-------------------------------------------------------------------------
+\input{sum}
+%-------------------------------------------------------------------------
+{\small
+\bibliographystyle{ieee}
+\bibliography{ParamNet}
+}
+%-------------------------------------------------------------------------
+\input{appendix}
+\end{document}
