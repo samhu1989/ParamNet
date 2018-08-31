@@ -3,7 +3,7 @@ import tensorflow as tf
 import os;
 from tensorflow.python.framework import ops
 path = os.path.dirname(os.path.realpath(__file__));
-nn_distance_module=tf.load_op_library(path+'/ChamferDist.so')
+nn_distance_module=tf.load_op_library(path+'/ChamferDist.so');
 
 def Loss(xyz1,xyz2):
 	'''

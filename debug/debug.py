@@ -3,9 +3,12 @@ import sys;
 import os;
 import shutil;
 import tensorflow as tf;
+sys.path.append('..');
 import util;
 import numpy as np;
 from data import DataFetcher;
+from net import loss;
+import time;
 def debug_train():
     os.environ["CUDA_VISIBLE_DEVICES"] = "2";
     traindir = "/data4T1/samhu/shapenet_split_complete/train";
@@ -95,6 +98,17 @@ def debug_up():
             faces.append(flst[-1]);
         util.write_to_obj('../debug/T%d_final'%t,data_dict['x3D_final'],faces=faces);
 
-
+def debug_emd():
+    xyz1 = np.random.uniform(-1,1,[32,1024,3]).astype(np.float32);
+    xyz2 = np.random.uniform(-1,1,[32,1024,3]).astype(np.float32);
+    t0 = time.clock();
+    print loss.emd.emd_eval(xyz1,xyz2);
+    print loss.emd.emd_eval(xyz2,xyz1);
+    print time.clock()-t0,"s";
+    
+def debug_realbatch():
+    path = '/data4T/samhu/real';
+    util.genRealBatch(path);
+    
 if __name__ == "__main__":
-    debug_up();
+    debug_realbatch();

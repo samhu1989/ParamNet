@@ -3,9 +3,10 @@
 Created on Tue May  2 10:50:31 2017
 @author: samhu
 """
-from __future__ import absolute_import;
+import ChamferDistLoss;
+import emd;
 __name__ = "loss";
-__all__ = ["ChamferDistLoss","helptxt"];
+__all__ = ["ChamferDistLoss","emd","helptxt"];
 
 def helptxt():
     print("SamplingLoss is Loaded");

@@ -16,7 +16,7 @@ __device__ inline void swap(int & a, int & b)
 }
 
 __global__ void KnnKernel(int b,const int n,const float * xyz,const int k,float * result,int * result_i){
-    const int size = 1024;
+    const int size = 4096;
     __shared__ float dist[size];
     __shared__ int idx[size];
     assert( n <= size );
@@ -111,6 +111,6 @@ __global__ void KnnKernel(int b,const int n,const float * xyz,const int k,float 
     }
 }
 void KnnKernelLauncher(int b,const int n,const float * xyz,const int k,float * result,int * result_i){
-    KnnKernel<<<dim3(32,16,1),512>>>(b,n,xyz,k,result,result_i);
+    KnnKernel<<<dim3(b,16,1),512>>>(b,n,xyz,k,result,result_i);
 }
 #endif
