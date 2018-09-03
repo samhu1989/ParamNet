@@ -1,10 +1,11 @@
 \section{Techniques and building blocks}
 In this section, we will elaborate on the techniques and building blocks that we have explored for the surface decoder. 
 \subsection{Association techniques}
-Association techniques are used to associate the image representation $\vec{x}$ with each point $\vec{z}_{n={0,1,\dots,N}}$ from $\mathbf{Z}=[\vec{z_0},\vec{z_1},\dots,\vec{z_N}]$ that are 2D or 3D coordinates.
+Association techniques are used to associate the image representation $\vec{x}$ with each point $\vec{z}_{n={0,1,\dots,N}}$ from $\mathbf{Z}=[\vec{z_0},\vec{z_1},\dots,\vec{z_N}]$ that are 2D or 3D coordinates corresponding to the samples from parameter domain.
 
 \noindent\textbf{duplicate + concatenate}
-this is most intuitive choice of and have been used for 
+this is most intuitive choice of association techniques and have been used in AtlasNet\cite{atlasnet} and FoldingNet\cite{foldingnet}
+
 \begin{equation}
 ass(\vec{x},\mathbf{Z})=\left[
 \begin{aligned}
@@ -13,23 +14,25 @@ ass(\vec{x},\mathbf{Z})=\left[
 \end{aligned}
 \right].
 \end{equation}
+
 \noindent\textbf{duplicate + outer-product} 
 Inspired by the success of bilinear pooling, we use duplicate + outer-product as a new association technique for surface decoder. 
+
 \begin{equation}
 ass(\vec{x},\mathbf{Z})=\left[
-~\\vec(\vec{z_0}\vec{x}^T),\\vec(\vec{z_1}\vec{x}^T),\dots,\\vec(\vec{z_N}\vec{x}^T)\\
+~\\vec(\vec{z}_0\vec{x}^T),\\vec(\vec{z}_1\vec{x}^T),\dots,\\vec(\vec{z}_N\vec{x}^T)\\
 \right],
-\end{equation}
-in which $\\vec(\mathbf{X})$ means vectorization of matrix $\mathbf{X}$ by concatenating its columns.
+\end{equation}in which, $\\vec(\mathbf{X})$ means vectorization of matrix $\mathbf{X}$ by concatenating its columns.
 
 \noindent\textbf{\emph{K}-neighbor point convolution}
 \begin{equation}
-ass(\vec{x},\mathbf{Z})=
+ass(\vec{x},\mathbf{Z})=\vec{b}(\vec{x})+[ \mathbf{W}(\vec{x})\mathbf{K}(\vec{z}_0),\dots,\mathbf{W}(\vec{x})\mathbf{K}(\vec{z}_N)],
 \end{equation}
+in which, $\mathbf{W}(\vec{x})$ is a $od \times k$ matrix depending on input image feature $\vec{x}$, it is the convolution kernel for point convolution derived from the $\vec{x}$. In implementation, $\mathbf{W}(\vec{x})$ is implemented as two fully connected layers plus a reshape operation to reshape output to $od \times k$. $\vec{b}(\vec{x})$ is a $od$ vector depending on input image feature $\vec{x}$. It is the bias for point convolution and be implemented in a similar way with $\mathbf{W}(\vec{x})$.
 
 \subsection{Blocks for point-wise decoding}
 
-\noindent\textbf{MLP}
+\noindent\textbf{MLP} as a building block for point-wise decoding, its difference with usual MLP in the image classification networks is that it processing input features in a point-wise manner instead of a image-wise manner. In other words, each associated feature corresponding to a sample point from parameter domain is mapped to one 3D point by the MLP. In practice, it is easier to implement such MLP as 1x1 convolution layers than as fully connected layers.
 
 \noindent\textbf{\emph{K}-neighbor point convolution}
 
