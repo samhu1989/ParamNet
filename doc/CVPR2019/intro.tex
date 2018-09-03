@@ -1,5 +1,19 @@
 \section{Introduction}
-In our previous unpublished work, we have proposed a framework of \emph{parameterization network}. Instead of predicting the coordinates of vertices in the 3D ambient space, \emph{parameterization network} learn to predict the parameterization map of a surface.
+Inferring 3D shape from a single view image is a traditional problem for computer vision. In computer graphics, 3D modeling with a given image has also been extensively studied. 
+Though it have been studied for decades, the problem remains challenging, due to the fact that 3D-to-2D projection is not invertible, and large portions of the 3D shape features are excluded in the 2D image. 
+
+Recently, great success has been achieved for 3D shape generation from a single color image using deep learning techniques~\cite{3DR2N2,PSGN}. 
+By using convolutional layers on regular grids or multi-layer
+perception on unordered 3D coordinates, the estimated 3D shape is represented
+as either a volume occupancy~\cite{3DR2N2} or point cloud~\cite{PSGN} in neural networks. 
+However, both representations lose important surface details, and they do not recover continuous surface forms.
+
+While meshes are more suitable for modeling shape details, deformation and rendering with various materials, efforts have been made to produce mesh models using deep neural networks. 
+Integrating mesh morphing techniques, an end-to-end trainable network is proposed to generate 3D meshes of a specific class of objects, such as faces~\cite{endface}.
+However, the use of morphing technique limits the network's generalization ability on general objects.
+%
+
+In order to develop an end-to-end trainable network that is capable of producing meshes for objects from generic categories, we have proposed a framework of \emph{parameterization network} in our previous unpublished work. Instead of predicting the coordinates of vertices in the 3D ambient space, \emph{parameterization network} learn to predict the parameterization map of a surface.
 Such framework have following advantages:
 
 a) It is challenging to obtain a canonicalized triangulation of arbitrary surfaces, letting alone making it differential. With parameterization network, the triangulation can be first conducted inside a predefined convex domain (e.g. a rectangle patch, a sphere surface) and then transferred to the target surface.
