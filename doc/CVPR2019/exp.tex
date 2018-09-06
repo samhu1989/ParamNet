@@ -1,20 +1,7 @@
 \section{Experiment}
 \subsection{Exploring multiple configurations for surface decoder}
 In parameterization networks, a surface decoder couple the shape representation (in our case, the high level feature extracted from 2D image) with each point sampled from the parameter domain, and then decode the each coupled feature into a 3D point. 
-\begin{table*}
-	\caption{Multiple configurations for surface decoder}
-	\label{tab:mulconfig}
-	\centering
-	\begin{tabular}{l | l | l | l | l}
-		parameter domains & coupling times &coupling techniques & point-wise decoding number & point-wise decoding blocks\\
-		\hline
-		a.1 sphere	 & a.1 & a. duplicate + concatenate 	& a.0	& a.MLP \\
-		b.1 patch    & b.2 & b. duplicate + outer-product   & b.1   & b.4-n point convolution \\
-		c.5 patches	 & c.4 & c. 4-n point convolution       & c.2   & c.8-n point convolution \\
-		d.25 patches &  ~  & d. 8-n point convolution       & d.4   & d.16-n point convolution  \\
-		~            &  ~  & e. 16-n point convolution              &  ~						 
-	\end{tabular}
-\end{table*}
+
 \subsection{Integrating Laplace smooth layer into network}
 
 \subsection{Integrating mesh related energy functions into loss}

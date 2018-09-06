@@ -2,7 +2,7 @@
 Inferring 3D shape from a single view image is a traditional problem for computer vision. In computer graphics, 3D modeling with a given image has also been extensively studied. 
 Though it have been studied for decades, the problem remains challenging, due to the fact that 3D-to-2D projection is not invertible, and large portions of the 3D shape features are excluded in the 2D image. 
 
-Recently, great success has been achieved for 3D shape generation from a single color image using deep learning techniques~\cite{3DR2N2,PSGN}. 
+Recently, great success has been achieved for 3D shape reconstruction from a single color image using deep learning techniques~\cite{3DR2N2,PSGN}. 
 By using convolutional layers on regular grids or multi-layer
 perception on unordered 3D coordinates, the estimated 3D shape is represented
 as either a volume occupancy~\cite{3DR2N2} or point cloud~\cite{PSGN} in neural networks. 
@@ -22,7 +22,7 @@ b) With triangulation established, \emph{parameterization network} makes it conv
 
 c) By designing the network to generate intermediate output in 3D space, \emph{parameterization network} can easily obtain more interpretable intermediate output and showing how the network progressively map the points from parameter domain to target shape.   
 
-Some new works, AtlasNet\cite{atlasnet} and FoldingNet\cite{foldingnet} , sharing same concept with us, have been published before ours. AtlasNet\cite{atlasnet} have provided some useful theoretic guarantee for \emph{parameterization network} and clearly demonstrated the advantage a) in their results. FoldingNet\cite{foldingnet}, though does not explicitly address the problem of mesh generation from single image, essentially used the same concept and by its network design, have clearly demonstrated the advantage c). 
+Some new works, AtlasNet\cite{atlasnet} and FoldingNet\cite{foldingnet} , sharing same concept with us, have been published before ours. AtlasNet\cite{atlasnet} have provided some useful theoretic guarantee for \emph{parameterization network} and clearly demonstrated the advantage a) in their results. FoldingNet\cite{foldingnet}, though does not explicitly address the problem of mesh reconstruction from single image, essentially used the same concept and by its network design, have clearly demonstrated the advantage c). 
 
 With these two works before ours, in this paper, we re-base our implementations onto these two new works and show our broader exploration into configurations of the surface decoder inside \emph{parameterization network}.
 

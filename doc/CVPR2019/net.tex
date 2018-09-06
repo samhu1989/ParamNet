@@ -7,6 +7,7 @@ Association techniques are used to associate the image representation $\vec{s}$ 
 this is most intuitive choice of association techniques and have been used in AtlasNet\cite{atlasnet} and FoldingNet\cite{foldingnet}
 
 \begin{equation}
+\label{equ:C}
 \mathbf{F}=ass(\vec{s},\mathbf{Z})=\left[
 \begin{aligned}
 ~&\vec{z_1},&\vec{z_2},\dots,&\vec{z_N}\\
@@ -19,6 +20,7 @@ this is most intuitive choice of association techniques and have been used in At
 Inspired by the success of bilinear pooling, we use duplicate + outer-product as a new association technique for surface decoder. 
 
 \begin{equation}
+\label{equ:O}
 \mathbf{F}=ass(\vec{s},\mathbf{Z})=\left[
 ~\\vec(\vec{z}_1\vec{s}^T),\\vec(\vec{z}_2\vec{s}^T),\dots,\\vec(\vec{z}_N\vec{s}^T)\\
 \right],
@@ -46,9 +48,10 @@ in which $\mathbf{W}$ is the convolution kernel, $\vec{b}$ is the bias vector. $
 
 
 \begin{equation}
+\label{equ:K}
 \mathbf{F}=ass(\vec{s},\mathbf{Z})=kconv^{K}(w(\vec{s}),\mathbf{Z},b(\vec{s})),
 \end{equation}
-in which, $w(\vec{s})$ and $b(\vec{s})$ are two MLP with 2 fully connected layers and reshape operation reshaping the output to fit in the $kconv$ layer. This means that when we use \emph{K}-neighbor point convolution as an association technique, we use features derived from image representation $\vec{s}$  instead of free trainable parameters as convolution kernel and bias for the $kconv$ layer. In this way, information from both $\vec{s}$ and $\mathbf{Z}$ are associated and in the back-propagation stage the gradient can be passed down to both $\vec{s}$ and $\mathbf{Z}$.
+in which, $w(\vec{s})$ and $b(\vec{s})$ are one layer perceptions followed by reshape operation, reshaping the output to fit in the $kconv$ layer. This means that when we use \emph{K}-neighbor point convolution as an association technique, we use features derived from image representation $\vec{s}$  instead of free trainable parameters as convolution kernel and bias for the $kconv$ layer. In this way, information from both $\vec{s}$ and $\mathbf{Z}$ are associated and in the back-propagation stage the gradient can be passed down to both $\vec{s}$ and $\mathbf{Z}$.
 \subsection{Blocks for point-wise decoding}
 
 \noindent\textbf{MLP} as a building block for point-wise decoding, its difference with usual MLP in the typical image classification networks is that it process input features in a point-wise manner instead of a image-wise manner. In other words, each associated feature corresponding to a sample point from parameter domain is mapped to one 3D point by the MLP.
@@ -57,31 +60,51 @@ in which, $w(\vec{s})$ and $b(\vec{s})$ are two MLP with 2 fully connected layer
 When building point-wise decoding blocks, we use trainable free parameters as kernel $\mathbf{W}$ and bias $\vec{b}$. In this case, we write $kconv^{K}(\mathbf{W},\mathbf{X},\vec{b})$ as $kconv^{K,d}(\mathbf{X})$ for short. $d$ in $kconv^{K,d}(\mathbf{X})$ is the number of output channels. With $K,d$ and the shape of $\mathbf{X}$, the shapes of $\mathbf{W}$ and $\vec{b}$ can be determined.
 
 \begin{equation}
-\mathbf{Z^*} = kconv^{K,3}(relu(conv^{1 \times 1 ,d}(\mathbf{F})))
+\label{equ:P}
+\mathbf{Z^*} = kconv^{K,3}(relu(\mathbf{F}))
 \end{equation}
 
 \begin{equation}
+\label{equ:R}
 \mathbf{Z^*} = \mathbf{Z} + kconv^{K,3}(relu(kconv^{K,d}(\mathbf{Z})))
 \end{equation}
 
 \subsection{Laplace smoothing layer}
 Another building block for surface decoder that we have explored in this paper is the Laplacian smoothing layer. Laplacian smoothing is a classic mesh based operation. We demonstrate that with triangulation established, it is convenient to integrate classic mesh based operation into network. Our results show that in some cases the can improve the result.
 
-The new position of each vertex $\vec{z}_n$ in the smoothed mesh is computed as Eq.~(\ref{equ:lpl}), where $\mathcal{N}(\vec{z}_n)$ represents the one-ring neighborhood of vertex $\vec{z}_n$. 
+The new position of each vertex $\vec{z}_n$ in the smoothed mesh is computed as Eq.~(\ref{equ:L}), where $\mathcal{N}(\vec{z}_n)$ represents the one-ring neighborhood of vertex $\vec{z}_n$. 
 This Laplacian smoothing operation is local linear and therefore differentiable.
 
 \begin{equation}
+	\label{equ:L}
 	\vec{z}^* = \frac{1}{|\mathcal{N}(\vec{z})|}\sum_{\vec{y}\in\mathcal{N}(\vec{z})}\vec{y}
-	\label{equ:lpl}
 \end{equation}
 
 \section{Network structures}
 In this paper, we only explore configurations for surface decoder. For the image encoder, we follow AtlasNet\cite{atlasnet} to use ResNet-18\cite{resnet}.
 
 \begin{table}
-	\caption{Annotation for elements in surface decoders}
-	\label{tab:elemann}
+	\caption{One letter notes for techniques and building blocks in surface decoders}
+	\label{tab:note}
 	\centering
-	\begin{tabular}{l | l | l | l | l}
+	\begin{tabular}{l | l }
+	one letter note & techniques/building blocks\\
+	\hline
+	$C$ & duplicate + concatenate as Equ.(\ref{equ:C}).\\
+	$O$ & duplicate + outer-product as Equ.(\ref{equ:O}).\\
+	$K^{K,d}$ & $kconv$ based association as Equ.(\ref{equ:K}).\\
+		     ~& $d$ is the channel number of output.\\
+		     & $d$ determines the output shape of $w(\vec{s})$ and $b(\vec{s})$\\
+	$M^{d_1,d_2,\dots}$ & point-wise MLP.\\
+					   ~& $d_1,d_2,\dots$ are sizes of hidden layers.\\
+					   ~& the size of output layer is always 3.\\
+	$P^{K}$			    & $kconv$ based block as Equ.(\ref{equ:P}) \\
+					   ~& $K$ is the size of neighborhood\\
+	$R^{K,d}$           & $kconv$ based residual block as Equ.(\ref{equ:R})\\
+					   ~& $K$ is the size of neighborhood\\ 
+					   ~& $d$ is channel number of hidden layer\\
+	$L$                 & Laplace smoothing layer as Equ.(\ref{equ:L}).\\
 	\end{tabular}	
 \end{table}
+
+
