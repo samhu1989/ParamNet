@@ -128,6 +128,7 @@ def laplace(sig,grid,y,param=None):
     return tf.reduce_sum(lpln*tf.reshape(lplw,[1,-1,6,1]),axis=2);
 
 blocks={
+    'M':mlp,
     'C':duplicate_concate,
     'O':duplicate_outerproduct,
     'K':kconv_couple,
