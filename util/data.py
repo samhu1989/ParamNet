@@ -15,8 +15,8 @@ class DataFetcher(threading.Thread):
         self.HEIGHT=192;
         self.WIDTH=256;
         self.PTS_DIM=3;
-        self.Data = Queue.Queue(256);
-        self.DataTag = Queue.Queue(256);
+        self.Data = Queue.Queue(128);
+        self.DataTag = Queue.Queue(128);
         self.Cnt = 0;
         self.EpochCnt = 0;
         self.stopped = False;

@@ -8,6 +8,8 @@ from .io import listdir;
 from .safety import safe_guard;
 import datetime;
 from tensorflow.python import pywrap_tensorflow;
+import traceback;
+from .inform import inform;
 
 def assign_from_checkpoint_fn(model_path, var_list, ignore_missing_vars=False,
                               reshape_variables=False):
@@ -169,7 +171,7 @@ def train(settings={}):
                 cnt = gpu_num*step;
                 epoch_len = len(train_fetcher.Dir);
                 n_epoch = cnt // epoch_len;
-                print >> sys.stderr,"Start Step:",cnt,"/",epoch_len;
+                #print >> sys.stderr,"Start Step:",cnt,"/",epoch_len;
                 feed_all = {};
                 for i in range(gpu_num):
                     data_dict = train_fetcher.fetch();
@@ -193,11 +195,15 @@ def train(settings={}):
                             net_dicts[0][settings['step']]
                         ],feed_dict=feed);
                     valid_writer.add_summary(summary,cnt);
-                    print >> sys.stderr,"Done Valid:",cnt,"/",epoch_len;
+                    #print >> sys.stderr,"Done Valid:",cnt,"/",epoch_len;
                 if cnt % 400 == 0:
                     safe_guard();
                     saver.save(sess,settings['dump']+os.sep+settings['net']+'_epoch_%d'%n_epoch);
-                print >> sys.stderr,"Done Step:",cnt,"/",epoch_len,"Epoch:",n_epoch,"GT_PTS_NUM",GT_PTS_NUM,"learning rate:",lrate;
+                    print >> sys.stderr,"Done Save at"+settings['dump']+os.sep+settings['net']+'_epoch_%d'%n_epoch;
+                if step % 10 == 0:
+                    print >> sys.stderr,"Done Step:",cnt,"/",epoch_len,"Epoch:",n_epoch,"GT_PTS_NUM",GT_PTS_NUM,"learning rate:",lrate;
+                if step % (2*epoch_len//gpu_num) == 0:
+                    inform("the train for "+settings['net']+" have done %d epoch"%n_epoch);
             saver.save(sess,settings['dump']+os.sep+settings['net']+'_epoch_%d'%n_epoch);
             print >> sys.stderr,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S");
     except Exception,e:
@@ -205,8 +211,13 @@ def train(settings={}):
         print(e);
         train_fetcher.shutdown();
         valid_fetcher.shutdown();
+        print >> sys.stderr,traceback.format_exc();
+        inform("the train for "+settings['net']+" caught an exception");
     else:
+        train_fetcher.shutdown();
+        valid_fetcher.shutdown();
         print("Done Training");
+        inform("done train "+settings['net']);
     return;
 
 def test(settings={}):
