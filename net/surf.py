@@ -2,6 +2,10 @@ from __future__ import absolute_import;
 from __future__ import division;
 from __future__ import print_function;
 
+import tensorflow as tf;
+import tensorflow.contrib.slim as slim;
+from tensorflow.contrib.layers.python.layers import initializers;
+from tensorflow.contrib.layers.python.layers import regularizers;
 from tensorflow.contrib import layers;
 from tensorflow.contrib.framework.python.ops import add_arg_scope;
 from tensorflow.contrib.framework.python.ops import arg_scope;
@@ -11,16 +15,17 @@ from tensorflow.contrib.slim.python.slim.nets import resnet_utils;
 from tensorflow.python.ops import math_ops;
 from tensorflow.python.ops import nn_ops;
 from tensorflow.python.ops import variable_scope;
-import group;
+from tensorflow.python.framework import ops;
+from .group import knn;
 
 resnet_arg_scope = resnet_utils.resnet_arg_scope;
 
-def kconv(x,knn_index,d,scope,is_training,reuse):
+def kconv(x,k,knn_index,d,scope,is_training,reuse):
     x = tf.gather_nd(x,knn_index,name=scope+'_gather');
     weight_decay=1e-4;
     batch_norm_decay=0.997;
     batch_norm_epsilon=1e-5;
-    batch_norm_scale=True:
+    batch_norm_scale=True;
     batch_norm_params={'decay':batch_norm_decay,'epsilon':batch_norm_epsilon,'scale':batch_norm_scale,'is_training':is_training,'updates_collections': ops.GraphKeys.UPDATE_OPS}
     with arg_scope([slim.conv2d],
       weights_regularizer=regularizers.l2_regularizer(weight_decay),
@@ -42,8 +47,8 @@ def duplicate_concate(sig,grid,y=None):
 def duplicate_outerproduct(sig,grid,y=None):
     x = tf.reshape(sig,[tf.shape(sig)[0],1,sig.shape[-1],1]);
     x = tf.tile(x,[1,tf.shape(grid)[1],1,1]);
-    y = tf.reshape(grid,[tf.shape(grid)[0],tf.shape(grid)[1],1,-1]);
-    return tf.reshape(tf.matmul(x,y),[tf.shape(grid)[0],tf.shape(grid)[1],-1]);
+    y = tf.reshape(grid,[tf.shape(grid)[0],tf.shape(grid)[1],1,int(grid.shape[-1])]);
+    return tf.reshape(tf.matmul(x,y),[tf.shape(grid)[0],tf.shape(grid)[1],int(sig.shape[-1])*int(grid.shape[-1])]);
 
 def kconv_couple(sig,grid,y=None,param=None):
     return None;
@@ -56,7 +61,7 @@ def mlp(sig,grid,siggrid,param=None):
     weight_decay=1e-4;
     batch_norm_decay=0.997;
     batch_norm_epsilon=1e-5;
-    batch_norm_scale=True:
+    batch_norm_scale=True;
     batch_norm_params={'decay':batch_norm_decay,'epsilon':batch_norm_epsilon,'scale': batch_norm_scale,'is_training':is_training,'updates_collections': ops.GraphKeys.UPDATE_OPS}
     ix =  tf.reshape(siggrid,[tf.shape(siggrid)[0],1,tf.shape(siggrid)[1],siggrid.shape[-1]]);
     oy = [];
@@ -84,11 +89,11 @@ def kconv_pts(sig,grid,siggrid,param=None):
     kidx = param[4];
     k = param[-1][0];
     if not kidx:
-        _,knn_index = group.knn(grid,k);
+        _,knn_index = knn(grid,k);
         kidx.append(knn_index);
     else:
         knn_index = kidx[0];
-    return kconv(siggrid,knn_index,3,scope,is_training,reuse);
+    return kconv(siggrid,k,knn_index,3,scope,is_training,reuse);
 
 def kconv_pts_res(sig,grid,y,param=None):
     scope = param[0];
@@ -99,15 +104,15 @@ def kconv_pts_res(sig,grid,y,param=None):
     k = param[-1][0];
     d = param[-1][1];
     if not kidx:
-        _,knn_index = group.knn(grid,k);
+        _,knn_index = knn(grid,k);
         kidx.append(knn_index);
     else:
         knn_index = kidx[0];
     short = y;
     res = y;
-    res = kconv(res,knn_index,d,scope+'_1',is_training,reuse);
+    res = kconv(res,k,knn_index,d,scope+'_1',is_training,reuse);
     res = tf.nn.relu(res);
-    res = kconv(res,knn_index,3,scope+'_2',is_training,reuse);
+    res = kconv(res,k,knn_index,3,scope+'_2',is_training,reuse);
     return tf.nn.relu(short+res);
 
 def laplace(sig,grid,y,param=None):
@@ -125,7 +130,7 @@ blocks={
     'L':laplace
 };
 
-def surf_decoder(surf_dict={},net=None,grid_num,istrain,scope='surf',reuse=False):
+def surf_decoder(surf_dict,net,grid_num,istrain,scope='surf',reuse=False):
     if net:
         sig = net[surf_dict['sig']];
         grid = net[surf_dict['grid']];

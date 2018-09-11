@@ -116,37 +116,37 @@ def param_base(settings,surf_name=sys._getframe().f_code.co_name,surf_lst=[['C']
 
 def PARAM001(settings):
     surf=[['C'],['M',[1024,512,256]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
 
 def PARAM002(settings):
     surf=[['C'],['M',[1024,512]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
 
 def PARAM003(settings):
     surf=[['O'],['M',[1024,512]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
 
 def PARAM013(settings):
     surf=[['C'],['P',[4]],['R',[4,64]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
 
 def PARAM014(settings):
     surf=[['C'],['P',[8]],['R',[8,64]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
 
 def PARAM015(settings):
     surf=[['C'],['P',[16]],['R',[16,64]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
 
 def PARAM016(settings):
     surf=[['O'],['P',[4]],['R',[4,64]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
 
 def PARAM017(settings):
     surf=[['O'],['P',[8]],['R',[8,64]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
 
 def PARAM018(settings):
     surf=[['O'],['P',[16]],['R',[16,64]]];
-    return param_base(settings,surf_setting=surf);
+    return param_base(settings,surf_lst=surf);
     
