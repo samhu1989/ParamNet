@@ -1,21 +1,21 @@
 #if GOOGLE_CUDA
 #define EIGEN_USE_GPU
-#include "../../3rdParty/Eigen3/unsupported/Eigen/CXX11/Tensor"
+#include <cassert>
 __device__ inline void swapf(float & a, float & b)
 {   
-    a += b ;
-    b = a - b;
-    a -= b;
+    float tmp = a;
+    a = b;
+    b = tmp;
 }
 
 __device__ inline void swap(int & a, int & b)
 {
-    a += b ;
-    b = a - b;
-    a -= b;
+    int tmp = a;
+    a = b ;
+    b = tmp;
 }
 
-__global__ void KnnKernel(int b,const int n,const float * xyz,const int k,float * result,int * result_i){
+__global__ void KnnKernel(int b,const int n,const int d,const float * xyz,const int k,float * result,int * result_i){
     const int size = 4096;
     __shared__ float dist[size];
     __shared__ int idx[size];
@@ -31,10 +31,12 @@ __global__ void KnnKernel(int b,const int n,const float * xyz,const int k,float 
                     idx[j]  = j;
                     continue;
                 }
-                float dx =xyz[(bi*n+i)*3+0] - xyz[(bi*n+j)*3+0];
-                float dy =xyz[(bi*n+i)*3+1] - xyz[(bi*n+j)*3+1];
-                float dz =xyz[(bi*n+i)*3+2] - xyz[(bi*n+j)*3+2];
-                float d = dx*dx+dy*dy+dz*dz;
+                float d = 0.0;
+                for ( int di = 0 ; di < d ; ++di )
+                {
+                    float dif = xyz[(bi*n+i)*3+di] - xyz[(bi*n+j)*3+di];
+                    d += dif*dif;
+                }
                 dist[j] = d;
                 idx[j] = j;
             }
@@ -110,7 +112,7 @@ __global__ void KnnKernel(int b,const int n,const float * xyz,const int k,float 
         }
     }
 }
-void KnnKernelLauncher(int b,const int n,const float * xyz,const int k,float * result,int * result_i){
-    KnnKernel<<<dim3(b,16,1),512>>>(b,n,xyz,k,result,result_i);
+void KnnKernelLauncher(int b,const int n,const int d,const float * xyz,const int k,float * result,int * result_i){
+    KnnKernel<<<dim3(b,16,1),512>>>(b,n,d,xyz,k,result,result_i);
 }
 #endif

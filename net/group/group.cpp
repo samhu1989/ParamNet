@@ -22,22 +22,22 @@ REGISTER_OP("Knn")
     });
 
 
-static void knnsearch(int b,int n,const float * xyz,const int k,float * dist,int * idx){
+static void knnsearch(int b,int n,int d,const float * xyz,const int k,float * dist,int * idx){
 	for (int i=0;i<b;i++){
 		for (int j=0;j<n;j++){
-			float x1=xyz[(i*n+j)*3+0];
-			float y1=xyz[(i*n+j)*3+1];
-			float z1=xyz[(i*n+j)*3+2];
+			const float* current = xyz+((i*n+j)*3);
 			for (int idxi = 0 ; idxi < k ; idxi++ )
 			{
 				dist[(i*n+j)*k+idxi] = -1;
 			}
 			for (int t=0;t<n;t++){
 				if(t==j)continue;
-				float x2=xyz[(i*n+t)*3+0]-x1;
-				float y2=xyz[(i*n+t)*3+1]-y1;
-				float z2=xyz[(i*n+t)*3+2]-z1;
-				double d=x2*x2+y2*y2+z2*z2;
+                float d = 0.0;
+                for(int di=0;di<d;di++)
+                {
+                    float dif = xyz[(i*n+t)*3+di] - current[di] ;
+                    d += dif*dif;
+                }
 				if( dist[(i*n+j)*k+k-1] >= 0 &&  dist[(i*n+j)*k+k-1] < d )continue;
 				dist[(i*n+j)*k+k-1] = d;
 				idx[((i*n+j)*k+k-1)*2+0] = i;
@@ -81,10 +81,11 @@ class KnnOp : public OpKernel{
 		void Compute(OpKernelContext * context)override{
 
 			const Tensor& xyz_tensor = context->input(0);
-			OP_REQUIRES(context,xyz_tensor.dims()==3,errors::InvalidArgument("Knn requires xyz be of shape (batch,#points,3)"));
-			OP_REQUIRES(context,xyz_tensor.shape().dim_size(2)==3,errors::InvalidArgument("Knn only accepts 3d point set xyz"));
+			OP_REQUIRES(context,xyz_tensor.dims()==3,errors::InvalidArgument("Knn requires input be of shape (batch,#points,dim)"));
+			//OP_REQUIRES(context,xyz_tensor.shape().dim_size(2)==3,errors::InvalidArgument("Knn only accepts 3d point set xyz"));
 			int b=xyz_tensor.shape().dim_size(0);
 			int n=xyz_tensor.shape().dim_size(1);
+            int d=xyz_tensor.shape().dim_size(2);
 			OP_REQUIRES(context,k>0&&k<n,errors::InvalidArgument("Knn requires k be larger than 0 and smaller than point number but got k=",k," n=",n));
 			auto xyz_flat=xyz_tensor.flat<float>();
 			const float * xyz=&xyz_flat(0);
@@ -98,14 +99,14 @@ class KnnOp : public OpKernel{
 			auto idx_flat = idx_tensor->flat<int>();
 			float * dist = &(dist_flat(0));
 			int * idx = &(idx_flat(0));
-			knnsearch(b,n,xyz,k,dist,idx);
+			knnsearch(b,n,d,xyz,k,dist,idx);
 		}
 	private:
 		int k;
 };
 REGISTER_KERNEL_BUILDER(Name("Knn").Device(DEVICE_CPU), KnnOp);
 
-void KnnKernelLauncher(int b,int n,const float * xyz,const int k,float * result,int * result_i);
+void KnnKernelLauncher(int b,int n,int d,const float * xyz,const int k,float * result,int * result_i);
 
 class KnnGpuOp : public OpKernel{
 	public:
@@ -118,9 +119,10 @@ class KnnGpuOp : public OpKernel{
 			const Tensor& k_tensor = context->input(1);
 			
 			OP_REQUIRES(context,xyz_tensor.dims()==3,errors::InvalidArgument("Knn requires xyz be of shape (batch,#points,3)"));
-			OP_REQUIRES(context,xyz_tensor.shape().dim_size(2)==3,errors::InvalidArgument("Knn only accepts 3d point set xyz"));
+			//OP_REQUIRES(context,xyz_tensor.shape().dim_size(2)==3,errors::InvalidArgument("Knn only accepts 3d point set xyz"));
 			int b=xyz_tensor.shape().dim_size(0);
 			int n=xyz_tensor.shape().dim_size(1);
+            int d=xyz_tensor.shape().dim_size(2);
 			OP_REQUIRES(context,k>0&&k<n,errors::InvalidArgument("Knn requires k be larger than 0 and smaller than point number but got k=",k," n=",n));
 
 			auto xyz_flat=xyz_tensor.flat<float>();
@@ -134,7 +136,7 @@ class KnnGpuOp : public OpKernel{
 			auto idx_flat=idx_tensor->flat<int>();
 			float * dist = &(dist_flat(0));
 			int * idx = &(idx_flat(0));
-			KnnKernelLauncher(b,n,xyz,k,dist,idx);
+			KnnKernelLauncher(b,n,d,xyz,k,dist,idx);
 		}
 	private:
 		int k;
