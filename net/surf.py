@@ -21,7 +21,6 @@ from .group import knn;
 resnet_arg_scope = resnet_utils.resnet_arg_scope;
 
 def kconv(x,k,knn_index,d,scope,is_training,reuse):
-    x = tf.gather_nd(x,knn_index,name=scope+'_gather');
     weight_decay=1e-4;
     batch_norm_decay=0.997;
     batch_norm_epsilon=1e-5;
@@ -34,8 +33,14 @@ def kconv(x,k,knn_index,d,scope,is_training,reuse):
       normalizer_fn=slim.batch_norm,
       normalizer_params=batch_norm_params,
       reuse=reuse):
-        with arg_scope([slim.batch_norm], **batch_norm_params): 
-            x = slim.conv2d(x,d,[1, k],scope=scope+"_kconv");
+        with arg_scope([slim.batch_norm], **batch_norm_params):
+            if int(x.shape[-1]) > 256:# too large to fit in gpu
+                x  = tf.reshape(x,[tf.shape(x)[0],tf.shape(x)[1],1,int(x.shape[2])]);
+                x = slim.conv2d(x,256,[1,1],scope=scope+'_reducedim');
+            rx = tf.reshape(x,[tf.shape(x)[0],tf.shape(x)[1],int(x.shape[-1])]);
+            xknn = tf.gather_nd(rx,knn_index,name=scope+'_gather');
+            x = tf.concat([tf.reshape(x,[tf.shape(x)[0],tf.shape(x)[1],1,int(x.shape[-1])]),xknn],axis=2);
+            x = slim.conv2d(x,d,[1, k+1],scope=scope+"_kconv",padding='VALID');
     return tf.reshape(x,[tf.shape(x)[0],-1,d]);
 
 def duplicate_concate(sig,grid,y=None):
@@ -105,6 +110,7 @@ def kconv_pts_res(sig,grid,y,param=None):
     d = param[-1][1];
     if not kidx:
         _,knn_index = knn(grid,k);
+        print(knn_index.shape);
         kidx.append(knn_index);
     else:
         knn_index = kidx[0];

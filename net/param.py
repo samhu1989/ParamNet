@@ -10,7 +10,7 @@ from .loss import ChamferDistLoss;
 import sys;
 from .surf import surf_decoder;
 
-def param_base(settings,surf_name=sys._getframe().f_code.co_name,surf_lst=[['C'],['M',[1024,512]]]):
+def param_base(settings,surf_name='',surf_lst=[['C'],['M',[1024,512]]]):
     if 'batch_size' in settings.keys():
         BATCH_SIZE=settings['batch_size'];
     else:
@@ -140,13 +140,16 @@ def PARAM015(settings):
 
 def PARAM016(settings):
     surf=[['O'],['P',[4]],['R',[4,64]]];
-    return param_base(settings,surf_lst=surf);
+    name = sys._getframe().f_code.co_name;
+    return param_base(settings,name,surf_lst=surf);
 
 def PARAM017(settings):
     surf=[['O'],['P',[8]],['R',[8,64]]];
-    return param_base(settings,surf_lst=surf);
+    name = sys._getframe().f_code.co_name;
+    return param_base(settings,name,surf_lst=surf);
 
 def PARAM018(settings):
     surf=[['O'],['P',[16]],['R',[16,64]]];
-    return param_base(settings,surf_lst=surf);
+    name = sys._getframe().f_code.co_name;
+    return param_base(settings,name,surf_lst=surf);
     
