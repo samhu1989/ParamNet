@@ -10,7 +10,7 @@ from .loss import ChamferDistLoss;
 import sys;
 
 def atlas_decode(siggrid,gridn,is_training,scope="",reuse=False,bottleneck_size=1024,weight_decay=1e-4,batch_norm_decay=0.997,batch_norm_epsilon=1e-5,batch_norm_scale=True):
-    batch_norm_params={'decay':batch_norm_decay,'epsilon':batch_norm_epsilon,'scale': batch_norm_scale,'updates_collections': ops.GraphKeys.UPDATE_OPS}
+    batch_norm_params={'decay':batch_norm_decay,'epsilon':batch_norm_epsilon,'scale': batch_norm_scale,'is_training':is_training,'updates_collections': ops.GraphKeys.UPDATE_OPS}
     ix =  tf.reshape(siggrid,[tf.shape(siggrid)[0],1,tf.shape(siggrid)[1],siggrid.shape[-1]]);
     oy = [];
     with arg_scope([slim.conv2d],
