@@ -122,7 +122,6 @@
 		098&$(OP^8R^{8,64})_4$ &~&~\\
 		099&$(OP^{12}R^{12,64})_4$ &~&~\\
 		100&$(OP^{16}R^{16,64})_4$ &~&~\\
-
 	\end{tabular}
 \end{table*}
 \begin{table*}
@@ -173,6 +172,12 @@ graph   &  0.0051679 \\
 2 graph &  0.0051687 \\
 \end{tabular}
 \end{table*}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/appendix/atlasnetvsour.png}
+	\caption{Add Laplace to AtlasNet}
+	\label{fig:atlasnet_lpl}
+\end{figure}
 \newpage
 \section{More Results}
 \begin{figure*}[htbp]
@@ -181,4 +186,24 @@ graph   &  0.0051679 \\
 	\caption{More visual results randomly picked from testing data}
 	\label{fig:more_res}
 \end{figure*}
+\begin{table*}
+	\label{tab:pix2mesh}
+	\centering
+	\begin{tabular}{| l | l |}
+		model  &   0 epoch   \\
+		\hline
+		Pix2Mesh &   0.59 \\
+		Pix2Mesh with KnPointNet instead of graph conv &   0.63 \\
+	\end{tabular}
+\end{table*}
+\begin{table*}
+	\label{tab:concate}
+	\centering
+	\begin{tabular}{| l | l |}
+		model  &   0 epoch   \\
+		\hline
+		Pix2Mesh &   0.59 \\
+		Pix2Mesh with Laplace &   0.601 \\
+	\end{tabular}
+\end{table*}
 \end{appendices}
