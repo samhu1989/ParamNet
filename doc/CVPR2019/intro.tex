@@ -1,13 +1,19 @@
 \section{Introduction}
 %introduction to surface reconstruction networks
-Inferring 3D shapes with neural network is now studied by the 
-%advantage and shortage of the chamfer distance loss
+Inferring 3D shape from a single view image is a traditional problem for computer vision. In computer graphics, 3D modeling with a given image has also been extensively studied. Though it have been studied for decades, the problem remains challenging, due to the fact that 3D-to-2D projection is not invertible, and large portions of the 3D shape features are excluded in the 2D image.
+
+In recent years, great success has been achieved for 3D shape reconstruction from a single color image using deep neural networks~\cite{3DR2N2,PSGN}. 
+%introduction to 3d mesh reconstruction networks-- AtlasNet and Pixel2Mesh to be specific
+
+
+%introduction to the self-intersection issue
+
+
+%reveal the cause of this problem 
 
 \comments{
-Inferring 3D shape from a single view image is a traditional problem for computer vision. In computer graphics, 3D modeling with a given image has also been extensively studied. 
-Though it have been studied for decades, the problem remains challenging, due to the fact that 3D-to-2D projection is not invertible, and large portions of the 3D shape features are excluded in the 2D image. 
 
-Recently, great success has been achieved for 3D shape reconstruction from a single color image using deep learning techniques~\cite{3DR2N2,PSGN}. 
+
 By using convolutional layers on regular grids or multi-layer
 perception on unordered 3D coordinates, the estimated 3D shape is represented
 as either a volume occupancy~\cite{3DR2N2} or point cloud~\cite{PSGN} in neural networks. 
