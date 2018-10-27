@@ -1,4 +1,9 @@
 \section{Introduction}
+%introduction to surface reconstruction networks
+Inferring 3D shapes with neural network is now studied by the 
+%advantage and shortage of the chamfer distance loss
+
+\comments{
 Inferring 3D shape from a single view image is a traditional problem for computer vision. In computer graphics, 3D modeling with a given image has also been extensively studied. 
 Though it have been studied for decades, the problem remains challenging, due to the fact that 3D-to-2D projection is not invertible, and large portions of the 3D shape features are excluded in the 2D image. 
 
@@ -36,7 +41,7 @@ b) point-wise decoding: it decodes the associated representations into 3D points
 These are intuitive choices. In this paper, we will explore and evaluate more possible techniques for association and more building blocks for point-wise decoding.
 
 In addition, we want to demonstrate the forementioned advantage b) that has been left out by AtlasNet\cite{atlasnet} and FoldingNet\cite{foldingnet}. We use Laplace smooth as a layer in our network. We take it as a simple but representative example showing that how the \emph{parameterization network} makes it convenient to integrate classic mesh operation into neural network. 
-
+}
 
 
  
