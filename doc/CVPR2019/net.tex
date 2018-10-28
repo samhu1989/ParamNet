@@ -1,110 +1,24 @@
-\section{Techniques and building blocks}
-In this section, we will elaborate on the techniques and building blocks that we have explored for the surface decoder. 
-\subsection{Association techniques}
-Association techniques are used to associate the image representation $\vec{s}$ with each point $\vec{z}_{n={1,\dots,N}}$ into associated features $\mathbf{F}$. The sample points $\vec{z}_{n={1,\dots,N}}$ from $\mathbf{Z}=[\vec{z_1},\dots,\vec{z_N}]$ are 2D or 3D vectors corresponding to the sampled points from parameter domain.
-
-\noindent\textbf{duplicate + concatenate}
-this is most intuitive choice of association techniques and have been used in AtlasNet\cite{atlasnet} and FoldingNet\cite{foldingnet}
-
+\section{Method}
+In this section, we firstly show that the self-intersection and self-overlap appear because the mapping is non-injective. 
+Then we propose the cycle regularization technique and explain in details about how we respectively apply this general technique onto AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}, whose network structures are different from each other. 
+\subsection{Injective mapping for mesh generation}
+\label{subsec:inj}
+\begin{m_def}
+Let $f$ be a function whose domain is a set $X$. The function $f$ is said to be injective provided that
 \begin{equation}
-\label{equ:C}
-\mathbf{F}=ass(\vec{s},\mathbf{Z})=\left[
-\begin{aligned}
-~&\vec{z_1},&\vec{z_2},\dots,&\vec{z_N}\\
-~&\vec{s}  ,&\vec{s}~,\dots,&\vec{s}
-\end{aligned}
-\right].
+\forall a,b \in X, f(a) = f(b) \Rightarrow a = b.
 \end{equation}
-
-\noindent\textbf{duplicate + outer-product} 
-Inspired by the success of bilinear pooling, we use duplicate + outer-product as a new association technique for surface decoder. 
-
+Equivalently, 
 \begin{equation}
-\label{equ:O}
-\mathbf{F}=ass(\vec{s},\mathbf{Z})=\left[
-~\\vec(\vec{z}_1\vec{s}^T),\\vec(\vec{z}_2\vec{s}^T),\dots,\\vec(\vec{z}_N\vec{s}^T)\\
-\right],
-\end{equation}in which, $\\vec(\mathbf{X})$ means vectorization of matrix $\mathbf{X}$ by concatenating its columns.
-
-\noindent\textbf{\emph{K}-neighbor point convolution}
-
-\begin{equation}
-\begin{aligned}
-&f^{K}(\mathbf{W},\vec{x},\mathbf{X})\\
-&= mean([\mathbf{w}_1\vec{n}_{1},\dots,\mathbf{w}_k\vec{n}_{k},\dots,\mathbf{w}_K\vec{n}_{K}],0),
-\end{aligned}
+\forall a,b \in X, a \neq b \Rightarrow f(a) \neq f(b).
 \end{equation}
-in which, $\mathbf{W}$ is a tensor with $rank=3$, $\mathbf{w}_k$ means the $k$th slice of $\mathbf{W}$, which is a matrix. $\vec{n}_{k}$ is the $k$th nearest vector of $\vec{x}$ among column vectors of $\mathbf{X}$.
-the function $mean(\mathbf{X},0)$ means average and reduce dimension along the first axis (axis=0) of tensor $\mathbf{X}$.
-
+\end{m_def}
+\subsection{Cycle regularization}
+\label{subsec:cylcereg}
+\begin{m_thm}
+functions with left inverses are always injections. That is, given $f:X \rightarrow Y$, if there is a function $g:Y \rightarrow X$ such that,
 \begin{equation}
-\begin{aligned}
-&kconv^{K}(\mathbf{W},\mathbf{X},\vec{b})\\
-&=\vec{b}+[f^{K}(\mathbf{W},\vec{x}_1),f^{K}(\mathbf{W},\vec{x}_2),\\
-&\dots,f^{K}(\mathbf{W},\vec{x}_n),\dots,f^{K}(\mathbf{W},\vec{x}_N)],
-\end{aligned}
+\forall x \in X,~g(f(x)) = x,
 \end{equation}
-in which $\mathbf{W}$ is the convolution kernel, $\vec{b}$ is the bias vector. $\mathbf{X}$ are input features and $\vec{x}_n)$ is the $n$th column vector of $\mathbf{X}$. 
-
-
-\begin{equation}
-\label{equ:K}
-\mathbf{F}=ass(\vec{s},\mathbf{Z})=kconv^{K}(w(\vec{s}),\mathbf{Z},b(\vec{s})),
-\end{equation}
-in which, $w(\vec{s})$ and $b(\vec{s})$ are one layer perceptions followed by reshape operation, reshaping the output to fit in the $kconv$ layer. This means that when we use \emph{K}-neighbor point convolution as an association technique, we use features derived from image representation $\vec{s}$  instead of free trainable parameters as convolution kernel and bias for the $kconv$ layer. In this way, information from both $\vec{s}$ and $\mathbf{Z}$ are associated and in the back-propagation stage the gradient can be passed down to both $\vec{s}$ and $\mathbf{Z}$.
-\subsection{Blocks for point-wise decoding}
-
-\noindent\textbf{MLP} as a building block for point-wise decoding, its difference with usual MLP in the typical image classification networks is that it process input features in a point-wise manner instead of a image-wise manner. In other words, each associated feature corresponding to a sample point from parameter domain is mapped to one 3D point by the MLP.
-
-\noindent\textbf{\emph{K}-neighbor point convolution}
-When building point-wise decoding blocks, we use trainable free parameters as kernel $\mathbf{W}$ and bias $\vec{b}$. In this case, we write $kconv^{K}(\mathbf{W},\mathbf{X},\vec{b})$ as $kconv^{K,d}(\mathbf{X})$ for short. $d$ in $kconv^{K,d}(\mathbf{X})$ is the number of output channels. With $K,d$ and the shape of $\mathbf{X}$, the shapes of $\mathbf{W}$ and $\vec{b}$ can be determined.
-
-\begin{equation}
-\label{equ:P}
-\mathbf{Z^*} = kconv^{K,3}(relu(\mathbf{F}))
-\end{equation}
-
-\begin{equation}
-\label{equ:R}
-\mathbf{Z^*} = \mathbf{Z} + kconv^{K,3}(relu(kconv^{K,d}(\mathbf{Z})))
-\end{equation}
-
-\subsection{Laplace smoothing layer}
-Another building block for surface decoder that we have explored in this paper is the Laplacian smoothing layer. Laplacian smoothing is a classic mesh based operation. We demonstrate that with triangulation established, it is convenient to integrate classic mesh based operation into network. Our results show that in some cases the can improve the result.
-
-The new position of each vertex $\vec{z}_n$ in the smoothed mesh is computed as Eq.~(\ref{equ:L}), where $\mathcal{N}(\vec{z}_n)$ represents the one-ring neighborhood of vertex $\vec{z}_n$. 
-This Laplacian smoothing operation is local linear and therefore differentiable.
-
-\begin{equation}
-	\label{equ:L}
-	\vec{z}^* = \frac{1}{|\mathcal{N}(\vec{z})|}\sum_{\vec{y}\in\mathcal{N}(\vec{z})}\vec{y}
-\end{equation}
-
-\section{Network structures}
-In this paper, we only explore configurations for surface decoder. For the image encoder, we follow AtlasNet\cite{atlasnet} to use ResNet-18\cite{resnet}.
-
-\begin{table}
-	\caption{One letter notes for techniques and building blocks in surface decoders}
-	\label{tab:note}
-	\centering
-	\begin{tabular}{l | l }
-	one letter note & techniques/building blocks\\
-	\hline
-	$C$ & duplicate + concatenate as Equ.(\ref{equ:C}).\\
-	$O$ & duplicate + outer-product as Equ.(\ref{equ:O}).\\
-	$K^{K,d}$ & $kconv$ based association as Equ.(\ref{equ:K}).\\
-		     ~& $d$ is the channel number of output.\\
-		     & $d$ determines the output shape of $w(\vec{s})$ and $b(\vec{s})$\\
-	$M^{d_1,d_2,\dots}$ & point-wise MLP.\\
-					   ~& $d_1,d_2,\dots$ are sizes of hidden layers.\\
-					   ~& the size of output layer is always 3.\\
-	$P^{K}$			    & $kconv$ based block as Equ.(\ref{equ:P}) \\
-					   ~& $K$ is the size of neighborhood\\
-	$R^{K,d}$           & $kconv$ based residual block as Equ.(\ref{equ:R})\\
-					   ~& $K$ is the size of neighborhood\\ 
-					   ~& $d$ is channel number of hidden layer\\
-	$L$                 & Laplace smoothing layer as Equ.(\ref{equ:L}).\\
-	\end{tabular}	
-\end{table}
-
-\section{Inversible AtlasNet to reduce triangle inversion ?}
+then $f$ is injective.
+\end{m_thm}

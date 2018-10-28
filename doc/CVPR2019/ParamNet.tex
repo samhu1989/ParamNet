@@ -11,10 +11,14 @@
 \usepackage{booktabs}
 \usepackage[titletoc]{appendix}
 \usepackage{color}
-
+\usepackage{makeidx}
+\makeindex
 \newcommand{\comments}[1]{}
-\newcommand{\todo}[1]{{\color{red}(TODO:#1)}}
-
+\newcommand{\todo}[1]{%
+	\index{#1}{\color{red}(TODO: #1)}%
+}
+\newtheorem{m_thm}{Theorem}
+\newtheorem{m_def}{Definition}
 % Include other packages here, before hyperref.
 
 % If you comment hyperref and then uncomment it, you should delete
@@ -32,7 +36,7 @@
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{Training 3D Mesh Reconstruction Networks with Inversive Regularization}
+\title{Training 3D Mesh Reconstruction Networks with Cycle Regularization}
 
 \author{Siyu Hu\\
 Institution1\\
@@ -75,5 +79,6 @@ First line of institution3 address\\
 \bibliography{ParamNet}
 }
 %-------------------------------------------------------------------------
-\input{appendix}
+\input{todo}
+%\input{appendix}
 \end{document}

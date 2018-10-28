@@ -13,16 +13,6 @@ However, shape retrieval from images itself is an challenging problem due to the
 %
 %These learning approaches are relatively early.
 %A more ideal solution would be to directly learn 3D shapes from single images under an end-to-end framework. 
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/net/k-n_pointnet}
-	\caption{The internal structure of \textit{K}-neighbor PointNet.}
-	\label{fig:knpointnet}
-\end{figure}
-
-
-
 \subsection{3D Neural Networks}
 Most recently, researchers have developed techniques to represent 3D shapes inside deep learning frameworks.%, and developed a serious of 3D neural networks to predict 3D shapes from images. 
 Unlike images, 3D shapes are not canonical functions on well-organized grids. 
@@ -34,13 +24,6 @@ An intuitive way to apply convolutional network in 3D is to use volume occupancy
 The main disadvantage of volumetric representation was the large memory consumption due to the raising of dimension when extending 2D grids to 3D. 
 Octree representation is proposed to support higher resolution outputs with limited memory, and used for shape generation~\cite{octreegen} and shape analysis~\cite{ocnn}.
 %The most recent work of use an octree representation for shape generation (similar representation is used in for 3D shape classification and segmentation by \cite{ocnn}), which allows to higher resolution outputswith limited memory.
-
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/net/semnet}
-	\caption{Semantic network: The semantic network takes image as input and predict parameters for the \textit{K}-neighbor PointNet and the global scale operation in the parameterization network. The semantic network have separate decoders for each \textit{K}-neighbor PointNet and and the global scale operation. }
-	\label{fig:semnet}
-\end{figure*}
 
 \noindent\textbf{Point Clouds} 
 Compared to regular 3D grids, point clouds is not limited by fixed local connections.
@@ -77,7 +60,4 @@ Manifold surfaces are required as training data so that the shapes can be parame
 In comparison, we represent 3D surfaces by surface parameterization. 
 Our proposed network predicts a mapping from the parameter domain to the target surface. Manifold surfaces are not necessary as supervision.
 Out network can be trained with point clouds as supervision, but it directly produces mesh models.
-
-\subsection{Learning to Learn and Filter Prediction}
-It is not a new idea to learn neural network that predict the network parameters of another. It is one of the approaches found for \textit{learning to learn}. A few methods \cite{schmidhuber1992learning,bertinetto2016learning,jia2016dynamic} , in particular, have been proposed to apply such idea in their work. Our framework adopt this idea to separate the semantic feature space and the 3D shape space. In this way, the learned shape operation becomes more interpretable. In other words, the effect of learned shape operation can be directly visualized by the intermediate result of the parameterization network as shown in Figure~\ref{fig:overview}. Such separation also makes it more intuitive to add traditional shape operations (e.g. Laplacian smooth) to the network. 
 
