@@ -1,15 +1,16 @@
 \section{Introduction}
-%introduction to surface reconstruction networks
-Inferring 3D shape from a single view image is a traditional problem for computer vision. In computer graphics, 3D modeling with a given image has also been extensively studied. Though it have been studied for decades, the problem remains challenging, due to the fact that 3D-to-2D projection is not invertible, and large portions of the 3D shape features are excluded in the 2D image.
+%introduction to 3D shape reconstruction from single view
+Inferring 3D shape from a single view image is a traditional problem for computer vision. In computer graphics, 3D modeling with a given image has also been extensively studied. \comments{Though it have been studied for decades, the problem remains challenging, due to the fact that 3D-to-2D projection is not invertible, and large portions of the 3D shape features are excluded in the 2D image.} In recent years, great success has been achieved for 3D shape reconstruction from a single color image using deep neural networks~\cite{3DR2N2,PSGN} \todo{add more refs}. Unlike classic shape from X \todo{add refs} approaches, these neural networks are able to recover not only the visible frontal shape but also the invisible part for object from a single view image by learning complicate prior knowledge from dataset. 
 
-In recent years, great success has been achieved for 3D shape reconstruction from a single color image using deep neural networks~\cite{3DR2N2,PSGN}. 
+These networks all rely on variants of convolution neural network to extract information and encode 2D images, but use quite different techniques to represent and decode 3D shapes. Started by 3D ShapeNets\cite{3dshapenet} and greatly improved by introducing octree structure\cite{octreegen}, volumetric representation and 3D convolution networks are most commonly used in this problem. There is also point set generation network\cite{PSGN} that use unordered point set representation and directly regress point set using both convolution and fully connected breaches. Other interesting approaches includes \cite{endface} which use bilinear model to represent shape of face and regress the interpolation coefficient to generate the shape and \cite{surfnet} which explicitly employ spherical parameterization as post-processing to represent shape as geometry image in parameter domain and so on.
+
 %introduction to 3d mesh reconstruction networks-- AtlasNet and Pixel2Mesh to be specific
-
-
+In latest works, AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh} to be specific, a new idea that let the network learns to map or deform from a predefined surface (square and sphere for AtlasNet and ellipsoid for Pixel2Mesh) instead of directly regress the absolute position of surface point have been applied on this problem.
 %introduction to the self-intersection issue
 
+%reveal the cause of this problem (the disadvantage of chamferdistance loss)
 
-%reveal the cause of this problem 
+%our proposed solution 
 
 \comments{
 
