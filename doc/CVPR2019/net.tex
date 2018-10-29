@@ -1,9 +1,12 @@
 \section{Method}
-In this section, we firstly show that the self-intersection and self-overlap appear because the mapping is non-injective. 
+In this section, we firstly show that the we can make sure that there is no overlapped points on target surface by enforcing the mapping to be injective. 
 Then we propose the cycle regularization technique and explain in details about how we respectively apply this general technique onto AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}, whose network structures are different from each other. 
-\subsection{Injective mapping for mesh generation}
+\subsection{Injective mapping and self-overlapped points}
 \label{subsec:inj}
+Start with the definition of injective mapping at \textbf{Definition}~\ref{def:injective}, we can intuitively induce the conclusion that given a predefined surface with $ X =\{\mathbf{x}~|~\mathbf{x}$ is a point on the predefined surface $ \} $, a target surface with $ Y =\{\mathbf{y}~|~\mathbf{y}$ is a point on the target surface $ \} $ and a function $f:X \rightarrow Y$. If $\exists$ $ \mathbf{a},\mathbf{b} \in X$, $\mathbf{a} \neq \mathbf{b}$ and $f(\mathbf{a}) = f(\mathbf{b})$ (i.e. the overlapped points on target surface exists) then by definition, $f$ is not an injective function. Equivalently (as the converse negative proposition), we can make sure there is no self-overlapped points on the target surface by enforcing $f$ to be injective.
+\todo{add figure to show relation between injective mapping and overlapped points}
 \begin{m_def}
+\label{def:injective}
 Let $f$ be a function whose domain is a set $X$. The function $f$ is said to be injective provided that
 \begin{equation}
 \forall a,b \in X, f(a) = f(b) \Rightarrow a = b.
@@ -13,12 +16,31 @@ Equivalently,
 \forall a,b \in X, a \neq b \Rightarrow f(a) \neq f(b).
 \end{equation}
 \end{m_def}
+
 \subsection{Cycle regularization}
 \label{subsec:cylcereg}
 \begin{m_thm}
-functions with left inverses are always injections. That is, given $f:X \rightarrow Y$, if there is a function $g:Y \rightarrow X$ such that,
+\label{thm:injective}
+functions with left inverses are always injective. That is, given $f:X \rightarrow Y$, if there is a function $g:Y \rightarrow X$ such that,
 \begin{equation}
 \forall x \in X,~g(f(x)) = x,
 \end{equation}
 then $f$ is injective.
 \end{m_thm}
+Based on \textbf{Theorem}~\ref{thm:injective}, we propose the cycle regularization term as:
+\begin{equation}
+cycle_X(f)=\min_g\frac{1}{|X|}\sum_{\mathbf{x}\in X}||g(f(\mathbf{x})) - \mathbf{x}||_2^2.
+\end{equation}
+By minimizing this term to zero:
+\begin{equation}
+f^* = \arg\min_f cycle_X(f)
+\end{equation}
+we can get the $f^*$ that has the left inverse function $g$, therefore $f^*$ is injective. 
+As stated in AtlasNet\cite{atlasnet}, it is possible to use multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse the network structures from their network respectively and show that our cycle regularization is a general technique for this type of networks. 
+
+\noindent\textbf{AtlasNet} Depending on a shape represent feature $\mathbf{s}$, the AtlasNet use MLP
+$f$ with parameters $\theta$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points sampled from predefined domain $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points sampled from target surface $S\}$. In implementation $P$ can be either unit square $[0,1]^2$ or the surface of a 3D sphere.
+
+\noindent\textbf{Pixel2Mesh}
+
+

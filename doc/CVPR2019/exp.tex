@@ -1,11 +1,20 @@
-\section{Experiment}
-\subsection{Exploring multiple configurations for surface decoder}
-In parameterization networks, a surface decoder couple the shape representation (in our case, the high level feature extracted from 2D image) with each point sampled from the parameter domain, and then decode the each coupled feature into a 3D point. 
+\section{Experiments}
 
-\subsection{Integrating Laplace smooth layer into network}
+\noindent{\textbf{Data}}
+\todo{explain the data we use in experiment}
 
-\subsection{Integrating mesh related energy functions into loss}
+\noindent{\textbf{Evaluation criteria}}
+\todo{we need to find a criteria different from Chamfer distance, which can show the advantage of our technique, i.e. our mesh have less self-intersection or self-overlap  }
+\subsection{Effect of cycle regularization}
+
+\todo{train and test atlasnet with and without cycle regularization}
+
+\todo{train and test Pixel2Mesh with and without cycle regularization}
 
 \subsection{Shape Interpolation}
 
-\subsection{Semantic Embedding}
+\todo{visualize the shape morphing for AtlasNet and Pixel2Mesh with and without cycle regularization}
+
+\subsection{Cycle regularization for parameterization optimization}
+\todo{implement cycle regularization for classic parameterization optimization and shape deformation to show that it is a general regularization technique as any classic regularization term that can be used beyond training neural networks}
+\subsection{Cycle regularization for shape deformation}
