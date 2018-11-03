@@ -1,13 +1,15 @@
 \section{Experiments}
 
-\noindent{\textbf{Data}}
+\noindent{\textbf{Data}} To show the effect of cycle regularization we use the data released by AtlasNet and Pixel2Mesh respectively \cite{3DR2N2}
 \todo{explain the data we use in experiment}
 
 \noindent{\textbf{Evaluation criteria}}
-\todo{we need to find a criteria different from Chamfer distance, which can show the advantage of our technique, i.e. our mesh have less self-intersection or self-overlap  }
-\subsection{Effect of cycle regularization}
+In order to quantitatively evaluate the issue of self-intersection and self-overlap, we count the percentage of self-intersected triangles on the surface over the total number of triangles. We also use the value of Chamfer distance (``CD") as the original AtlasNet and Pixel2Mesh to evaluate how well the generated mesh approximate the target shape.
+\subsection{Cycle regularization with AtlasNet}
 
 \todo{train and test atlasnet with and without cycle regularization}
+
+\subsection{Cycle regularization with Pixel2Mesh}
 
 \todo{train and test Pixel2Mesh with and without cycle regularization}
 
