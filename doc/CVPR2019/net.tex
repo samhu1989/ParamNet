@@ -4,7 +4,6 @@ Then we propose the cycle regularization technique and explain in details about 
 \subsection{Injective mapping and self-overlapped points}
 \label{subsec:inj}
 Start with the definition of injective mapping at \textbf{Definition}~\ref{def:injective}, we can intuitively induce the conclusion that given a predefined surface with $ X =\{\mathbf{x}~|~\mathbf{x}$ is a point on the predefined surface $ \} $, a target surface with $ Y =\{\mathbf{y}~|~\mathbf{y}$ is a point on the target surface $ \} $ and a function $f:X \rightarrow Y$. If $\exists$ $ \mathbf{a},\mathbf{b} \in X$, $\mathbf{a} \neq \mathbf{b}$ and $f(\mathbf{a}) = f(\mathbf{b})$ (i.e. the overlapped points on target surface exists) then by definition, $f$ is not an injective function. Equivalently (as the converse negative proposition), we can make sure there is no self-overlapped points on the target surface by enforcing $f$ to be injective.
-\todo{add figure to show relation between injective mapping and overlapped points}
 \begin{m_def}
 \label{def:injective}
 Let $f$ be a function whose domain is a set $X$. The function $f$ is said to be injective provided that
@@ -23,6 +22,7 @@ Equivalently,
 \label{thm:injective}
 functions with left inverses are always injective. That is, given $f:X \rightarrow Y$, if there is a function $g:Y \rightarrow X$ such that,
 \begin{equation}
+\label{equ:injective}
 \forall x \in X,~g(f(x)) = x,
 \end{equation}
 then $f$ is injective.
@@ -30,6 +30,7 @@ then $f$ is injective.
 
 Based on \textbf{Theorem}~\ref{thm:injective}, we relax an injective constraint to our cycle regularization term as:
 \begin{equation}
+\label{equ:cycle_term}
 cycle_X(f)=\min_g\sum_{\mathbf{x}\in X}||g(f(\mathbf{x})) - \mathbf{x}||_2^2.
 \end{equation}
 By minimizing this term to zero:
@@ -42,7 +43,7 @@ However, it is never possible to actually minimize a regularization term to zero
 
 \begin{m_prop}
 	\label{prop:nearest}
-	Given finite sets $X$ and $Y$ that are subset of Euclidean space $\mathcal{R}^3$, function $f:X \rightarrow Y$  and function $g:Y \rightarrow X$, if
+	Given sets $X$ and $Y$ that are subset of Euclidean space $\mathcal{R}^3$, function $f:X \rightarrow Y$  and function $g:Y \rightarrow X$, if
 	\begin{equation}
 	\exists~g, \max_{\mathbf{x}\in X}|| g(f(\mathbf{x})) - \mathbf{x} ||_2^2 < \min_{\mathbf{a},\mathbf{b} \in X}|| \mathbf{a} - \mathbf{b} ||_2^2,
 	\end{equation}
@@ -62,9 +63,12 @@ then
 &\Rightarrow l(g(f(\mathbf{x}))) = \mathbf{x}\\
 \end{aligned}
 \end{equation}
-then $g^*(\mathbf{y}) = l(g(\mathbf{y}))$ is the left inverse of $f$, therefore $f$ is injective. On mesh representation, such injective function $f$ for finite set can be further extend to entire continue surface by locally linear interpolation on each triangle.
+then $g^*(\mathbf{y}) = l(g(\mathbf{y}))$ is the left inverse of $f$, therefore $f$ is injective.
+
+\noindent\textbf{Remaining gap}
+Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for $f$ being injective over the continue surface. The reason is that when we relax Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we relax the constraint over continue surface into term defined on discrete point set. However, our experiment result show that it is still quite effective with point density in AtlasNet and Pixel2Mesh. 
 \subsection{Implementation along with networks}
-As stated in AtlasNet\cite{atlasnet}, it is possible to use multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse the network structures from their network respectively and show that our cycle regularization is a general technique for this type of networks. 
+As stated in AtlasNet\cite{atlasnet}, it is possible to use multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse the network structures from their network respectively and show that our cycle regularization is a general technique for this type of networks.
 
 \noindent\textbf{AtlasNet} Depending on a shape representing feature $\mathbf{s}$, the AtlasNet use point-wise MLP
 $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from predefined surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In implementation, $P$ can be either unit square $[0,1]^2$ or the surface of a 3D sphere. $S$ is the target surface, which is usually the surface of an object in AtlasNet\cite{atlasnet} and in this paper. Then we use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization  total function can be written as:
@@ -76,7 +80,7 @@ $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathb
 In which, the shape representation feature is simply concatenated to each point so that the $f$ and $g$ is depending on a global shape representing feature $\mathbf{s}$. In AtlasNet, $\mathbf{s}$ is generated from either PointNet for auto-encoding or ResNet-18 for single view reconstruction.
 
 \noindent\textbf{Pixel2Mesh}
-Comparing to AtlasNet, the Pixel2Mesh use a more complicate network structure.
+Comparing to AtlasNet, the Pixel2Mesh\cite{pixel2mesh} use a more complicate network structure.
 \todo{describe and then implement the cycle regularization with pixel2mesh}
 
 

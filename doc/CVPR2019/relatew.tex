@@ -14,18 +14,17 @@ However, shape retrieval from images itself is an challenging problem due to the
 %These learning approaches are relatively early.
 %A more ideal solution would be to directly learn 3D shapes from single images under an end-to-end framework. 
 \subsection{3D Neural Networks}
-Most recently, researchers have developed techniques to represent 3D shapes inside deep learning frameworks.%, and developed a serious of 3D neural networks to predict 3D shapes from images. 
-Unlike images, 3D shapes are not canonical functions on well-organized grids. 
+Most recently, researchers have developed techniques to represent 3D shapes inside deep learning frameworks. Unlike images, 3D shapes are not canonical functions on well-organized grids.
 This leads to exploration on various representations of 3D shapes.
 
-\noindent\textbf{Volume Occupancy} 
+\noindent\textbf{Volume occupancy} 
 An intuitive way to apply convolutional network in 3D is to use volume occupancy of regular 3D grids to represent 3D shapes~\cite{3dshapenet}, and it is subsequently use for 3D shape generation~\cite{3DR2N2,learnobj}.
 %
 The main disadvantage of volumetric representation was the large memory consumption due to the raising of dimension when extending 2D grids to 3D. 
 Octree representation is proposed to support higher resolution outputs with limited memory, and used for shape generation~\cite{octreegen} and shape analysis~\cite{ocnn}.
 %The most recent work of use an octree representation for shape generation (similar representation is used in for 3D shape classification and segmentation by \cite{ocnn}), which allows to higher resolution outputswith limited memory.
 
-\noindent\textbf{Point Clouds} 
+\noindent\textbf{Point cloud} 
 Compared to regular 3D grids, point clouds is not limited by fixed local connections.
 Many networks have been proposed to take unordered 3D point sets as input and extract geometric features from 3D point set for classification or segmentation~\cite{PointNet,NIPS2017_7095,pointcnn}.
 %
@@ -39,25 +38,25 @@ do not consider local connections of the points, and thus the point positions ha
 a very large degree of freedom. Consequently, it is difficult to reconstruct continue surface from the generated point cloud.
 }
 
-\noindent\textbf{Meshes}
+\noindent\textbf{Mesh}
 Meshes are widely used in game and movie industries. Spherical parameterization techniques like \cite{HuAHSP2018} have been well studied and 
 In addition to vertex positions, the mesh representation contains local structure of vertices. 
 However, the mesh representation is not well supported in current neural networks.
 % 
 To generate mesh models by using neural networks, composition weights of a series of base meshes are predicted by networks~\cite{img2mesh} and \cite{endface}. %produce meshes by linear interpolating base meshes. 
 Since it is only possible to choose/learn base meshes for specific class of object, these two networks only generates meshes for a specific class of object, such as face.
-%(the latter one is only used for human face).
 %
-\cite{3Drender} aims to make a differentiable approximation for 3D mesh rendering process, which we believe is a significant step for both graphics and vision community. However, in its application for mesh generation, it only take silhouette as supervision, hence does not perform well for complicated objects, such as cars, airplanes, etc.
-%
-In comparison, our network draws a lot of experiences from techniques designed for point cloud representation, and it directly produces meshes as output.
+In comparison, the idea that learn to map from predefined domain as in AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh} can generate surface mesh for generic objects. Our work is a follow-up of their idea and addresses a specific issue of surface self-intersection in their networks.
 %but it .
 
-\subsection{Parameterization in Learning}
+\subsection{Parameterization in learning}
 The idea of utilizing surface parameterization in neural networks has been explored\cite{surfnet,geoimg}. 
 Typically, a non-trainable procedure is involved for the creation of geometry image. 
 Manifold surfaces are required as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contain meshes that are not manifold surfaces. 
 In comparison, we represent 3D surfaces by surface parameterization. 
 Our proposed network predicts a mapping from the parameter domain to the target surface. Manifold surfaces are not necessary as supervision.
 Out network can be trained with point clouds as supervision, but it directly produces mesh models.
+
+\subsection{Cycle neural networks}
+The general idea of using neural network to map from one domain to target domain and then map back have been utilized in previous works. CycleGAN\cite{CycleGAN2017} is a famous example of such work. In CycleGAN\cite{CycleGAN2017}, the cycle relation provide a supervision to translate between unpaired data. However, our work uses the same general idea to enforce injective mapping for 3D surface mesh generation networks and preventing self-intersection in generated surfaces. 
 
