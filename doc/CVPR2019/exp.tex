@@ -2,14 +2,15 @@
 
 \noindent{\textbf{Data}} To fairly evaluate the effect of cycle regularization, we use the datasets released by AtlasNet and Pixel2Mesh respectively. Their model sets are both subsets of ShapeNet\cite{shapenetdata} and they both used the rendered image from \cite{3DR2N2}. The absolute size and position of the models and the sampled points as ground truth are not processed in the same way in these two datasets, which makes it unreasonable to compare them all together. However, this doesn't prevent us to show the effect of our regularization technique separately.
 
-\noindent{\textbf{Mesh generation}} Since we are addressing a issue regarding the quality of generated mesh, any post-processing used in AtlasNet\cite{atlasnet} are not used in our experiment. All the triangulations are directly transfered from the predefined surface. We do not divide the triangles to get denser vertex either. The meshes from AtlasNet all have 2500 vertices and about 4k faces. The meshes from Pixel2Mesh all have 2466 vertices and 
+\noindent{\textbf{Mesh generation}} Since we are addressing a issue regarding the quality of generated mesh, any post-processing used in AtlasNet\cite{atlasnet} are not used in our experiment. All the triangulations are directly transfered from the predefined surface. We do not divide the triangles to get denser vertex either. The meshes from AtlasNet all have 2500 vertices and about 4k faces. The meshes from Pixel2Mesh all have 2466 vertices and 4928 faces.
 
 \noindent{\textbf{Evaluation criteria}}
 In order to quantitatively evaluate the issue of self-intersection and self-overlap, we count the percentage of self-intersected triangles (``SI") over the total number of triangles. For this evaluation, we provide our code in the supplemental material which can calculate the ``SI" for a input mesh.  
 We also use the value of Chamfer distance (``CD") as the original AtlasNet and Pixel2Mesh to evaluate how well the generated mesh approximate the target shape. For the evaluation of Chamfer distance we used the codes that are already implemented by AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}.
 
-\subsection{Visualize optimization process}
+\subsection{Visualize convergence of optimization}
 
+In this subsection, we visualize the convergence progress, providing a more intuitive view into the effect of our cycle regularization term. Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one, therefore for the visualization in this section we do not involve any semantic networks and show the effect of our proposed technique in a pure shape deforming manner. In other words, we optimize the same loss function as in Equ.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18\cite{resnet} nor PointNet\cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as 1024 free variables. We initialize the parameters $\theta_f,\theta_g,\mathbf{s}$ randomly and use gradient descent method as optimizer. Under such setting, we are deforming a randmly initialized shape (probably start with self-intersection) to a target shape. As in Figure~\ref{fig:opt}, the case of two target shapes (downloaded from the Internet) are shown. In these two cases, after few iterations our cycle regularization term take effect.
 \subsection{Cycle regularization with AtlasNet}
 
 \begin{table*}
