@@ -30,7 +30,7 @@ Note that the inverse 3D decoder is only needed in training phase, therefore it 
 In summary, our contributions in this paper are:
 \begin{itemize}
 	\item We first propose the cycle regularization technique to handle the surface self-intersection for surface mesh reconstruction networks. 
-	\item We show that it is simple to implement our cycle regularization technique by applying it on AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}.
+	\item We show that it is simple to implement our cycle regularization technique by applying it on AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}. Meanwhile, we also show that our technique keeps the network end-to-end trainable by using existing differentiable layers.
 	\item We show that when trained with cycle regularization these networks are able to produce surface meshes with significantly less self-intersection and keep being close to target surface in the sense of Chamfer distance.
 \end{itemize}
 

@@ -1,10 +1,15 @@
 \section{Experiments}
 
-\noindent{\textbf{Data}} To show the effect of cycle regularization we use the data released by AtlasNet and Pixel2Mesh respectively \cite{3DR2N2}
-\todo{explain the data we use in experiment}
+\noindent{\textbf{Data}} To fairly evaluate the effect of cycle regularization, we use the datasets released by AtlasNet and Pixel2Mesh respectively. Their model sets are both subsets of ShapeNet\cite{shapenetdata} and they both used the rendered image from \cite{3DR2N2}. The absolute size and position of the models and the sampled points as ground truth are not processed in the same way in these two datasets, which makes it unreasonable to compare them all together. However, this doesn't prevent us to show the effect of our regularization technique separately.
+
+\noindent{\textbf{Mesh generation}} Since we are addressing a issue regarding the quality of generated mesh, any post-processing used in AtlasNet\cite{atlasnet} are not used in our experiment. All the triangulations are directly transfered from the predefined surface. We do not divide the triangles to get denser vertex either. The meshes from AtlasNet all have 2500 vertices and about 4k faces. The meshes from Pixel2Mesh all have 2466 vertices and 
 
 \noindent{\textbf{Evaluation criteria}}
-In order to quantitatively evaluate the issue of self-intersection and self-overlap, we count the percentage of self-intersected triangles on the surface over the total number of triangles. We also use the value of Chamfer distance (``CD") as the original AtlasNet and Pixel2Mesh to evaluate how well the generated mesh approximate the target shape.
+In order to quantitatively evaluate the issue of self-intersection and self-overlap, we count the percentage of self-intersected triangles (``SI") over the total number of triangles. For this evaluation, we provide our code in the supplemental material which can calculate the ``SI" for a input mesh.  
+We also use the value of Chamfer distance (``CD") as the original AtlasNet and Pixel2Mesh to evaluate how well the generated mesh approximate the target shape. For the evaluation of Chamfer distance we used the codes that are already implemented by AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}.
+
+\subsection{Visualize optimization process}
+
 \subsection{Cycle regularization with AtlasNet}
 
 \begin{table*}
@@ -41,9 +46,4 @@ In order to quantitatively evaluate the issue of self-intersection and self-over
 
 \todo{train and test Pixel2Mesh with and without cycle regularization}
 
-\subsection{Shape Interpolation}
-
-\todo{visualize the shape morphing for AtlasNet and Pixel2Mesh with and without cycle regularization}
-
-\subsection{Cycle regularization for parameterization optimization and shape deformation}
-\todo{implement cycle regularization for classic parameterization optimization and shape deformation to show that it is a general regularization technique and can be used beyond training neural networks}
+\subsection{Limitations and future work}
