@@ -36,14 +36,6 @@ Many networks have been proposed to take unordered 3D point sets as input and ex
 %
 The first attempt to generate a set of discrete points from a single image using neural networks was made by \cite{PSGN}, however, it is non-trivial to construct continuous surface models from the predicted point sets. Since the local variation of point positions are not continues in the predicted point sets.
 
-%
-\comments{
-\cite{PSGN} proposed neural networks that regress unordered
-3D point set for 3D shape generation. The point cloud representation
-do not consider local connections of the points, and thus the point positions have
-a very large degree of freedom. Consequently, it is difficult to reconstruct continue surface from the generated point cloud.
-}
-
 \noindent\textbf{Mesh}
 Meshes are widely used in game and movie industries. Spherical parameterization techniques like \cite{HuAHSP2018} have been well studied and 
 In addition to vertex positions, the mesh representation contains local structure of vertices. 
@@ -59,7 +51,7 @@ In comparison, the idea that learn to map from predefined domain as in AtlasNet\
 The idea of utilizing surface parameterization in neural networks has been explored\cite{surfnet,geoimg}. 
 Typically, a non-trainable procedure is involved for the creation of geometry image. 
 Manifold surfaces are required as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contain meshes that are not manifold surfaces. 
-In comparison, we are seeking techniques that can be integrated into network and can be trained end-to-end along with the networks. For the issue we are addressing, our idea is based on the same insight (enforcing injective/bijective to prevent self-intersection for surface mesh) as the parameterization papers (e.g.\cite{provableplanarmapping,lifted_bijection,freeboundary,boundeddistortion,Liu_PP_2018},...), but we propose our own technique that is more suitable for training neural networks. 
+In comparison, we are seeking techniques that can be integrated into network and can be trained end-to-end along with the networks. For the issue we are addressing, our idea is based on the same insight (self-intersection for surface mesh is related to the mapping being non-injective) as the parameterization papers (e.g.\cite{provableplanarmapping,lifted_bijection,freeboundary,boundeddistortion,Liu_PP_2018},...), but we propose our own technique that is more suitable for training neural networks. 
 
 \subsection{Cycle neural networks}
 The general idea of using neural network to map from one domain to target domain and then map back have been utilized in previous works. CycleGAN\cite{CycleGAN2017} is a famous example of such work. In CycleGAN\cite{CycleGAN2017}, the cycle relation provide a supervision to translate between unpaired data. However, our work uses the same general idea to enforce injective mapping for 3D surface mesh generation networks and preventing self-intersection in generated surfaces. 

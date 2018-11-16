@@ -97,7 +97,7 @@ One is the coarse-to-fine framework adopted by Pixel2Mesh. It uses three blocks 
 &+ \min_{\theta_{g_3}}\sum_{\mathbf{x} \in X_3}||g_{3}(f_{3}(\mathbf{s}_3,\mathbf{x})) - \mathbf{x}||_2^2,
 \end{aligned}
 \end{equation}
-in which, $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in original network (please refer to Pixel2Mesh\cite{pixel2mesh} for more details). We add our regularization term to original loss function of Pixel2Mesh.
+in which, $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in original network. We add our regularization term to original loss function of Pixel2Mesh with a weight $\lambda$. (Please refer to Pixel2Mesh\cite{pixel2mesh} for more details of the entire loss function)
 
 The other feature we need to cope with is that Pixel2Mesh is based on the graph convolution framework from \cite{graphconv}. In its implementation the supports are not continuously stored, they are inputed as sparse indexes, which makes the implementation of point-wise MLP different from conventional ones. However, it is still quite simple to do so, since the Pixel2Mesh already implemented the graph convolution layer as:
 \begin{equation}

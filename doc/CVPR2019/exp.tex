@@ -17,8 +17,8 @@ In order to quantitatively evaluate the issue of self-intersection and self-over
 We also use the value of Chamfer distance (``CD") as the original AtlasNet and Pixel2Mesh to evaluate how well the generated mesh approximate the target shape. For the evaluation of Chamfer distance we used the codes that are already implemented by AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}.
 
 \begin{table*}
-	\caption{Validation error on AtlasNet trained with(\textbf{ours}) and without cycle regularization. Chamfer distance(CD) and percentage of self-intersected(SI) faces are reported}
-	\label{tab:seg}
+	\caption{Test error on AtlasNet trained with(\textbf{ours}) and without cycle regularization. Chamfer distance(CD) and percentage of self-intersected(SI) faces are reported. ``AE" stands for the shape auto-encoding task, and ``SVR" stands for single view reconstruction task. Sphere means that the models are using sphere as predefined surface to sample points from. The mean is data-wise as it is implemented in the evaluation code of AtlasNet}
+	\label{tab:atlas}
 	\centering
 	\begin{tabular}{c|rc|rc|rc|rc|}
 		\multirow{2}{*}{CD,SI} &\multicolumn{4}{c|}{AE-sphere}&\multicolumn{4}{c|}{SVR-sphere}\\
@@ -46,24 +46,21 @@ We also use the value of Chamfer distance (``CD") as the original AtlasNet and P
 
 \subsection{Visualize deformation process}
 \label{subsec:deform}
-In this subsection, we visualize the deformation process, providing a more intuitive view into the effect of our cycle regularization term. Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one, therefore for the visualization in this section we do not involve any semantic networks and show the effect of our proposed technique in a pure shape deforming manner. In other words, we optimize the same loss function as in Equ.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18\cite{resnet} nor PointNet\cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as 1024 free variables. We initialize the parameters $\theta_f,\theta_g,\mathbf{s}$ randomly and use gradient descent method as optimizer. Under such setting, we are deforming a randmly initialized shape (probably start with self-intersection) to a target shape. As in Figure~\ref{fig:opt}, the case of two target shapes (downloaded from the Internet) are shown. In these two cases, after few iterations our cycle regularization term take effect. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization.
+In this subsection, we visualize the deformation process, providing a more intuitive view into the effect of our cycle regularization term. Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one, therefore for the visualization in this section we do not involve any semantic networks and show the effect of our proposed technique in a pure shape deforming manner. In other words, we optimize the same loss function as in Equ.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18\cite{resnet} nor PointNet\cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as 1024 free variables. We initialize the parameters $\theta_f,\theta_g,\mathbf{s}$ randomly and sample $X$ from sphere surface in this experiment. For optimizer, we use gradient descent. Under such setting, we are deforming a randmly initialized shape (probably start with self-intersection) to a target shape. As in Figure~\ref{fig:opt}, the case of two target shapes (downloaded from the Internet) are shown. In these two cases, after few iterations our cycle regularization term take effect. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization.
 
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/opt/lambda}
-	\caption{The choice of $\lambda$: Under the setting in Sec~\ref{subsec:deform}}, we show some results with different choice of $\lambda$}
+	\caption{The choice of $\lambda$: Under the setting in Sec~\ref{subsec:deform}, we show some results with different choice of $\lambda$}
 	\label{fig:lambda}
 \end{figure}
 
 As shown in Figure~\ref{fig:lambda}, visually speaking, when set the weight $\lambda=0.25$, the deformed shape is able to approximate more details than the larger choices (i.e. $\lambda=0.5,1.0$), and it is also sufficient to enforce the injective mapping.  Therefore we use $\lambda=0.25$ as an emperical choice in following experiments, however finer tuning is possible depending on specific networks. 
 \subsection{Cycle regularization with AtlasNet}
-
-
-		
-\todo{train and test atlasnet with and without cycle regularization}
-
+In this subsection, we show and discuss the effect of our cycle regularization term on  AtlasNet\cite{atlasnet}. As shown in Table~\ref{tab:atlas}, after applying our cycle regularization on the AtlasNet(sphere), the percentage of self-intersected triangles (``SI") are significantly reduced, while the Chamfer distance (``CD") remains close to original networks (somehow slightly worse in auto-encoding and better in single view reconstruction task). As visualized in Figure~\ref{fig:svr} for single view reconstruction task, the reduction of self-intersection is also visually evident. In some case, as highlighted by red rectangles in Figure~\ref{fig:svr}, our cycle regularization term even helps to improve the reconstructed details.
 \subsection{Cycle regularization with Pixel2Mesh}
 
 \todo{train and test Pixel2Mesh with and without cycle regularization}
 
 \subsection{Limitations and future work}
+When we apply our cycle regularization term to the model based on 25-patches, which is also released by AtlasNet\cite{atlasnet}, we encountered failure. We believe this is due to the reason we stated under \emph{Remaining gap} in Sec~\ref{subsec:cyclereg}. The AtlasNet based on 25-patches use 25 independent point-wise MLP to map the domain $[0,1]^2$ to different part of the target surface. This makes the overall mapping neither a canonical function (map one point from the patch to multiple points on surface) nor continue. In future, we want to try to use masks on continue domain instead of multiple patches to handle the case that the target surface is not homeomorphic to continue surface. This seems to be how the researchers usually handle it for human mouth on the face surface in parameterization. 
