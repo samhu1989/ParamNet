@@ -52,16 +52,14 @@ However, the mesh representation is not well supported in current neural network
 To generate mesh models by using neural networks, composition weights of a series of base meshes are predicted by networks~\cite{img2mesh} and \cite{endface}. %produce meshes by linear interpolating base meshes. 
 Since it is only possible to choose/learn base meshes for specific class of object, these two networks only generates meshes for a specific class of object, such as face.
 %
-In comparison, the idea that learn to map from predefined domain as in AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh} can generate surface mesh for generic objects. Our work is a follow-up of their idea and addresses a specific issue of surface self-intersection in their networks.
+In comparison, the idea that learn to map from predefined domain as in AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh} can generate surface mesh for generic objects. Our work is a follow-up of their general idea and addresses a specific issue of surface self-intersection in their networks.
 %but it .
 
 \subsection{Parameterization in learning}
 The idea of utilizing surface parameterization in neural networks has been explored\cite{surfnet,geoimg}. 
 Typically, a non-trainable procedure is involved for the creation of geometry image. 
 Manifold surfaces are required as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contain meshes that are not manifold surfaces. 
-In comparison, we represent 3D surfaces by surface parameterization. 
-Our proposed network predicts a mapping from the parameter domain to the target surface. Manifold surfaces are not necessary as supervision.
-Out network can be trained with point clouds as supervision, but it directly produces mesh models.
+In comparison, we are seeking techniques that can be integrated into network and can be trained end-to-end along with the networks. For the issue we are addressing, our idea is based on the same insight (enforcing injective/bijective to prevent self-intersection for surface mesh) as the parameterization papers (e.g.\cite{provableplanarmapping,lifted_bijection,freeboundary,boundeddistortion,Liu_PP_2018},...), but we propose our own technique that is more suitable for training neural networks. 
 
 \subsection{Cycle neural networks}
 The general idea of using neural network to map from one domain to target domain and then map back have been utilized in previous works. CycleGAN\cite{CycleGAN2017} is a famous example of such work. In CycleGAN\cite{CycleGAN2017}, the cycle relation provide a supervision to translate between unpaired data. However, our work uses the same general idea to enforce injective mapping for 3D surface mesh generation networks and preventing self-intersection in generated surfaces. 

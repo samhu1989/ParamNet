@@ -66,11 +66,11 @@ then
 then $g^*(\mathbf{y}) = l(g(\mathbf{y}))$ is the left inverse of $f$, therefore $f$ is injective.
 
 \noindent\textbf{Remaining gap}
-Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for $f$ being injective over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually change the constraint over continue surface into term defined on discrete point set. We believe that if $f$ and $g$ are both piecewise linear functions, being injective may be better extended to continue surface, since we are using triangle meshes and we can establish bijective mapping between two triangles by linear interpolation. This is why we prefer to use point-wise MLP and ReLU activations in our inverse decoder $g$.
+Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for $f$ being injective over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually change the constraint over continue surface into term defined on discrete point set. We believe that if $f$ and $g$ are linearly extended to entire continue surface, then being injective may be better extended to continue surface, since we are using triangle meshes and we can establish bijective mapping between two triangles by linear interpolation. This is why we use point-wise MLP and ReLU activations as our inverse decoder $g$.
 \begin{figure*}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/opt/opt}
-	\caption{Visualize convergence of optimization: When optimized with cycle regularization, the term take effect after only few iterations. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization. When optimized without cycle regularization term, the surface usually generate }
+	\caption{Visualize convergence of optimization: When optimized with our cycle regularization term, the term take effect after only few iterations. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization. When optimized without cycle regularization term, the surface usually generate }
 	\label{fig:opt}
 \end{figure*}
 \subsection{Implementation along with networks}
@@ -82,10 +82,10 @@ $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathb
 \begin{equation}
 \begin{aligned}
 \label{equ:atlascycle}
-\mathcal{L}_{(X,Y)}(\theta_f) &= \sum_{\mathbf{x} \in X} \min_{\mathbf{y} \in Y}|| f_{\theta_f}(\mathbf{x};\mathbf{s}) - \mathbf{y} ||_2^2 \\ &+ \sum_{ \mathbf{y} \in Y}\min_{ \mathbf{x} \in X} || f_{\theta_f}(\mathbf{x};\mathbf{s}) - \mathbf{y} ||_2^2 \\ &+ \min_{\theta_g}\sum_{\mathbf{x} \in X}||g_{\theta_g}(f_{\theta_f}(\mathbf{x};\mathbf{s});\mathbf{s}) - \mathbf{x}||_2^2,
+\mathcal{L}_{(X,Y)}(\theta_f) &= \sum_{\mathbf{x} \in X} \min_{\mathbf{y} \in Y}|| f_{\theta_f}(\mathbf{x};\mathbf{s}) - \mathbf{y} ||_2^2 \\ &+ \sum_{ \mathbf{y} \in Y}\min_{ \mathbf{x} \in X} || f_{\theta_f}(\mathbf{x};\mathbf{s}) - \mathbf{y} ||_2^2 \\ &+ \lambda\min_{\theta_g}\sum_{\mathbf{x} \in X}||g_{\theta_g}(f_{\theta_f}(\mathbf{x};\mathbf{s});\mathbf{s}) - \mathbf{x}||_2^2,
 \end{aligned}
  \end{equation}
-In which, the shape representation feature is simply concatenated to each point so that the $f$ and $g$ is depending on a global shape representing feature $\mathbf{s}$. In AtlasNet, $\mathbf{s}$ is generated from either PointNet\cite{resnet} for auto-encoding or ResNet-18\cite{resnet} for single view reconstruction. In implementation $g$ is a MLP with same number of units in hidden layers as $f$, as shown in Figure~\ref{fig:net}.
+In which, the shape representation feature is simply concatenated to each point so that the $f$ and $g$ is depending on a global shape representing feature $\mathbf{s}$. $\lambda$ is the weight for cycle regularization. In AtlasNet, $\mathbf{s}$ is generated from either PointNet\cite{resnet} for auto-encoding or ResNet-18\cite{resnet} for single view reconstruction. In implementation $g$ is a MLP with same number of units in hidden layers as $f$, as shown in Figure~\ref{fig:net}.
 
 \noindent\textbf{Pixel2Mesh}
 Comparing to AtlasNet, the Pixel2Mesh\cite{pixel2mesh} use a more complicate network structure. In order to implement cycle regularization along with Pixel2Mesh, we need to cope with two features in the network of Pixel2Mesh. 
