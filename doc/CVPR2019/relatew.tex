@@ -1,9 +1,3 @@
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/net/net}
-	\caption{The cycle regularization implemented along with networks: (a) is the implementation with AtlasNet\cite{atlasnet}. $f$ is the forward 3D surface decoder in original network and $g$ is our inverse decoder used to form the regularization term. (b) is the implementation with Pixel2Mesh\cite{pixel2mesh}.  Pixel2Mesh\cite{pixel2mesh} adopt the coarse-to-fine framework and use three \emph{G-ResNet} block ($f_1,f_2,f_3$) to map the mesh to target shape on three different point density. The \emph{Graph -Unpooling} layers are used to do the upsampling. In other words, they upsample $Y_1$ to $X_2$ and $Y_2$ to $X_3$ base on connected graph in mesh. We use three point-wise MLP ($g_1,g_2,g_3$) as inverse decoders for each level of point density and form a regularization term for each level.}
-	\label{fig:net}
-\end{figure*}
 \section{Related Work}
 3D reconstruction and modeling from a single image has been extensively studied as the problem of \emph{shape from monocular cues}, including shadings~\cite{shapefromshadingsurvey}, focuses~\cite{shapefromdf1,shapefromdf2}, and textures~\cite{Aloimonos1988}. 
 These methods usually recover 2.5D surfaces from 2D images. 

@@ -1,3 +1,6 @@
 \begin{abstract}
-	In this paper, we address a specific issue of surface self-intersection for some of the latest 3D mesh reconstruction networks. We propose a cycle regularization technique to train these networks, preventing surface self-intersection for the generated mesh. It is extremely easy to implement given an existing 3D surface mesh reconstruction network as AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}. We explain the mathematics foundation of the proposed technique and prove its effectiveness for this issue in experiment.
+	Self-intersection in surfaces is a typical defect that makes a 3D model unsuitable for many applications. 
+	Existing neural networks for 3D mesh reconstruction has the challenges of integrating self-intersection prevention in their unidirectional frameworks.
+	In this paper, we propose to use cycle regularization as a self-intersection prevention technique for mesh reconstruction networks.
+	It is flexible to integrate into networks for generating meshes. Our experiments on two latest mesh reconstruction networks demonstrates that the proposed cycle regularization can effectively reduce the self-intersection in generated mesh while remains similar discrepancy with target surface 
 \end{abstract}
