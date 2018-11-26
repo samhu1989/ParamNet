@@ -1,11 +1,4 @@
 \section{Experiments}
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/atlas/svr}
-	\caption{Cycle regularization on AtlasNet: All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles are highlighting a case (the table) in which more details are preserved than the original network because we are enforcing the surface to be free of self-intersection with our cycle regularization term}
-	\label{fig:svr}
-\end{figure*}
-
 \noindent{\textbf{Data}} To fairly evaluate the effect of cycle regularization, we use the datasets released by AtlasNet and Pixel2Mesh respectively. Their model sets are both subsets of ShapeNet\cite{shapenetdata} and they both used the rendered image from \cite{3DR2N2}. The absolute size and position of the models and the sampled points as ground truth are not processed in the same way in these two datasets, which makes it unreasonable to compare them all together. However, this doesn't prevent us to show the effect of our regularization technique separately.
 
 \noindent{\textbf{Mesh generation and visualization}} Since we are addressing a issue regarding the quality of generated mesh, any post-processing used in AtlasNet\cite{atlasnet} are not used in our experiment. All the triangulations are directly transfered from the predefined surface. We do not divide the triangles to get denser vertex either. The meshes from AtlasNet all have 2500 vertices and about 4k faces. The meshes from Pixel2Mesh all have 2466 vertices and 4928 faces.

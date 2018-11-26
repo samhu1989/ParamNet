@@ -79,12 +79,22 @@ Even when the condition in Proposition~\ref{prop:nearest} is met after optimizat
 	\caption{Visualize convergence of optimization: When optimized with our cycle regularization term, the term take effect after only few iterations. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization. When optimized without cycle regularization term, the surface usually converge to a surface with self-intersection.}
 	\label{fig:opt}
 \end{figure*}
+
+
 \subsection{Implementation along with networks}
 
 As stated in AtlasNet\cite{atlasnet}, it is possible to use multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse the network structures from their network respectively and show that our cycle regularization is a general technique for this type of networks.
 
 \noindent\textbf{AtlasNet} Depending on a shape representing feature $\mathbf{s}$, the AtlasNet use point-wise MLP
 $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from predefined surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In implementation, $P$ can be either unit square $[0,1]^2$ or the surface of a 3D sphere. $S$ is the target surface, which is usually the surface of an object in AtlasNet\cite{atlasnet} and in this paper. Then we use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization  total loss function for AtlasNet can be written as:
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/atlas/svr}
+	\caption{Cycle regularization on AtlasNet: All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles are highlighting a case (the table) in which more details are preserved than the original network because we are enforcing the surface to be free of self-intersection with our cycle regularization term}
+	\label{fig:svr}
+\end{figure*}
+
 \begin{equation}
 \begin{aligned}
 \label{equ:atlascycle}
@@ -114,4 +124,3 @@ in which,  $\mathbf{y}_p^l$ is the feature vector $\mathbf{y}$ at support $p$ (c
 \mathbf{y}_p^{(l+1)} = w_0 \mathbf{y}_p^l + \mathbf{b},
 \end{equation}
 For more details, please go to our supplemental material for the code of this implementation.
-
