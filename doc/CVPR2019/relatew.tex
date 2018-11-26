@@ -17,20 +17,20 @@ However, shape retrieval from images itself is an challenging problem due to the
 Most recently, researchers have developed techniques to represent 3D shapes inside deep learning frameworks. Unlike images, 3D shapes are not canonical functions on well-organized grids.
 This leads to exploration on various representations of 3D shapes.
 
-\noindent\textbf{Volume occupancy} 
+\noindent\textbf{Volume occupancy}. 
 An intuitive way to apply convolutional network in 3D is to use volume occupancy of regular 3D grids to represent 3D shapes~\cite{3dshapenet}, and it is subsequently use for 3D shape generation~\cite{3DR2N2,learnobj}.
 %
 The main disadvantage of volumetric representation was the large memory consumption due to the raising of dimension when extending 2D grids to 3D. 
 Octree representation is proposed to support higher resolution outputs with limited memory, and used for shape generation~\cite{octreegen} and shape analysis~\cite{ocnn}.
 %The most recent work of use an octree representation for shape generation (similar representation is used in for 3D shape classification and segmentation by \cite{ocnn}), which allows to higher resolution outputswith limited memory.
 
-\noindent\textbf{Point cloud} 
+\noindent\textbf{Point cloud}. 
 Compared to regular 3D grids, point clouds is not limited by fixed local connections.
 Many networks have been proposed to take unordered 3D point sets as input and extract geometric features from 3D point set for classification or segmentation~\cite{pointnet,NIPS2017_7095,pointcnn}.
 %
 The first attempt to generate a set of discrete points from a single image using neural networks was made by \cite{PSGN}, however, it is non-trivial to construct continuous surface models from the predicted point sets. Since the local variation of point positions are not continues in the predicted point sets.
 
-\noindent\textbf{Mesh}
+\noindent\textbf{Mesh}.
 Meshes are widely used in game and movie industries. Spherical parameterization techniques like \cite{HuAHSP2018} have been well studied.
 In addition to vertex positions, the mesh representation contains local structure of vertices. 
 However, the mesh representation is not well supported in current neural networks.
