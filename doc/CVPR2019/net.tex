@@ -88,13 +88,6 @@ As stated in AtlasNet\cite{atlasnet}, it is possible to use multilayer perceptro
 \noindent\textbf{AtlasNet} Depending on a shape representing feature $\mathbf{s}$, the AtlasNet use point-wise MLP
 $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from predefined surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In implementation, $P$ can be either unit square $[0,1]^2$ or the surface of a 3D sphere. $S$ is the target surface, which is usually the surface of an object in AtlasNet\cite{atlasnet} and in this paper. Then we use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization  total loss function for AtlasNet can be written as:
 
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=\linewidth]{img/atlas/svr}
-	\caption{Cycle regularization on AtlasNet: All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles are highlighting a case (the table) in which more details are preserved than the original network because we are enforcing the surface to be free of self-intersection with our cycle regularization term}
-	\label{fig:svr}
-\end{figure*}
-
 \begin{equation}
 \begin{aligned}
 \label{equ:atlascycle}
@@ -102,6 +95,13 @@ $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathb
 \end{aligned}
  \end{equation}
 In which, the shape representation feature is simply concatenated to each point so that the $f$ and $g$ is depending on a global shape representing feature $\mathbf{s}$. $\lambda$ is the weight for cycle regularization. In AtlasNet, $\mathbf{s}$ is generated from either PointNet\cite{resnet} for auto-encoding or ResNet-18\cite{resnet} for single view reconstruction. In implementation $g$ is a MLP with same number of units in hidden layers as $f$, as shown in Figure~\ref{fig:net}.
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/atlas/svr}
+	\caption{Cycle regularization on AtlasNet: All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles are highlighting a case (the table) in which more details are preserved than the original network because we are enforcing the surface to be free of self-intersection with our cycle regularization term}
+	\label{fig:svr}
+\end{figure*}
 
 \noindent\textbf{Pixel2Mesh}
 Comparing to AtlasNet, the Pixel2Mesh\cite{pixel2mesh} use a more complicate network structure. In order to implement cycle regularization along with Pixel2Mesh, we need to cope with two features in the network of Pixel2Mesh. 
