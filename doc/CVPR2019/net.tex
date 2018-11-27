@@ -37,11 +37,13 @@ then $f$ is injective.
 Based on \textbf{Theorem}~\ref{thm:injective}, we turn an injective constraint to our cycle regularization term as:
 \begin{equation}
 \label{equ:cycle_term}
-cycle_X(f)=\min_g\sum_{\mathbf{x}\in X}||g(f(\mathbf{x})) - \mathbf{x}||_2^2.
+cycle_X(f,g)=\sum_{\mathbf{x}\in X}||g(f(\mathbf{x})) - \mathbf{x}||_2^2.
 \end{equation}
+As shown in Figure~\ref{fig:cycle}, 
+
 By minimizing this term to zero:
 \begin{equation}
-f^* = \arg\min_f cycle_X(f)
+f^* = \arg\min_{(f,g)} cycle_X(f,g)
 \end{equation}
 we can get the $f^*$ that has the left inverse function $g$, therefore $f^*$ is injective. 
 

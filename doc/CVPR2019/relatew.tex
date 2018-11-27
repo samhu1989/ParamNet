@@ -50,5 +50,10 @@ In comparison, we are seeking techniques that can be integrated into network and
 \subsection{Cycle neural networks}
 The general idea of using neural network to map from one domain to target domain and then map back have been utilized in previous works. CycleGAN\cite{CycleGAN2017} is a famous example of such work. In CycleGAN\cite{CycleGAN2017}, the cycle relation provide extra constraint for translating between unpaired data from different domains. However, our work uses the same general idea to enforce injective mapping for 3D surface mesh generation networks and trying to prevent self-intersection in generated meshes. 
 
-
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\linewidth]{img/net/cycle}
+	\caption{The illustration of cycle regularization (as in Equ.(\ref{equ:cycle_term}))}
+	\label{fig:cycle}
+\end{figure}
 
