@@ -43,11 +43,11 @@ In mesh reconstruction networks, our term can be illustrated as in Figure~\ref{f
 
 By minimizing this term to zero:
 \begin{equation}
-f^* = \arg\min_{(f,g)} cycle_X(f,g)
+f^*,g^* = \arg\min_{(f,g)} cycle_X(f,g)
 \end{equation}
-we can get the $f^*$ that has the left inverse function $g$, therefore $f^*$ is injective. 
+we can get the $f^*$ that has the left inverse function $g^*$, therefore $f^*$ is injective. 
 
-However, it is never possible to actually minimize a regularization term to zero, especially in training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ based on $g$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. A very tight example is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
+However, it is never possible to actually minimize a regularization term to zero, especially in training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. A very tight example is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
 
 \begin{m_prop}
 	\label{prop:nearest}
@@ -115,7 +115,7 @@ One is the coarse-to-fine framework adopted by Pixel2Mesh. It uses three blocks 
 &+ \sum_{\mathbf{x} \in X_3}||g_{3}(f_{3}(\mathbf{s}_3,\mathbf{x})) - \mathbf{x}||_2^2,
 \end{aligned}
 \end{equation}
-in which, $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\theta_g$ is the whole parameters for $g_1,g_2,g_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in original network. We add our regularization term to original loss function of Pixel2Mesh with a weight $\lambda$. (Please refer to Pixel2Mesh\cite{pixel2mesh} for more details of the entire loss function)
+in which, $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\theta_g$ is the whole parameters for $g_1,g_2,g_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in original network. We multiply our regularization term with weight $\lambda$ and add it to original loss function of Pixel2Mesh (Please refer to Pixel2Mesh\cite{pixel2mesh} for more details of the entire loss function)
 
 The other feature we need to cope with is that Pixel2Mesh is based on the graph convolution framework from \cite{graphconv}. In its implementation the supports are not continuously stored, they are inputed as sparse indexes, which makes the implementation of point-wise MLP different from conventional ones. However, it is still quite simple to do so, since the Pixel2Mesh already implemented the graph convolution layer as:
 \begin{equation}
