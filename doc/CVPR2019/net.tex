@@ -47,13 +47,13 @@ f^*,g^* = \arg\min_{(f,g)} cycle_X(f,g)
 \end{equation}
 we can get the $f^*$ that has the left inverse function $g^*$, therefore $f^*$ is injective. 
 
-However, it is never possible to actually minimize a regularization term to zero, especially in training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. A very tight example is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
+However, it is never possible to actually minimize a regularization term to zero, especially in training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. A very example is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
 
 \begin{m_prop}
 	\label{prop:nearest}
 	Given sets $X$ and $Y$ that are subset of Euclidean space $\mathcal{R}^3$, function $f:X \rightarrow Y$  and function $g:Y \rightarrow X$, if
 	\begin{equation}
-	\exists~g, \max_{\mathbf{x}\in X}|| g(f(\mathbf{x})) - \mathbf{x} ||_2^2 < \min_{\mathbf{a},\mathbf{b} \in X}|| \mathbf{a} - \mathbf{b} ||_2^2,
+	\exists~g, || g(f(\mathbf{x})) - \mathbf{x} ||_2^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2,
 	\end{equation}
 	then $f$ is injective.
 \end{m_prop}
@@ -65,9 +65,8 @@ However, it is never possible to actually minimize a regularization term to zero
 then
 \begin{equation}
 \begin{aligned}
-&\max_{\mathbf{x}\in X}|| g(f(\mathbf{x})) - \mathbf{x} ||_2^2 < \min_{\mathbf{a},\mathbf{b} \in X}|| \mathbf{a} - \mathbf{b} ||_2^2\\
-&\Rightarrow || g(f(\mathbf{x})) - \mathbf{x} ||_2^2 \leq \min_{\mathbf{a},\mathbf{b} \in X}|| \mathbf{a} - \mathbf{b} ||_2^2\\
-&\Rightarrow || g(f(\mathbf{x})) - \mathbf{x} ||_2^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2\\
+&|| g(f(\mathbf{x})) - \mathbf{x} ||_2^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2\\
+&\Rightarrow \mathbf{x} = \arg\min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2\\
 &\Rightarrow l(g(f(\mathbf{x}))) = \mathbf{x}\\
 \end{aligned}
 \end{equation}

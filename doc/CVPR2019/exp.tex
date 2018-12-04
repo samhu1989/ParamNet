@@ -52,6 +52,11 @@ As shown in Figure~\ref{fig:lambda}, visually speaking, when we set the weight $
 \subsection{Cycle regularization with AtlasNet}
 In this subsection, we show and discuss the effect of our cycle regularization term on AtlasNet\cite{atlasnet}. As shown in Table~\ref{tab:atlas}, after applying our cycle regularization on the AtlasNet(sphere), the percentage of self-intersected triangles (``SI") are significantly reduced, while the Chamfer distance (``CD") remains close to original networks (somehow slightly worse in auto-encoding and better in single view reconstruction task). As visualized in Figure~\ref{fig:svr} for single view reconstruction task, the reduction of self-intersection is also visually evident. In some cases, as the one highlighted by red rectangles in Figure~\ref{fig:svr}, our cycle regularization term even helps to improve the reconstructed details.
 \subsection{Cycle regularization with Pixel2Mesh}
+\done{have tried the implementation as shown in Figure~\ref{fig:net}(b)}
+
+We have encountered the failure as shown in Figure~\ref{fig:p2m}
+ 
+\todo{Try randomly sample points from surface, so that the injective is better extended to the entire surface}
 
 \begin{table}
 	\caption{Test error on Pixel2Mesh trained with(\textbf{ours}) and without cycle regularization. Chamfer distance(CD) and percentage of self-intersected(SI) faces are reported. The mean is data-wise calculated}

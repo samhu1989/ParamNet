@@ -22,6 +22,9 @@ In this paper, we focus on the fundamental reason behind this issue, which is th
 Being injective is difficult to enforce and has been studied under parameterization optimization for many years in computer graphics. For surface with disk topology, one possible strategy is to start from a feasible solution (by Tutte's embedding\cite{tutte} or its variants) and keep every optimization iteration or deformation inside feasible region. This can be enforced by adding barrier energy from distortion metrics (e.g. \cite{provableplanarmapping,lifted_bijection}), bounding the triangle distortion (e.g.\cite{freeboundary,boundeddistortion})
 or using a progressive strategy\cite{Liu_PP_2018}.
 We find it difficult to adopt their strategy in training neural networks, since the network is simultaneously learning to predict the mapping for many different shapes and only a batch of these shapes are sampled from the dataset in each training iteration. It is not easy to use Tutte's embedding to initialize the network or design loss to enforce local injective for batch based optimization. We propose a regularization technique to help enforcing the learning of injective mapping for mesh. Our technique is easy to implement by reusing the existing layers, given an existing surface mesh reconstruction networks as AtlasNet\cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh}.  
+
+\done{have read about some papers about self-intersection removal}
+we don't have implementation of this papers, the best we can do is to argue that their strategies are not suitable for training neural networks.
 \todo{discuss using self-intersection removal technique as post-process}
 
 %our solution
