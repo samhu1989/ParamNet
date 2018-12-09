@@ -47,7 +47,7 @@ f^*,g^* = \arg\min_{(f,g)} cycle_X(f,g)
 \end{equation}
 we can get the $f^*$ that has the left inverse function $g^*$, therefore $f^*$ is injective. 
 
-However, it is never possible to actually minimize a regularization term to zero, especially in training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. A very example is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
+However, it is never possible to actually minimize a regularization term to zero, especially in training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. An example of such case is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
 
 \begin{m_prop}
 	\label{prop:nearest}
@@ -73,7 +73,7 @@ then
 then $g^*(\mathbf{y}) = l(g(\mathbf{y}))$ is the left inverse of $f$, therefore $f$ is injective.
 
 \noindent\textbf{Remaining gap}
-Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for $f$ being injective over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually change the constraint over continue surface into term defined on discrete point set. In order to make being injective hold for the continue surfaces, we randomly sample $X$ from the predefined surface in training phase. Such sampling technique was already employed by AtlasNet as a technique against overfitting. We add such sampling for Pixel2Mesh and our controlled experiment validates that such random sampling is crucial for our cycle regularization technique.  
+Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for $f$ being injective over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually change the constraint over continue surface into term defined on discrete point set. In order to make being injective hold for the continue surfaces, we randomly sample $X$ from the predefined surface in training phase. Such sampling technique was already employed by AtlasNet as a technique against overfitting. We add such sampling in the inverse decoder $g$ for Pixel2Mesh and our controlled experiment validates that such random sampling is crucial for our cycle regularization technique.  
 \begin{figure*}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/opt/opt}
@@ -87,7 +87,7 @@ Even when the condition in Proposition~\ref{prop:nearest} is met after optimizat
 As stated in AtlasNet\cite{atlasnet}, it is possible to use multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse the network structures from their network respectively and show that our cycle regularization is a general technique for this type of networks.
 
 \noindent\textbf{AtlasNet} Depending on a shape representing feature $\mathbf{s}$, the AtlasNet use point-wise MLP
-$f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from predefined surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In implementation, $P$ can be either unit square $[0,1]^2$ or the surface of a 3D sphere. $S$ is the target surface, which is usually the surface of an object in AtlasNet\cite{atlasnet} and in this paper. Then we use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization  total loss function for AtlasNet can be written as:
+$f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from predefined surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In implementation, $P$ is the surface of a 3D sphere. $S$ is the target surface, which is usually the surface of an object in AtlasNet\cite{atlasnet} and in this paper. Then we use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization  total loss function for AtlasNet can be written as:
 
 \begin{equation}
 \begin{aligned}
@@ -105,23 +105,23 @@ In which, the shape representation feature is simply concatenated to each point 
 \end{figure*}
 
 \noindent\textbf{Pixel2Mesh}
-Comparing to AtlasNet, the Pixel2Mesh\cite{pixel2mesh} use a more complicate network structure. In order to implement cycle regularization along with Pixel2Mesh, we need to cope with two features in the network of Pixel2Mesh. 
-One is the coarse-to-fine framework adopted by Pixel2Mesh. It uses three blocks of graph based convolution residual network ($f_1,f_2,f_3$ shown in Figure~\ref{fig:net}) to map mesh based features to target surface at three different level of point density. To be compatible with such framework, we also use three point-wise MLP as inverse decoder and form our regularization term as:
+Comparing to AtlasNet, Pixel2Mesh\cite{pixel2mesh} use a more complicate network structure. In order to implement cycle regularization along with Pixel2Mesh, we need to cope with such design of network and use cycle regularization term in each level of point density.
+As shown in Figure~\ref{fig:net}), Pixel2Mesh uses three blocks of graph based convolution residual network ($f_1,f_2,f_3$) to map mesh based features to target surface at three different level of point density. To be compatible with such framework, we also use three point-wise MLP as inverse decoder and form our regularization term as:
 \begin{equation}
 \begin{aligned}
-\mathcal{L}_{cycle}(\theta_f,\theta_g) &= \sum_{\mathbf{x} \in X_1}||g_{1}(f_{1}(\mathbf{x},\mathbf{s}_1),\mathbf{s}_1)) - \mathbf{x}||_2^2\\
-&+ \sum_{\mathbf{x} \in X_2}||g_{2}(f_{2}(\mathbf{x},\mathbf{s}_2)),\mathbf{s}_2) - \mathbf{x}||_2^2\\
-&+ \sum_{\mathbf{x} \in X_3}||g_{3}(f_{3}(\mathbf{x},\mathbf{s}_3),\mathbf{s}_3) - \mathbf{x}||_2^2,
+\mathcal{L}_{cycle}(\theta_f,\theta_g) 
+&= \sum_{\hat{\mathbf{x}} \in \hat{X}_1}||g_{1}(\hat{\mathbf{y_1}},\mathbf{s}_1) - \hat{\mathbf{x}}||_2^2\\
+&+ \sum_{\hat{\mathbf{x}} \in \hat{X}_2}||g_{2}(\hat{\mathbf{y_2}},\mathbf{s}_2) - \hat{\mathbf{x}}||_2^2\\
+&+ \sum_{\hat{\mathbf{x}} \in \hat{X}_3}||g_{3}(\hat{\mathbf{y_3}},\mathbf{s}_3) - \hat{\mathbf{x}}||_2^2,\\
 \end{aligned}
 \end{equation}
-in which, $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\theta_g$ is the whole parameters for $g_1,g_2,g_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in original network. We multiply our regularization term with weight $\lambda$ and add it to original loss function of Pixel2Mesh (Please refer to Pixel2Mesh\cite{pixel2mesh} for more details of the entire loss function)
-
-The other feature we need to cope with is that Pixel2Mesh is based on the graph convolution framework from \cite{graphconv}. In its implementation the supports are not continuously stored, they are inputed as sparse indexes, which makes the implementation of point-wise MLP different from conventional ones. However, it is still quite simple to do so, since the Pixel2Mesh already implemented the graph convolution layer as:
+in which $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are sampled as convex combination of vertexes in each triangle as: 
 \begin{equation}
-\mathbf{y}_p^{(l+1)} = w_0 \mathbf{y}_p^l + \sum_{q\in\mathcal{N}(p)} w_1\mathbf{y}_q^l + \mathbf{b},
+\begin{aligned}
+&\hat{\mathbf{x}} = \sum^{N=3} w_n\mathbf{x}_n, \\
+&\hat{\mathbf{y}_l} = \sum^{N=3} w_nf_l(\mathbf{x}_n,\mathbf{s}_l),\\
+&\sum^{N=3} w_n = 1
+\end{aligned}
 \end{equation}
-in which,  $\mathbf{y}_p^l$ is the feature vector $\mathbf{y}$ at support $p$ (corresponding to a vertex on mesh) of layer $l$. $q\in N(p)$ means that $q$ is neighbor support of $p$ in graph. We can implement point-wise MLP by removing neighbor related term as:
-\begin{equation}
-\mathbf{y}_p^{(l+1)} = w_0 \mathbf{y}_p^l + \mathbf{b},
-\end{equation}
-For more details, please go to our supplemental material for the code of this implementation.
+the combination coefficients $w_n$ are randomly generated by kept consistent for $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ in each level $l$. $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\theta_g$ is the whole parameters for $g_1,g_2,g_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in original network. $\hat{X}_1,\hat{X}_2,\hat{X}_3$ are the sets of sampled points at each level. 
+As we have mentioned in Sec~\ref{subsec:cyclereg} \emph{Remaining gap}, random sampling from predefined surface is crucial for our technique. Since Pixel2Mesh do not include such sampling in their method, we have to add it in our inverse decoding. In our inverse decoding we do not directly map the vertexes from target surface back to predefined surface as we did for AtlasNet. Instead, we map the sampled points $\hat{\mathbf{y}_l}$ from each face back to the corresponding samples $\hat{\mathbf{x}}$. The correspondence between $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are ensured to be locally injective by using same set of convex combination coefficients $w_n$ for the sampling. We multiply our regularization term with weight $\lambda$ and add it to original loss function of Pixel2Mesh. For more details, please go to our supplemental material for the code of this implementation.
