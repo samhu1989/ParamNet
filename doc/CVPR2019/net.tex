@@ -73,7 +73,7 @@ then
 then $g^*(\mathbf{y}) = l(g(\mathbf{y}))$ is the left inverse of $f$, therefore $f$ is injective.
 
 \noindent\textbf{Remaining gap}
-Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for $f$ being injective over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually change the constraint over continue surface into term defined on discrete point set. We believe that if $f$ and $g$ are linearly extended to entire continue surface, then being injective may be better extended to continue surface, since we are using triangle meshes and we can establish bijective mapping between two triangles by linear interpolation. This is why we use point-wise MLP and ReLU activations as our inverse decoder $g$.
+Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for $f$ being injective over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually change the constraint over continue surface into term defined on discrete point set. In order to make being injective hold for the continue surfaces, we randomly sample $X$ from the predefined surface in training phase. Such sampling technique was already employed by AtlasNet as a technique against overfitting. We add such sampling for Pixel2Mesh and our controlled experiment validates that such random sampling is crucial for our cycle regularization technique.  
 \begin{figure*}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/opt/opt}
@@ -109,9 +109,9 @@ Comparing to AtlasNet, the Pixel2Mesh\cite{pixel2mesh} use a more complicate net
 One is the coarse-to-fine framework adopted by Pixel2Mesh. It uses three blocks of graph based convolution residual network ($f_1,f_2,f_3$ shown in Figure~\ref{fig:net}) to map mesh based features to target surface at three different level of point density. To be compatible with such framework, we also use three point-wise MLP as inverse decoder and form our regularization term as:
 \begin{equation}
 \begin{aligned}
-\mathcal{L}_{cycle}(\theta_f,\theta_g) &= \sum_{\mathbf{x} \in X_1}||g_{1}(f_{1}(\mathbf{s}_1,\mathbf{x})) - \mathbf{x}||_2^2\\
-&+ \sum_{\mathbf{x} \in X_2}||g_{2}(f_{2}(\mathbf{s}_2,\mathbf{x})) - \mathbf{x}||_2^2\\
-&+ \sum_{\mathbf{x} \in X_3}||g_{3}(f_{3}(\mathbf{s}_3,\mathbf{x})) - \mathbf{x}||_2^2,
+\mathcal{L}_{cycle}(\theta_f,\theta_g) &= \sum_{\mathbf{x} \in X_1}||g_{1}(f_{1}(\mathbf{x},\mathbf{s}_1),\mathbf{s}_1)) - \mathbf{x}||_2^2\\
+&+ \sum_{\mathbf{x} \in X_2}||g_{2}(f_{2}(\mathbf{x},\mathbf{s}_2)),\mathbf{s}_2) - \mathbf{x}||_2^2\\
+&+ \sum_{\mathbf{x} \in X_3}||g_{3}(f_{3}(\mathbf{x},\mathbf{s}_3),\mathbf{s}_3) - \mathbf{x}||_2^2,
 \end{aligned}
 \end{equation}
 in which, $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\theta_g$ is the whole parameters for $g_1,g_2,g_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in original network. We multiply our regularization term with weight $\lambda$ and add it to original loss function of Pixel2Mesh (Please refer to Pixel2Mesh\cite{pixel2mesh} for more details of the entire loss function)

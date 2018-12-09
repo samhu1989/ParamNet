@@ -3,7 +3,7 @@
 
 \noindent{\textbf{Mesh generation and visualization}} Since we are addressing a issue regarding the quality of generated mesh, any post-processing used in AtlasNet\cite{atlasnet} are not used in our experiment. All the triangulations are directly transfered from the predefined surface. We do not divide the triangles to get denser vertex either. The meshes from AtlasNet all have 2500 vertices and about 4k faces. The meshes from Pixel2Mesh all have 2466 vertices and 4928 faces.
 
-To better expose the issue we are addressing in this paper, we render the generated mesh in the software MeshLab and use the ``gooch.gdp" in the software as our shader. In such mode the triangles are rendered golden at front and bluish at back. The golden region and bluish region interlacing at surface evidently indicates the self-intersected triangles.
+To better expose the issue we are addressing in this paper, we render the generated mesh in the software MeshLab and use the ``gooch.gdp" in the software as our shader. In such mode the triangles are rendered golden at front and bluish at back. The golden region and bluish region interlacing at surface evidently indicates the self-intersected surface.
 
 \noindent{\textbf{Evaluation criteria}}
 In order to quantitatively evaluate the issue of self-intersection and self-overlap, we count the percentage of self-intersected triangles (``SI") over the total number of triangles. For this evaluation, we provide our code in the supplemental material which can calculate the ``SI" for a input mesh.  
