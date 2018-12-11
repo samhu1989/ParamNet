@@ -1,0 +1,71 @@
+\documentclass[final,3p]{elsarticle}
+
+\usepackage{lineno}
+\usepackage[colorlinks=true,breaklinks=true,pdftex]{hyperref}
+\modulolinenumbers[1]
+\usepackage{makeidx}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{multirow}
+\usepackage[titletoc]{appendix}
+\makeindex
+\newcommand{\comments}[1]{}
+\newcommand{\todo}[1]{%
+	\index{#1}{\color{red}(TODO: #1)}%
+}
+\newcommand{\done}[1]{%
+	{\color{green}(DONE: #1)}%
+}
+\newtheorem{m_thm}{Theorem}
+\newtheorem{m_def}{Definition}
+\newtheorem{m_prop}{Proposition}
+
+\journal{GMP 2019}
+
+\bibliographystyle{model2-names}\biboptions{authoryear}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\begin{frontmatter}
+%%%%%%%%% TITLE
+\title{Self-intersection Prevention with Cycle Regularization in Mesh Reconstruction Networks}
+
+% USE FOR THE REVIEW PROCESS
+\author{paper1027}
+
+%% ONLY USE FOR THE FINAL ACCEPTED PAPER SUBMISSION
+%\author[first]{First Author}
+%\ead{FirstAuthor@email.com}
+%\author[last]{Last and Corresponding Author\corref{cor}}
+%\ead{LastAuthor@email.com}
+%\cortext[cor]{Corresponding author}
+%\address[first]{Institution and address of the first author}
+%\address[last]{Institution and address of the last author}
+
+\input{abstract}
+
+\begin{keyword}
+First keyword \sep Second keyword \sep Last keyword
+\end{keyword}
+
+\end{frontmatter}
+
+% Comment out for final accepted paper submission
+\linenumbers
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{intro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{relatew}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{net}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{exp}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{sum}
+%\section*{References} % needed on some systems
+\bibliography{ParamNet}
+\input{todo}
+\end{document}
