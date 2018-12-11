@@ -13,13 +13,13 @@ However, shape retrieval from images itself is an challenging problem due to the
 %
 %These learning approaches are relatively early.
 %A more ideal solution would be to directly learn 3D shapes from single images under an end-to-end framework.
+\subsection{3D Neural Networks}
 \begin{figure*}[htbp]
 	\centering
 	\includegraphics[width=\linewidth]{img/net/net}
-	\caption{The cycle regularization implemented along with networks: (a) is the implementation with AtlasNet\cite{atlasnet}. $f$ is the forward 3D surface decoder in original network and $g$ is our inverse decoder used to form the regularization term. (b) is the implementation with Pixel2Mesh\cite{pixel2mesh}.  Pixel2Mesh\cite{pixel2mesh} adopt the coarse-to-fine framework and use three \emph{G-ResNet} block ($f_1,f_2,f_3$) to map the mesh to target shape on three different point density. The \emph{Graph -Unpooling} layers are used to do the upsampling. In other words, they upsample $Y_1$ to $X_2$ and $Y_2$ to $X_3$ base on connected graph in mesh. We use three point-wise MLP ($g_1,g_2,g_3$) as inverse decoders for each level of point density and form a regularization term for each level.}
+	\caption{The cycle regularization implemented along with networks: (a) is the implementation with AtlasNet \cite{atlasnet}. $f$ is the forward 3D surface decoder in original network and $g$ is our inverse decoder used to form the regularization term. (b) is the implementation with Pixel2Mesh \cite{pixel2mesh}.  Pixel2Mesh \cite{pixel2mesh} adopt the coarse-to-fine framework and use three \emph{G-ResNet} block ($f_1,f_2,f_3$) to map the mesh to target shape on three different point density. The \emph{Graph -Unpooling} layers are used to do the upsampling. We use three point-wise MLP ($g_1,g_2,g_3$) as inverse decoders for each level of point density and form a regularization term for each level.}
 	\label{fig:net}
 \end{figure*}
-\subsection{3D Neural Networks}
 Most recently, researchers have developed techniques to represent 3D shapes inside deep learning frameworks. Unlike images, 3D shapes are not canonical functions on well-organized grids.
 This leads to exploration on various representations of 3D shapes.
 
