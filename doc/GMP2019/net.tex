@@ -1,5 +1,12 @@
 \section{Method}
-In this section, we firstly show that the we can make sure that there is no overlapped points on target surface by enforcing the mapping to be injective. 
+\begin{wrapfigure}{l}{0.5\textwidth}
+	\vspace{-20pt}
+	\begin{center}
+		\includegraphics[width=0.48\textwidth]{img/net/cycle}
+	\end{center}
+	\caption{Illustration of our cycle regularization}
+\end{wrapfigure}
+In this section, we firstly establish the relation between self-intersection and non-injectivity.  
 Then we propose the cycle regularization technique and explain in details (as shown in Figure~\ref{fig:net}) about how we respectively apply this general technique onto AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh}, whose network structures are quite different from each other.
 
 \subsection{Injective mapping and self-overlapped points}
@@ -34,7 +41,7 @@ Based on \textbf{Theorem}~\ref{thm:injective}, we turn an injective constraint t
 \label{equ:cycle_term}
 cycle_X(f,g)=\sum_{\mathbf{x}\in X}||g(f(\mathbf{x})) - \mathbf{x}||_2^2.
 \end{equation}
-In mesh reconstruction networks, our term can be illustrated as in Figure~\ref{fig:issue}(b), 
+In mesh reconstruction networks, our term can be illustrated as in Figure~\ref{fig:cycle},
 
 By minimizing this term to zero:
 \begin{equation}
@@ -42,7 +49,7 @@ f^*,g^* = \arg\min_{(f,g)} cycle_X(f,g)
 \end{equation}
 we can get the $f^*$ that has the left inverse function $g^*$, therefore $f^*$ is injective. 
 
-\begin{figure*}[htbp]
+\begin{figure*}[t]
 	\centering
 	\includegraphics[width=\linewidth]{img/opt/opt}
 	\caption{Visualize convergence of optimization: When optimized with our cycle regularization term, the term take effect after only few iterations. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization. When optimized without cycle regularization term, the surface usually converge to a surface with self-intersection.}
@@ -75,8 +82,8 @@ then
 then $g^*(\mathbf{y}) = l(g(\mathbf{y}))$ is the left inverse of $f$, therefore $f$ is injective.
 
 \noindent\textbf{Remaining gap}
-Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for $f$ being injective over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually create a theoretical gap. 
-The the constraint in Equ.~(\ref{equ:injective}) is defined over continue surface, while the term in  Equ.~(\ref{equ:cycle_term}) is defined on discrete point set. In order to fill in the gap, we randomly sample $X$ from the predefined surface in training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from predefined surface is somehow already employed by AtlasNet (Ever since VAE \cite{VAE}, random vector as input is commonly used to encode latent variation in generation networks.). For Pixel2Mesh, we add such sampling in the inverse decoding, we could have added it in original network in a similar way as AtlasNet. We choose not to do so to advocate that our cycle regularization is a general regularization technique and it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that such random sampling is crucial for our cycle regularization technique.
+Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for the injectivity over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually create a theoretical gap. 
+The the constraint in Equ.~(\ref{equ:injective}) is defined over continue surface, while the term in  Equ.~(\ref{equ:cycle_term}) is defined on discrete point set. In order to fill in the gap as much as we can, we randomly sample $X$ from the predefined surface in training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from predefined surface is somehow (Ever since VAE \cite{VAE}, random vector as input is commonly used to encode latent variation in generation networks.) already employed by AtlasNet. For Pixel2Mesh, we add such sampling in the inverse decoding, we could have added it in original network in a similar way as AtlasNet. We choose not to do so to advocate that our cycle regularization is a general regularization technique and it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that such random sampling is crucial for our cycle regularization technique to actually enforce injectivity.
 
 \subsection{Implementation along with networks}
 
@@ -112,7 +119,7 @@ in which $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are sampled as convex combi
 &\sum^{N=3} w_n = 1
 \end{aligned}
 \end{equation}
-\begin{figure*}[htbp]
+\begin{figure*}[t]
 	\centering
 	\includegraphics[width=\linewidth]{img/atlas/svr}
 	\caption{Cycle regularization on AtlasNet: All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles are highlighting a case (the table) in which more details are preserved than the original network because we are enforcing the surface to be free of self-intersection with our cycle regularization term}
