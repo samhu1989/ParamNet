@@ -1,17 +1,18 @@
-\section{Method}
+\section{Our Method}
 \begin{wrapfigure}{r}{0.5\textwidth}
 	\vspace{-20pt}
 	\begin{center}
 		\includegraphics[width=0.48\textwidth]{img/net/cycle}
 	\end{center}
 	\caption{Illustration of our cycle regularization}
+	\label{fig:cycle}
 \end{wrapfigure}
-In this section, we firstly establish the relation between self-intersection and non-injectivity.  
+In this section, we firstly establish the relation between self-intersection (means having self-overlapped points on the surface) and non-injectivity.  
 Then we propose the cycle regularization technique and explain in details (as shown in Figure~\ref{fig:net}) about how we respectively apply this general technique onto AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh}, whose network structures are quite different from each other.
 
-\subsection{Injective mapping and self-overlapped points}
+\subsection{Injective Mapping and Self-overlapped Points}
 \label{subsec:inj}
-Start with the definition of injective mapping at \textbf{Definition}~\ref{def:injective}, we can intuitively induce the conclusion that given a predefined surface with $ X =\{\mathbf{x}~|~\mathbf{x}$ is a point on the predefined surface $ \} $, a target surface with $ Y =\{\mathbf{y}~|~\mathbf{y}$ is a point on the target surface $ \} $ and a function $f:X \rightarrow Y$. If $\exists$ $ \mathbf{a},\mathbf{b} \in X$, $\mathbf{a} \neq \mathbf{b}$ and $f(\mathbf{a}) = f(\mathbf{b})$ (i.e. the overlapped points on target surface exists) then by definition, $f$ is not an injective function. Equivalently (as the converse negative proposition), we can make sure there is no self-overlapped points on the target surface by enforcing $f$ to be injective.
+Start with the definition of injective mapping at \textbf{Definition}~\ref{def:injective}, we can intuitively induce the conclusion that given a surface with $ X =\{\mathbf{x}~|~\mathbf{x}$ is a point on the surface $ \} $, another surface with $ Y =\{\mathbf{y}~|~\mathbf{y}$ is a point on the surface$ \} $ and a function $f:X \rightarrow Y$. If $\exists$ $ \mathbf{a},\mathbf{b} \in X$, $\mathbf{a} \neq \mathbf{b}$ and $f(\mathbf{a}) = f(\mathbf{b})$ (i.e. the overlapped points on target surface exists) then by definition, $f$ is not an injective function. Equivalently (as the converse negative proposition), we can make sure there is no self-overlapped points on the target surface by enforcing $f$ to be injective.
 \begin{m_def}
 \label{def:injective}
 Let $f$ be a function whose domain is a set $X$. The function $f$ is said to be injective provided that
@@ -24,7 +25,7 @@ Equivalently,
 \end{equation}
 \end{m_def}
 
-\subsection{Cycle regularization}
+\subsection{Cycle Regularization}
 \label{subsec:cyclereg}
 \begin{m_thm}
 \label{thm:injective}
@@ -39,7 +40,7 @@ then $f$ is injective.
 Based on \textbf{Theorem}~\ref{thm:injective}, we turn an injective constraint to our cycle regularization term as:
 \begin{equation}
 \label{equ:cycle_term}
-cycle_X(f,g)=\sum_{\mathbf{x}\in X}||g(f(\mathbf{x})) - \mathbf{x}||_2^2.
+cycle_X(f,g)=\sum_{\mathbf{x}\in X}||g(f(\mathbf{x})) - \mathbf{x}||^2.
 \end{equation}
 In mesh reconstruction networks, our term can be illustrated as in Figure~\ref{fig:cycle},
 
@@ -56,38 +57,38 @@ we can get the $f^*$ that has the left inverse function $g^*$, therefore $f^*$ i
 	\label{fig:opt}
 \end{figure*}
 
-However, it is never possible to actually minimize a regularization term to zero, especially in training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. An example of such case is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
+However, it is never possible to actually minimize a regularization term to zero, especially during training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. An example of such case is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
 
 \begin{m_prop}
 	\label{prop:nearest}
-	Given sets $X$ and $Y$ that are subset of Euclidean space $\mathcal{R}^3$, function $f:X \rightarrow Y$  and function $g:Y \rightarrow X$, if
+	Given sets $X$ and $Y$ that are two subsets of Euclidean space $\mathcal{R}^3$, a function $f:X \rightarrow Y$  and a function $g:Y \rightarrow X$, if
 	\begin{equation}
-	\exists~g, || g(f(\mathbf{x})) - \mathbf{x} ||_2^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2,
+	\exists~g, || g(f(\mathbf{x})) - \mathbf{x} ||^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||^2,
 	\end{equation}
 	then $f$ is injective.
 \end{m_prop}
 
-\textbf{Proposition}~\ref{prop:nearest} can be proved by simplely composite nearest neighbor with the function $g$. We can construct nearest neighbor function $l: \mathcal{R}^3 \rightarrow X $ as:
+\textbf{Proposition}~\ref{prop:nearest} can be proved by simplely compositing the nearest neighbor with the function $g$. We can construct nearest neighbor function $l: \mathcal{R}^3 \rightarrow X $ as:
 \begin{equation}
-\forall \mathbf{a} \in \mathcal{R}^3, l(\mathbf{a}) = \arg\min_{\mathbf{b} \in X} || \mathbf{a} - \mathbf{b} ||_2^2
+\forall \mathbf{a} \in \mathcal{R}^3, l(\mathbf{a}) = \arg\min_{\mathbf{b} \in X} || \mathbf{a} - \mathbf{b} ||^2
 \end{equation}
 then
 \begin{equation}
 \begin{aligned}
 &|| g(f(\mathbf{x})) - \mathbf{x} ||_2^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2\\
 &\Rightarrow \mathbf{x} = \arg\min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2\\
-&\Rightarrow l(g(f(\mathbf{x}))) = \mathbf{x}\\
+&\Rightarrow l\Big(g\big(f(\mathbf{x})\big)\Big) = \mathbf{x}\\
 \end{aligned}
 \end{equation}
-then $g^*(\mathbf{y}) = l(g(\mathbf{y}))$ is the left inverse of $f$, therefore $f$ is injective.
+then $g^*(\mathbf{y}) = l\big(g(\mathbf{y})\big)$ is the left inverse of $f$, therefore $f$ is injective.
 
 \noindent\textbf{Remaining gap}
-Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for the injectivity over the continue surface. The reason is that when we turn Equ.~(\ref{equ:injective}) into Equ.~(\ref{equ:cycle_term}), we actually create a theoretical gap. 
-The the constraint in Equ.~(\ref{equ:injective}) is defined over continue surface, while the term in  Equ.~(\ref{equ:cycle_term}) is defined on discrete point set. In order to fill in the gap as much as we can, we randomly sample $X$ from the predefined surface in training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from predefined surface is somehow (Ever since VAE \cite{VAE}, random vector as input is commonly used to encode latent variation in generation networks.) already employed by AtlasNet. For Pixel2Mesh, we add such sampling in the inverse decoding, we could have added it in original network in a similar way as AtlasNet. We choose not to do so to advocate that our cycle regularization is a general regularization technique and it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that such random sampling is crucial for our cycle regularization technique to actually enforce injectivity.
+Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for the injectivity of $f$ over the continue surface. The reason is that when we turn Eq.~(\ref{equ:injective}) into Eq.~(\ref{equ:cycle_term}), we actually create a theoretical gap. 
+The the constraint in Eq.~(\ref{equ:injective}) is defined over continue surface, while the term in  Eq.~(\ref{equ:cycle_term}) is defined on discrete point set. In order to fill in the gap, we randomly sample $X$ from the predefined surface in the training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from the predefined surface is somehow already employed by AtlasNet. Ever since VAE \cite{VAE}, taking a random vector as input is commonly used to encode latent variation in generation networks. For Pixel2Mesh, we add such a sampling in the inverse decoding. We could have added it in the original network in a similar way as AtlasNet. We choose not to do so to advocate that our cycle regularization is a general regularization technique and it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that such random sampling is crucial for our cycle regularization technique to actually enforce injectivity.
 
-\subsection{Implementation along with networks}
+\subsection{Implementation Along with Networks}
 
-As stated in AtlasNet \cite{atlasnet}, it is possible to use multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse the network structures from their network respectively and show that our cycle regularization is a general technique for this type of networks.
+As stated in AtlasNet \cite{atlasnet}, it is possible to use multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse the network structures from their networks respectively and show that our cycle regularization is general for this type of networks.
 
 \noindent\textbf{AtlasNet} Depending on a shape representing feature $\mathbf{s}$, the AtlasNet use point-wise MLP
 $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from predefined surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In implementation, $P$ is the surface of a 3D sphere. $S$ is the target surface, which is usually the surface of an object in AtlasNet \cite{atlasnet} and in this paper. Then we use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization  total loss function for AtlasNet can be written as:
