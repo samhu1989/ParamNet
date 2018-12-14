@@ -25,7 +25,7 @@ Most recently, researchers have developed techniques to represent 3D shapes insi
 This leads to exploration on various representations of 3D shapes.
 
 \noindent\textbf{Volume occupancy}. 
-An intuitive way to apply convolutional network in 3D is to use volume occupancy of regular 3D grids to represent 3D shapes~\cite{3dshapenet}, and it is subsequently use for 3D shape generation~\cite{3DR2N2,learnobj}.
+An intuitive way to apply convolutional network in 3D is to use volume occupancy of regular 3D grids to represent 3D shapes~\cite{3dshapenet}, and it is subsequently used for 3D shape generation~\cite{3DR2N2,learnobj}.
 %
 The main disadvantage of volumetric representation was the large memory consumption due to the raising of dimension when extending 2D grids to 3D. 
 Octree representation is proposed to support higher resolution outputs with limited memory, and used for shape generation~\cite{octreegen} and shape analysis~\cite{ocnn}.
@@ -35,28 +35,28 @@ Octree representation is proposed to support higher resolution outputs with limi
 Compared to regular 3D grids, point clouds is not limited by fixed local connections.
 Many networks have been proposed to take unordered 3D point sets as input and extract geometric features from 3D point set for classification or segmentation~\cite{pointnet,NIPS2017_7095,pointcnn}.
 %
-The first attempt to generate a set of discrete points from a single image using neural networks was made by \cite{PSGN}, however, it is non-trivial to construct continuous surface models from the predicted point sets. Since the local variation of point positions are not continues in the predicted point sets.
+The first attempt to generate a set of discrete points from a single image using neural networks was made by \cite{PSGN}, however, it is non-trivial to construct continuous surface models from the predicted point sets. Since the local variation of point positions are not continuous in the predicted point sets.
 
 \noindent\textbf{Mesh}.
-Meshes are widely used in game and movie industries. Spherical parameterization techniques like \cite{HuAHSP2018} have been well studied.
+Meshes are widely used in game and movie industries.
 In addition to vertex positions, the mesh representation contains local structure of vertices. 
 However, the mesh representation is not well supported in current neural networks.
 % 
 To generate mesh models using neural networks, composition weights of a series of base meshes are predicted by networks \cite{img2mesh} and \cite{endface}. %produce meshes by linear interpolating base meshes. 
-Since it is only possible to choose/learn base meshes for specific class of object, these two networks only generates meshes for a specific class of object, such as face.
+Since it is only possible to choose or learn base meshes for a specific class of object, these two networks only generate meshes for a specific class of objects, such as face.
 %
 In comparison, the idea that learn to map from predefined domain as in AtlasNet \cite{atlasnet} and Pixel2Mesh\cite{pixel2mesh} can generate surface meshes for generic objects. Our work is a follow-up of their general idea and addresses a specific issue of surface self-intersection in their networks.
 %but it .
 
-\subsection{Parameterization in learning}
-The idea of utilizing surface parameterization in neural networks has been explored\cite{surfnet,geoimg}. 
+\subsection{Parameterization in Learning}
+The idea of utilizing surface parameterization in neural networks has been explored by \cite{surfnet,geoimg}. 
 Typically, a non-trainable procedure is involved for the creation of geometry image. 
-Manifold surfaces are required as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet\cite{shapenetdata} contain meshes that are not manifold surfaces. 
-In comparison, we are seeking techniques that can be integrated into network and can be trained end-to-end along with the networks. For the issue we are addressing, our idea is based on the same insight (self-intersection for surface mesh is related to the mapping being non-injective) as the parameterization papers (e.g.\cite{provableplanarmapping,lifted_bijection,freeboundary,boundeddistortion,Liu_PP_2018}), but we propose our own technique that is more suitable for training neural networks. 
+Manifold surfaces are required as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry image. However, the public datasets like ShapeNet \cite{shapenetdata} contain meshes that are not manifold surfaces. 
+In comparison, we are seeking techniques that can be integrated into networks and can be trained end-to-end along with the networks. For the issue we are addressing, our idea is based on the same insight (self-intersection for surface mesh is related to the mapping being non-injective) as the parameterization papers (e.g.\cite{provableplanarmapping,lifted_bijection,freeboundary,boundeddistortion,Liu_PP_2018}), but we propose our own technique that is more suitable for training neural networks in an end-to-end manner. 
 
-\subsection{Cycle neural networks}
-The general idea of using neural network to map from one domain to target domain and then map back have been utilized in previous works. CycleGAN \cite{CycleGAN2017} is a famous example of such work. In CycleGAN \cite{CycleGAN2017}, the cycle relation provide extra constraint for translating between unpaired data from different domains. However, our work uses the same general idea to enforce injective mapping for 3D surface mesh generation networks and trying to prevent self-intersection in generated meshes. 
+\subsection{Cycle Neural Networks}
+The general idea of using neural networks to map from one domain to a target domain and then map back have been utilized in previous works. CycleGAN \cite{CycleGAN2017} is a famous example of such work. In CycleGAN \cite{CycleGAN2017}, the cycle relation provide extra constraint for translating between unpaired data from different domains. However, our work uses the same general idea to enforce injectivity for 3D surface mesh generation networks and trying to prevent self-intersection in generated meshes. 
 
-\subsection{Self intersection removal}
-We did survey on topic of ``self intersection removal" to seek for ideas as well. The classic methods we found (e.g. \cite{edgeswap,removeoffset}) follow the pipeline that first identify the self-intersected faces and then altering the faces with their proposed method. We find it difficult to integrate such pipeline into networks or to formulate their alteration in a differentiable manner.\\
+\subsection{Self Intersection Removal}
+The classic methods we found (e.g. \cite{edgeswap,removeoffset}) follow the pipeline that they first identify the self-intersected faces and then altering the faces with their proposed method. We find it difficult to integrate such a pipeline into networks or to formulate their alterations in a differentiable manner.\\
 
