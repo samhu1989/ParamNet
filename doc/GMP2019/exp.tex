@@ -1,8 +1,22 @@
 \section{Experiments}
-\noindent{\textbf{Data}} To fairly evaluate the effect of cycle regularization, we use the datasets released by AtlasNet and Pixel2Mesh respectively. Their model sets are both subsets of ShapeNet \cite{shapenetdata} and they both used the rendered image from \cite{3DR2N2}. The absolute size and position of the models and the sampled points as ground truth are not processed in the same way in these two datasets, which makes it unreasonable to compare them all together. However, this does not prevent us to show the effect of our regularization technique separately.
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{img/p2m/final}
+	\caption{Cycle regularization on Pixel2Mesh: All the visualized cases here are selected from the test set of Pixel2Mesh. Some meshes' view direction are manually adjusted to better expose the differences.}
+	\label{fig:p2m}
+\end{figure}
+\noindent{\textbf{Data}} To fairly evaluate the effect of cycle regularization, we use the datasets released by AtlasNet and Pixel2Mesh respectively. Their model sets are both subsets of ShapeNet \cite{shapenetdata} and they both used the rendered image from \cite{3DR2N2}. The absolute size and position of the models and the sampled points as ground truth are not processed in the same way in these two datasets, which makes it unreasonable to compare them all together. Therefore we evaluate the effect of our regularization technique with these two networks separately.
+
+\begin{wrapfigure}{r}{0.48\textwidth}
+	\begin{center}
+		\includegraphics[width=0.48\textwidth]{img/opt/lambda}
+	\end{center}
+	\caption{The choice of $\lambda$: Under the setting in Sec~\ref{subsec:deform}, we show some results with different choice of $\lambda$}
+	\label{fig:lambda}
+\end{wrapfigure}
 
 \noindent{\textbf{Training}}
-Unless specifically explained, the network models shown in this paper are trained as follows: The parameters for image encoders and forward 3D decoders $\theta_f$ are initialized with parameters released by AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh} respectively. The parameters for inverse decoders $\theta_g$ are randomly initialized. We use the ADAM \cite{adam} optimizer with the same learning rate as in the original codes of AtlasNet and Pixel2Mesh respectively. We use $\lambda=0.25$ as an empirical choice for the weight of our cycle regularization term. Up till this submission we haven't explored more training strategies for better numerical results yet.
+Unless specifically explained, the network models shown in this paper are trained as follows: The parameters for image encoders and forward 3D decoders $\theta_f$ are initialized with parameters released by AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh} respectively. The parameters for inverse decoders $\theta_g$ are randomly initialized. We use the ADAM \cite{adam} optimizer with the same learning rate as in the original codes of AtlasNet and Pixel2Mesh respectively. We use $\lambda=0.25$ as an empirical choice for the weight of our cycle regularization term.
 
 \noindent{\textbf{Evaluation criteria}}
 In order to quantitatively evaluate the issue of self-intersection and self-overlap, we count the percentage of self-intersected triangles (``SI") over the total number of triangles. For this evaluation, we provide our code in the supplemental material which can calculate the ``SI" for a input mesh.  
@@ -41,21 +55,30 @@ To better expose the issue we are addressing in this paper, we render the genera
 
 \subsection{Visualize Deformation}
 \label{subsec:deform}
-In this subsection, we visualize the deformation process, providing a more intuitive view into the effect of our cycle regularization term. Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one, therefore for the visualization in this section we do not involve any semantic networks and show the effect of our proposed technique in a pure shape deforming manner (different from the training neural networks). In other words, we optimize the same loss function as in Eq.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18 \cite{resnet} nor PointNet \cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as 1024 free variables. We initialize the parameters $\theta_f,\theta_g,\mathbf{s}$ randomly and sample $X$ from sphere surface in this experiment. For optimizer, we use gradient descent. Under such setting, we are deforming a randmly initialized shape (probably start with self-intersection) to a target shape. As in Figure~\ref{fig:opt}, the case of two target shapes (downloaded from the Internet) are shown. In these two cases, after few iterations our cycle regularization term take effect. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization.
-
-\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{wrapfigure}{r}{0.48\textwidth}
 	\begin{center}
-		\includegraphics[width=0.48\textwidth]{img/opt/lambda}
+		\includegraphics[width=0.5\textwidth]{img/p2m/3level}
 	\end{center}
-	\caption{The choice of $\lambda$: Under the setting in Sec~\ref{subsec:deform}, we show some results with different choice of $\lambda$}
-	\label{fig:lambda}
+	\caption{Visualization of the effect of our cycle regularization in the coarse-to-fine framework of Pixel2Mesh. The green rectangle zoomed in on a subtle self-intersection.}
+	\label{fig:3level}
+\end{wrapfigure}
+In this subsection, we visualize the deformation process, providing a more intuitive view into the effect of our cycle regularization term. Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one, therefore for the visualization in this section we do not involve any semantic networks and show the effect of our proposed technique in a pure shape deforming manner (different from the training neural networks). In other words, in this experiment, we optimize the same loss function as in Eq.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18 \cite{resnet} nor PointNet \cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as 1024 free variables. We initialize the parameters $\theta_f,\theta_g,\mathbf{s}$ randomly with standard normal distribution and sample $X$ from sphere surface in this experiment. For optimizer, we use gradient descent. Under such setting, we are deforming a randomly initialized shape (probably start with self-intersection) to a target shape. As in Figure~\ref{fig:opt}, the case of two target shapes (downloaded from the Internet) are shown. In these two cases, after few iterations our cycle regularization term take effect. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization.
+
+\begin{wrapfigure}{r}{0.48\textwidth}
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{img/limit/limit}
+	\end{center}
+	\caption{Failure cases of our cycle regularization. Though the self-intersection are significantly reduced, it is not entirely removed in the results.}
+	\label{fig:limit}
 \end{wrapfigure}
 
 As shown in Figure~\ref{fig:lambda}, visually speaking, when we set the weight $\lambda=0.25$, the deformed shape is able to approximate more details than the larger choices (i.e. $\lambda=0.5,1.0$), and it is also sufficient to enforce the injective mapping.  Therefore we use $\lambda=0.25$ as an empirical choice in following experiments, however finer tuning for specific networks is possible. 
+
 \subsection{Cycle regularization with AtlasNet}
 In this subsection, we show and discuss the effect of our cycle regularization term on AtlasNet \cite{atlasnet}. As shown in Table~\ref{tab:atlas}, after applying our cycle regularization on the AtlasNet(sphere), the percentage of self-intersected triangles (``SI") are significantly reduced, while the Chamfer distance (``CD") remains close to original networks (somehow slightly worse in auto-encoding and better in single view reconstruction task). As visualized in Figure~\ref{fig:svr} for single view reconstruction task, the reduction of self-intersection is also visually evident. In some cases, as the one highlighted by red rectangles in Figure~\ref{fig:svr}, our cycle regularization term even helps to improve the reconstructed details.
-\subsection{Cycle regularization with Pixel2Mesh}
 
+\subsection{Cycle regularization with Pixel2Mesh}
+In this subsection, we show and discuss the effect of our cycle regularization term on Pixel2Mesh \cite{pixel2mesh}. As shown in Table~\ref{tab:p2m}, when applying our cycle regularization on the Pixel2Mesh, the percentage of self-intersected triangles (``SI") are significantly reduced, while the Chamfer distance (``CD") remains close to original Pixel2Mesh. As visualized in Figure~\ref{fig:p2m}, the reduction of self-intersection is also visually evident. As the examples shown in Figure~\ref{fig:3level}, our cycle regularization take effect in all three levels in the coarse-to-fine framework of Pixel2Mesh.
 \begin{table}
 	\caption{Test error on Pixel2Mesh trained with(\textbf{ours}) and without cycle regularization. Chamfer distance(CD) and percentage of self-intersected(SI) faces are reported. The mean is data-wise calculated}
 	\label{tab:p2m}
@@ -81,6 +104,7 @@ In this subsection, we show and discuss the effect of our cycle regularization t
 	\end{tabular}
 \end{table}
 
-\subsection{Limitations and future work}
+\subsection{Limitations and Future Work}
+Averagely speaking, with our cycle regularization, less than one self-intersected triangles are generated in the output mesh. However, the self-intersection are not totally prevented after all. As shown in Figure~\ref{fig:limit}, some failure cases are enumerated. In the future,  we may be able to deduce a more elegent hard constraint on the network parameters and make multilayer perception injective. 
 
-When we apply our cycle regularization term to the model based on 25-patches, which is also released by AtlasNet \cite{atlasnet}, we encountered failure(for more details please turn to our supplemental material). We believe this is due to the reason we stated under \emph{Remaining gap} in Sec~\ref{subsec:cyclereg}. In fact, the AtlasNet based on 25-patches use 25 independent point-wise MLP to map the domain $[0,1]^2$ to different part of the target surface. This makes the overall mapping neither a canonical function (map one point from the patch to multiple points on surface) nor continue. In future, we want to try to use masks on continue domain instead of multiple patches to handle the cases in which the target surface is not homeomorphic to continue surface. This is how the researchers usually handle it for human mouth on the face surface in parameterization. We imagine it as using point-wise attention mechanism in mesh generation networks.
+Our cycle regularization is only valid for the cases that the mesh reconstruction network map from only one predefined surface to target surface. This fundamental limitation prevents us to apply it for surfaces with more complicated topology. However, we believe a possible better solution for this limitation would be applying mask on the surface to handle the holes instead of using multiple parameter domain. We maybe able to using attention techniques in deep learning to predict such masks.
