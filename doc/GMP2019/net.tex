@@ -84,7 +84,7 @@ then $g^*(\mathbf{y}) = l\big(g(\mathbf{y})\big)$ is the left inverse of $f$, th
 
 \noindent\textbf{Remaining gap}
 Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for the injectivity of $f$ over the continue surface. The reason is that when we turn Eq.~(\ref{equ:injective}) into Eq.~(\ref{equ:cycle_term}), we actually create a theoretical gap. 
-The the constraint in Eq.~(\ref{equ:injective}) is defined over continue surface, while the term in  Eq.~(\ref{equ:cycle_term}) is defined on discrete point set. In order to fill in the gap as much as we can, we randomly sample $X$ from the predefined surface in the training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from the predefined surface is somehow already employed by AtlasNet. Ever since VAE \cite{VAE}, taking a random vector as input is commonly used to encode latent variation in generation networks. For Pixel2Mesh, we add such a sampling in the inverse decoding. We could have added it in the original network in a similar way as AtlasNet. We choose not to do so to advocate that our cycle regularization is a general regularization technique and it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that such random sampling is crucial for our cycle regularization technique to actually enforce injectivity.
+The the constraint in Eq.~(\ref{equ:injective}) is defined over continue surface, while the term in  Eq.~(\ref{equ:cycle_term}) is defined on discrete point set. In order to fill in the gap as much as we can, we randomly sample $X$ from the predefined surface in the training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from the predefined surface is somehow already employed by AtlasNet. Ever since VAE \cite{VAE}, taking a random vector as input is commonly used to encode latent variation in generation networks. For Pixel2Mesh, we add such a sampling in the inverse decoding. We could have added it in the original network in a similar way as AtlasNet. We choose not to do so to advocate that our cycle regularization is a general regularization technique and it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that it is better for our cycle regularization technique to work with such a sampling.
 
 \subsection{Implementation Along with Networks}
 
@@ -115,6 +115,7 @@ As shown in Figure~\ref{fig:net}, Pixel2Mesh uses three blocks of graph-based co
 in which $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are sampled as a convex combination of vertexes in each triangle as:
 \begin{equation}
 \begin{aligned}
+\label{equ:sample}
 &\hat{\mathbf{x}} = \sum^{N=3} w_n\mathbf{x}_n, \\
 &\hat{\mathbf{y}_l} = \sum^{N=3} w_nf_l(\mathbf{x}_n;\mathbf{s}_l,\theta_{f_l}),\\
 &\sum^{N=3} w_n = 1
@@ -123,7 +124,7 @@ in which $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are sampled as a convex com
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\linewidth]{img/atlas/svr}
-	\caption{Cycle regularization on AtlasNet: All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles are highlighting a case (the table) in which more details are preserved than the original network because we are enforcing the injectivity with our cycle regularization term}
+	\caption{Cycle regularization on AtlasNet. All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles are highlighting a case (the table) in which more details are preserved than the original network because we are enforcing the injectivity with our cycle regularization term.}
 	\label{fig:svr}
 \end{figure*}
 The combination coefficients $w_n$ are randomly generated but kept the same for corresponding $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ in each level $l$. $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\theta_g$ is the whole parameters for $g_1,g_2,g_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in the network. $\hat{X}_1,\hat{X}_2,\hat{X}_3$ are the sets of sampled points at each level. 

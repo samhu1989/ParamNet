@@ -2,7 +2,7 @@
 \begin{figure}[t]
 	\centering
 	\includegraphics[width=\linewidth]{img/p2m/final}
-	\caption{Cycle regularization on Pixel2Mesh: All the visualized cases here are selected from the test set of Pixel2Mesh. Some meshes' view direction are manually adjusted to better expose the differences.}
+	\caption{Cycle regularization on Pixel2Mesh: All the visualized cases here are selected from the test set of Pixel2Mesh. Some meshes' view direction are manually adjusted to better expose the differences. Our results shown here are from model trained with random $X$}
 	\label{fig:p2m}
 \end{figure}
 \noindent{\textbf{Data}} To fairly evaluate the effect of cycle regularization, we use the datasets released by AtlasNet and Pixel2Mesh respectively. Their model sets are both subsets of ShapeNet \cite{shapenetdata} and they both used the rendered image from \cite{3DR2N2}. The absolute size and position of the models and the sampled points as ground truth are not processed in the same way in these two datasets, which makes it unreasonable to compare them all together. Therefore we evaluate the effect of our regularization technique with these two networks separately.
@@ -11,7 +11,7 @@
 	\begin{center}
 		\includegraphics[width=0.48\textwidth]{img/opt/lambda}
 	\end{center}
-	\caption{The choice of $\lambda$: Under the setting in Sec~\ref{subsec:deform}, we show some results with different choice of $\lambda$}
+	\caption{The choice of $\lambda$: Under the setting in Sec~\ref{subsec:deform}, we show some results with different choice of $\lambda$.}
 	\label{fig:lambda}
 \end{wrapfigure}
 
@@ -26,14 +26,14 @@ We also use the value of Chamfer distance (``CD") as the original AtlasNet and P
 
 To better expose the issue we are addressing in this paper, we render the generated mesh in the software MeshLab and use the ``gooch.gdp" in the software as our shader. In such mode the triangles are rendered golden at front and bluish at back. The golden region and bluish region interlacing at surface evidently indicates the self-intersected surfaces.
 
-\begin{table*}
-	\caption{Test error on AtlasNet trained with(\textbf{ours}) and without cycle regularization. Chamfer distance(CD) ($10^3$ times) and percentage of self-intersected(SI) faces are reported. ``AE" stands for the shape auto-encoding task, and ``SVR" stands for single view reconstruction task. Sphere means that the models are using sphere as predefined surface to sample points from. The mean is data-wise as it is implemented in the evaluation code of AtlasNet}
+\begin{table}
+	\caption{Test error on AtlasNet trained with(\textbf{ours}) and without cycle regularization. Chamfer distance(CD) ($10^3$ times) and percentage of self-intersected(SI) faces are reported. ``AE" stands for the shape auto-encoding task, and ``SVR" stands for single view reconstruction task. Sphere means that the models are using sphere as predefined surface to sample points from. The mean is data-wise as it is implemented in the evaluation code of AtlasNet.}
 	\label{tab:atlas}
 	\centering
 	\begin{tabular}{c|rc|rc|rc|rc|}
 		\diagbox{Category}{CD,SI}{Model} &\multicolumn{4}{c|}{AE-sphere}&\multicolumn{4}{c|}{SVR-sphere}\\
 		\cline{2-9}
-		~& \multicolumn{2}{c|}{without-cycle} & \multicolumn{2}{c|}{ours} & \multicolumn{2}{c|}{without-cycle} & \multicolumn{2}{c|}{ours} \\
+		~& \multicolumn{2}{c|}{AtlasNet} & \multicolumn{2}{c|}{ours} & \multicolumn{2}{c|}{AtlasNet} & \multicolumn{2}{c|}{ours} \\
 		\hline
 		cellphone&1.3,&0.53\%&1.4,&3.4e-3\%&3.8,&1.4\%&3.7,&2.7e-4\%\\
 		watercraft&1.5,&2.3\%&1.8,&6.8e-4\%&4.3,&7.4\%&4.3,&2.6e-4\%\\
@@ -51,7 +51,7 @@ To better expose the issue we are addressing in this paper, we render the genera
 		\hline
 		mean &1.7,&8.5\%&1.9,& 1.3e-2\% &5.2,&9.6\%&5.0,&1.2e-2\%\\
 	\end{tabular}
-\end{table*}
+\end{table}
 
 \subsection{Visualize Deformation}
 \label{subsec:deform}
@@ -59,7 +59,7 @@ To better expose the issue we are addressing in this paper, we render the genera
 	\begin{center}
 		\includegraphics[width=0.5\textwidth]{img/p2m/3level}
 	\end{center}
-	\caption{Visualization of the effect of our cycle regularization in the coarse-to-fine framework of Pixel2Mesh. The green rectangle zoomed in on a subtle self-intersection.}
+	\caption{Visualization of the effect of our cycle regularization in the coarse-to-fine framework of Pixel2Mesh. The green rectangle zoomed in on a subtle self-intersection. Our results shown here are from model trained with random $X$.}
 	\label{fig:3level}
 \end{wrapfigure}
 In this subsection, we visualize the deformation process, providing a more intuitive view into the effect of our cycle regularization term. Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one, therefore for the visualization in this section we do not involve any semantic networks and show the effect of our proposed technique in a pure shape deforming manner (different from the training neural networks). In other words, in this experiment, we optimize the same loss function as in Eq.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18 \cite{resnet} nor PointNet \cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as 1024 free variables. We initialize the parameters $\theta_f,\theta_g,\mathbf{s}$ randomly with standard normal distribution and sample $X$ from sphere surface in this experiment. For optimizer, we use gradient descent. Under such setting, we are deforming a randomly initialized shape (probably start with self-intersection) to a target shape. As in Figure~\ref{fig:opt}, the case of two target shapes (downloaded from the Internet) are shown. In these two cases, after few iterations our cycle regularization term take effect. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization.
@@ -68,7 +68,7 @@ In this subsection, we visualize the deformation process, providing a more intui
 	\begin{center}
 		\includegraphics[width=0.5\textwidth]{img/limit/limit}
 	\end{center}
-	\caption{Failure cases of our cycle regularization. Though the self-intersection are significantly reduced, it is not entirely removed in the results.}
+	\caption{Failure cases of our cycle regularization. Though the self-intersection are significantly reduced for most cases, it is not entirely removed in the results.}
 	\label{fig:limit}
 \end{wrapfigure}
 
@@ -79,32 +79,37 @@ In this subsection, we show and discuss the effect of our cycle regularization t
 
 \subsection{Cycle regularization with Pixel2Mesh}
 In this subsection, we show and discuss the effect of our cycle regularization term on Pixel2Mesh \cite{pixel2mesh}. As shown in Table~\ref{tab:p2m}, when applying our cycle regularization on the Pixel2Mesh, the percentage of self-intersected triangles (``SI") are significantly reduced, while the Chamfer distance (``CD") remains close to original Pixel2Mesh. As visualized in Figure~\ref{fig:p2m}, the reduction of self-intersection is also visually evident. As the examples shown in Figure~\ref{fig:3level}, our cycle regularization take effect in all three levels in the coarse-to-fine framework of Pixel2Mesh.
+From the Table~\ref{tab:p2m}, we can also see that our cycle regularization works better when trained with random $X$, especially by the measure of self-intersection. The model trained with Random $X$ (sampled as in Eq.\ref{equ:sample}) have lower average percentage of self-intersected triangles across almost all categories (except cellphone and cabinet).
 \begin{table}
-	\caption{Test error on Pixel2Mesh trained with(\textbf{ours}) and without cycle regularization. Chamfer distance(CD) and percentage of self-intersected(SI) faces are reported. The mean is data-wise calculated}
+	\caption{Test error on Pixel2Mesh trained with(\textbf{ours}) and without cycle regularization. For cycle regularization, the cases with fixed $X$ (the vertices of the ellipsoids as $X$) and random $X$ (sampled as in Eq.\ref{equ:sample}) are both evaluated. Chamfer distance(CD) and percentage of self-intersected(SI) faces are reported. The mean is data-wise calculated.}
 	\label{tab:p2m}
 	\centering
-	\begin{tabular}{c|rc|rc|}
-		\diagbox{Category}{CD,SI}{Model}& \multicolumn{2}{c|}{without-cycle} & \multicolumn{2}{c|}{ours}\\
+	\begin{tabular}{c|rc|rc|rc|}
+		\diagbox{Category}{CD,SI}{Model}&\multicolumn{2}{c|}{\multirow{2}{*}{Pixel2Mesh}}&\multicolumn{4}{c|}{ours}\\
+		\cline{2-7}
+		~&~&~&\multicolumn{2}{c|}{Fixed $X$}&\multicolumn{2}{c|}{Random $X$}\\
 		\hline
-		cellphone&0.303,&0.22\%&0.303,&3.85e-3\%\\
-		watercraft&0.433,&0.84\%&0.438,&2.51e-2\%\\
-		monitor&0.390,&0.585\%&0.425,&1.15e-2\%\\
-		car&0.233,&0.145\%&0.242,&1.39e-3\%\\
-		couch&0.361,&0.21\%&0.384,&3.67e-3\%\\
-		cabinet&0.268,&0.167\%&0.283,&2.32e-3\%\\
-		lamp&0.728,&10.3\%&0.788,&0.190\%\\
-		plane&0.265,&1.82\%&0.300,&3.75e-2\%\\
-		speaker&0.523,&0.487\%&0.524,&5.09e-3\%\\
-		bench&0.323,&1.13\%&0.349,&3.32e-2\%\\
-		table&0.304,&1.17\%&0.333,&4.98e-2\%\\
-		chair&0.392,&1.68\%&0.420,&6.82e-2\%\\
-		firearm&0.326,&1.86\%&0.352,&8.64e-2\%\\
+		cellphone&0.303,&0.22\%&0.304,&3.85e-3\%&0.288,&3.85e-3\%\\
+		watercraft&0.433,&0.84\%&0.438,&2.51e-2\%&0.433,&1.25e-2\%\\
+		monitor&0.390,&0.585\%&0.425,&1.15e-2\%&0.397,&9.27e-3\%\\
+		car&0.233,&0.145\%&0.242,&1.39e-3\%&0.239,&1.24e-3\%\\
+		couch&0.361,&0.21\%&0.384,&3.67e-3\%&0.377,&2.26e-3\%\\
+		cabinet&0.268,&0.167\%&0.283,&5.32e-3\%&0.276,&5.80e-3\%\\
+		lamp&0.728,&10.3\%&0.788,&0.190\%&0.795,&0.182\%\\
+		plane&0.265,&1.82\%&0.300,&3.75e-2\%&0.289,&3.37e-2\%\\
+		speaker&0.523,&0.487\%&0.524,&5.39e-3\%&0.523,&5.34e-3\%\\
+		bench&0.323,&1.13\%&0.349,&3.32e-2\%&0.350,&1.48e-2\%\\
+		table&0.304,&1.17\%&0.333,&4.98e-2\%&0.330,&3.87e-2\%\\
+		chair&0.392,&1.68\%&0.420,&6.82e-2\%&0.414,&5.10e-2\%\\
+		firearm&0.326,&1.86\%&0.352,&8.64e-2\%&0.349,&7.36e-2\%\\
 		\hline
-		mean &0.345,&1.47\%&0.369,& 1.3e-2\%\\
+		mean &0.345,&1.47\%&0.369,& 4.20e-2\%&0.364,& 3.45e-2\%\\
 	\end{tabular}
 \end{table}
+
+
 
 \subsection{Limitations and Future Work}
 Averagely speaking, with our cycle regularization, less than one self-intersected triangles are generated in the output mesh. However, the self-intersection are not totally prevented after all. As shown in Figure~\ref{fig:limit}, some failure cases are enumerated. In the future,  we may be able to deduce a more elegent hard constraint on the network parameters and make multilayer perception injective. 
 
-Our cycle regularization is only valid for the cases that the mesh reconstruction network map from only one predefined surface to target surface. This fundamental limitation prevents us to apply it for surfaces with more complicated topology. However, we believe a possible better solution for this limitation would be applying mask on the surface to handle the holes instead of using multiple parameter domain. We maybe able to using attention techniques in deep learning to predict such masks.
+Our cycle regularization is only validly deduced for the cases that the mesh reconstruction network map from only one predefined surface to target surface. This fundamental limitation prevents us to apply it for surfaces with more complicated topology. However, we believe a possible better solution for this limitation would be applying mask on the surface to handle the holes instead of using multiple parameter domain. We maybe able to using attention techniques in deep learning to predict such masks.
