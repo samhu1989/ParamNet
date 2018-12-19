@@ -50,13 +50,6 @@ f^*,g^* = \arg\min_{(f,g)} cycle_X(f,g)
 \end{equation}
 we can get the $f^*$ that has the left inverse function $g^*$, therefore $f^*$ is injective. 
 
-\begin{figure*}[t]
-	\centering
-	\includegraphics[width=\linewidth]{img/opt/opt}
-	\caption{Visualize convergence of optimization: When optimized with our cycle regularization term, the term take effect after only few iterations. It not only keep the mapping injective in optimization but also correct the self-intersection from the initialization. When optimized without cycle regularization term, the surface usually converge to a surface with self-intersection.}
-	\label{fig:opt}
-\end{figure*}
-
 However, it is never possible to actually minimize a regularization term to zero, especially during training neural networks. But when this term is minimized to sufficiently small then we can construct $g^*$ that is the left inverse function of $f^*$ and guarantee that $f^*$ is injective. An example of such case is that when the regularization term is so small that $g(f(\mathbf{x}))$ is closer to $\mathbf{x}$ than any other point in $X$. Such example can be summarized by \textbf{Proposition}~\ref{prop:nearest}.
 
 \begin{m_prop}
@@ -83,8 +76,8 @@ then
 then $g^*(\mathbf{y}) = l\big(g(\mathbf{y})\big)$ is the left inverse of $f$, therefore $f$ is injective.
 
 \noindent\textbf{Remaining gap}
-Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for the injectivity of $f$ over the continue surface. The reason is that when we turn Eq.~(\ref{equ:injective}) into Eq.~(\ref{equ:cycle_term}), we actually create a theoretical gap. 
-The the constraint in Eq.~(\ref{equ:injective}) is defined over continue surface, while the term in  Eq.~(\ref{equ:cycle_term}) is defined on discrete point set. In order to fill in the gap as much as we can, we randomly sample $X$ from the predefined surface in the training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from the predefined surface is somehow already employed by AtlasNet. Ever since VAE \cite{VAE}, taking a random vector as input is commonly used to encode latent variation in generation networks. For Pixel2Mesh, we add such a sampling in the inverse decoding. We could have added it in the original network in a similar way as AtlasNet. We choose not to do so to advocate that our cycle regularization is a general regularization technique and it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that it is better for our cycle regularization technique to work with such a sampling.
+Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for the injectivity of $f$ over the continuous surface. The reason is that when we turn Eq.~(\ref{equ:injective}) into Eq.~(\ref{equ:cycle_term}), we actually create a theoretical gap. 
+The constraint in Eq.~(\ref{equ:injective}) is defined over continuous surface, while the term in  Eq.~(\ref{equ:cycle_term}) is defined on discrete point set. In order to fill in the gap as much as we can, we randomly sample $X$ from the predefined surface in the training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from the predefined surface is already employed by AtlasNet. This is a commonly used technique to encode latent variation in generation networks since VAE \cite{VAE}. For Pixel2Mesh, we add such a sampling in the inverse decoding. We did not add it in forward 3D decoding to avoid altering the original forward inference path for Pixel2Mesh. We want to keep our cycle regularization general in the way that it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that it is better for our cycle regularization technique to work with such a sampling.
 
 \subsection{Implementation Along with Networks}
 
@@ -121,11 +114,5 @@ in which $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are sampled as a convex com
 &\sum^{N=3} w_n = 1
 \end{aligned}
 \end{equation}
-\begin{figure*}[t]
-	\centering
-	\includegraphics[width=\linewidth]{img/atlas/svr}
-	\caption{Cycle regularization on AtlasNet. All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles are highlighting a case (the table) in which more details are preserved than the original network because we are enforcing the injectivity with our cycle regularization term.}
-	\label{fig:svr}
-\end{figure*}
 The combination coefficients $w_n$ are randomly generated but kept the same for corresponding $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ in each level $l$. $\theta_f$ is the whole parameters for $f_1,f_2,f_3$. $\theta_g$ is the whole parameters for $g_1,g_2,g_3$. $\mathbf{s}_1,\mathbf{s}_2,\mathbf{s}_3$ are features extracted from different layers of VGG-16 based on input point positions $X_1,X_2,X_3$ in the network. $\hat{X}_1,\hat{X}_2,\hat{X}_3$ are the sets of sampled points at each level. 
 As we have mentioned in Sec~\ref{subsec:cyclereg} \emph{Remaining gap}, random sampling from predefined surface is crucial for our technique. Since Pixel2Mesh does not include such sampling in their method, we add it in our inverse decoding. In other words, in our inverse decoding we do not directly map the vertexes from the target surface back to the predefined surface. Instead, we map the sampled points $\hat{\mathbf{y}_l}$ from each face back to the corresponding samples $\hat{\mathbf{x}}$. The correspondence between $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are ensured to be locally injective by using the same set of convex combination coefficients $w_n$ for the sampling. We multiply our regularization term with weight $\lambda$ and add it to original loss function of Pixel2Mesh (see \cite{pixel2mesh} for original loss function). For more details of our implementation, please go to our supplemental material for the code of this implementation.
