@@ -1,6 +1,6 @@
 \begin{abstract}
 	Self-intersection in surfaces is a typical defect that makes a 3D model unsuitable for many applications. 
-	Existing neural networks for 3D surface mesh reconstruction have the challenge of integrating self-intersection prevention in their unidirectional frameworks.
+	Existing neural networks for 3D surface mesh reconstruction are faced with the challenge of integrating self-intersection prevention.
 	In this paper, we propose a trainable cycle regularization in mesh reconstruction networks to prevent self-intersection.
-	It is a general technique that can be implemented with networks for generating meshes from a single color image. Our experiments on two latest mesh reconstruction networks demonstrates that with the proposed cycle regularization, self-intersections in the generated meshes are significantly reduced, while the distance between the generated surfaces with ground-truth is on par with original networks.
+	It is a general technique that can be easily implemented with existing surface mesh generation networks. Our experiments on two latest mesh reconstruction networks demonstrates that with the proposed cycle regularization, self-intersections in the generated meshes are significantly reduced, while the shape similarity is comparable with original networks under the Chamfer distance metric.
 \end{abstract}
