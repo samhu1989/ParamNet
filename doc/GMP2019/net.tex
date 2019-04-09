@@ -1,17 +1,9 @@
-\section{Our Method}
-\begin{wrapfigure}{r}{0.5\textwidth}
-	\vspace{-20pt}
-	\begin{center}
-		\includegraphics[width=0.48\textwidth]{img/net/cycle}
-	\end{center}
-	\caption{Illustration of our cycle regularization.}
-	\label{fig:cycle}
-\end{wrapfigure}
+\section{Proposed Method}
+
 In this section, we firstly establish the relation between self-intersection (means having self-overlapped points on the surface) and non-injectivity.  
 Then we introduce the proposed cycle regularization technique and explain in details (as shown in Figure~\ref{fig:net}) about how we respectively apply this general technique onto AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh}, whose network structures are quite different from each other.
 
-\subsection{Injective Mapping and Self-overlapped Points}
-\label{subsec:inj}
+\subsection{Injective Mapping and Self-Overlapped Points}
 Start with the definition of injective mapping at \textbf{Definition}~\ref{def:injective}, we can intuitively induce conclusion that given a surface with $X =\{\mathbf{x}~|~\mathbf{x}$ is a point on the surface$\} $, another surface with $ Y =\{\mathbf{y}~|~\mathbf{y}$ is a point on the surface$\}$ and a function $f:X \rightarrow Y$. If $\exists$ $ \mathbf{a},\mathbf{b} \in X$, $\mathbf{a} \neq \mathbf{b}$ and $f(\mathbf{a}) = f(\mathbf{b})$ (i.e. the overlapped points on target surface exists) then by definition, $f$ is not an injective function. Equivalently (as the converse negative proposition), we can make sure there is no self-overlapped points on the target surface by enforcing injectivity for $f$.
 \begin{m_def}
 \label{def:injective}
@@ -24,9 +16,17 @@ Equivalently,
 \forall \mathbf{a},\mathbf{b} \in X, \mathbf{a} \neq \mathbf{b} \Rightarrow f(\mathbf{a}) \neq f(\mathbf{b}).
 \end{equation}
 \end{m_def}
-
+\begin{wrapfigure}{r}{0.5\textwidth}
+	\vspace{-20pt}
+	\begin{center}
+		\includegraphics[width=0.48\textwidth]{img/net/cycle}
+	\end{center}
+	\caption{Illustration of our cycle regularization.}
+	\label{fig:cycle}
+\end{wrapfigure}
 \subsection{Cycle Regularization}
 \label{subsec:cyclereg}
+\label{subsec:inj}
 \begin{m_thm}
 \label{thm:injective}
 A function $f$ with a left inverse is necessarily injective. That is, given $f:X \rightarrow Y$, if there is a function $g:Y \rightarrow X$ such that,
@@ -42,7 +42,7 @@ Based on \textbf{Theorem}~\ref{thm:injective}, we turn an injective constraint t
 \label{equ:cycle_term}
 cycle_X(f,g)=\sum_{\mathbf{x}\in X}||g(f(\mathbf{x})) - \mathbf{x}||^2.
 \end{equation}
-In mesh reconstruction networks, our term can be illustrated as in Figure~\ref{fig:cycle},
+In mesh reconstruction networks, this term (Eq.\ref{equ:cycle_term}) is illustrated in Figure~\ref{fig:cycle}. As shown in Figure~\ref{fig:cycle}, points from the source surface (as the red point) is mapped to image points (as the green point) on target surface by a 3D decoder $f$ to generate a shape of plane. These image points are then mapped back to points on the source surface (as the blue point) by the inverse decoder $g$. We are minimizing the difference after such cycle mapping (as the distance between red point and blue point) to ensure that $f$ has an left inverse mapping $g$ and enforce injectivity for $f$. 
 
 By minimizing this term to zero:
 \begin{equation}
@@ -68,8 +68,8 @@ However, it is almost impossible to actually minimize a regularization term to z
 then
 \begin{equation}
 \begin{aligned}
-&|| g(f(\mathbf{x})) - \mathbf{x} ||_2^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2\\
-&\Rightarrow \mathbf{x} = \arg\min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||_2^2\\
+&|| g(f(\mathbf{x})) - \mathbf{x} ||^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||^2\\
+&\Rightarrow \mathbf{x} = \arg\min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||^2\\
 &\Rightarrow l\Big(g\big(f(\mathbf{x})\big)\Big) = \mathbf{x}\\
 \end{aligned}
 \end{equation}
@@ -80,32 +80,36 @@ Even when the condition in Proposition~\ref{prop:nearest} is met after optimizat
 The constraint in Eq.~(\ref{equ:injective}) is defined over continuous surface, while the term in  Eq.~(\ref{equ:cycle_term}) is defined on discrete point sets. In order to fill in the gap as much as we can, we randomly sample $X$ from the predefined surface in the training phase instead of minimizing the cycle regularization for any specific set of $X$. Sampling different $X$ from the predefined surface is already employed by AtlasNet. This is a commonly used technique to encode latent variation in generation networks since VAE \cite{VAE}. For Pixel2Mesh, we add such a sampling in the inverse decoding. We did not add it in forward 3D decoding to avoid altering the original forward inference path for Pixel2Mesh. We want to keep our cycle regularization general in the way that it can work along with surface mesh generation networks without altering the original network. Our controlled experiment validates that it is better for our cycle regularization technique to work with such a sampling.
 
 \subsection{Implementation in Networks}
-
-As stated in AtlasNet \cite{atlasnet}, it is possible to use multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse the network structures from their networks respectively and show that our cycle regularization is generally suitable for this type of networks.
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{img/net/net}
+	\caption{The cycle regularization implemented along with networks. (a) is the implementation with AtlasNet \cite{atlasnet}. $f$ is the forward 3D surface decoder in original network and $g$ is our inverse decoder used to form the regularization term. (b) is the implementation with Pixel2Mesh \cite{pixel2mesh}.  Pixel2Mesh \cite{pixel2mesh} adopt the coarse-to-fine framework and use three \emph{G-ResNet} block ($f_1,f_2,f_3$) to map the mesh to target shape on three different point density. The \emph{Graph -Unpooling} layers are used to do the upsampling. We use three point-wise MLP ($g_1,g_2,g_3$) as inverse decoders for each level of point density and form a regularization term for each level.}
+	\label{fig:net}
+\end{figure}
+As stated in AtlasNet \cite{atlasnet}, it is possible to use a multilayer perceptron with ReLU nonlinearities and enough hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse their network structures respectively and show that our cycle regularization is generally suitable for this type of networks.
 
 \noindent\textbf{Cycle-AtlasNet} Depending on a shape representing feature $\mathbf{s}$, AtlasNet uses point-wise MLP
-$f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In our implementation, $P$ is the surface of a 3D sphere. $S$ is the ground truth surface, which is usually the surface of an object in AtlasNet \cite{atlasnet} and in this paper. Then we use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization, the total loss function for Cycle-AtlasNet can be written as:
-
+$f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In our implementation, $P$ is a sphere surface. $S$ is the generated surface for an object. Then we use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization, the total loss function for Cycle-AtlasNet is:
 \begin{equation}
 \begin{aligned}
 \label{equ:atlascycle}
 \mathcal{L}_{(X,Y)}(\theta_f,\theta_g) &= \sum_{\mathbf{x} \in X} \min_{\mathbf{y} \in Y}|| f(\mathbf{x};\mathbf{s},\theta_f) - \mathbf{y} ||^2 \\ &+ \sum_{ \mathbf{y} \in Y}\min_{ \mathbf{x} \in X} || f(\mathbf{x};\mathbf{s},\theta_f) - \mathbf{y} ||^2 \\ &+ \lambda\sum_{\mathbf{x} \in X}||g(f(\mathbf{x};\mathbf{s},\theta_g);\mathbf{s},\theta_f) - \mathbf{x}||^2,
 \end{aligned}
  \end{equation}
-where the shape representation feature is simply concatenated to each point so that the $f$ and $g$ is depending on a global shape representing feature $\mathbf{s}$. $\lambda$ is the weight for cycle regularization. In AtlasNet, $\mathbf{s}$ is generated from either PointNet \cite{resnet} for auto-encoding or ResNet-18 \cite{resnet} for single view reconstruction. $g$ is a MLP with the same number of units in hidden layers as $f$, as shown in Figure~\ref{fig:net}.
+where the shape representation feature is simply concatenated to each point so that $f$ and $g$ depend on a global shape representing feature $\mathbf{s}$. $\lambda$ is the weight for cycle regularization term. In AtlasNet, $\mathbf{s}$ is generated from either PointNet \cite{resnet} for auto-encoding or ResNet-18 \cite{resnet} for single view reconstruction. $g$ is a MLP with the same number of units in hidden layers as $f$, as shown in Figure~\ref{fig:net}.
 
 \noindent\textbf{Cycle-Pixel2Mesh}
-Comparing to AtlasNet, Pixel2Mesh uses a more complicated network structure which generates shapes in a coarse-to-fine framework. In order to implement cycle regularization along with Pixel2Mesh, we need to cope with such design of network and use the cycle regularization term in each level of point density.
-As shown in Figure~\ref{fig:net}, Pixel2Mesh uses three blocks of graph-based convolution residual network ($f_1,f_2,f_3$) to map mesh-based features to the generated surface at three different levels of point density. To be compatible with such a framework, we also use three point-wise MLPs as the inverse decoder and form our regularization term as:
+Comparing to AtlasNet, Pixel2Mesh uses a more complicated network structure which generates shapes in a coarse-to-fine framework. In order to implement cycle regularization along with Pixel2Mesh, we need to cope with such design.
+As shown in Figure~\ref{fig:net}, Pixel2Mesh uses three blocks of graph-based convolutional residual network ($f_1,f_2,f_3$) to map mesh-based features to the generated surface at three different levels of point density. To be compatible with such a framework, we also use three point-wise MLPs as the inverse decoder and form our regularization term as:
 \begin{equation}
 \begin{aligned}
 \mathcal{L}_{cycle}(\theta_f,\theta_g) 
-&= \sum_{\hat{\mathbf{x}} \in \hat{X}_1}||g_{1}(\hat{\mathbf{y_1}};\mathbf{s}_1,\theta_{g_1}) - \hat{\mathbf{x}}||_2^2\\
-&+ \sum_{\hat{\mathbf{x}} \in \hat{X}_2}||g_{2}(\hat{\mathbf{y_2}};\mathbf{s}_2,\theta_{g_2}) - \hat{\mathbf{x}}||_2^2\\
-&+ \sum_{\hat{\mathbf{x}} \in \hat{X}_3}||g_{3}(\hat{\mathbf{y_3}};\mathbf{s}_3,\theta_{g_3}) - \hat{\mathbf{x}}||_2^2,\\
+&= \sum_{\hat{\mathbf{x}} \in \hat{X}_1}||g_{1}(\hat{\mathbf{y_1}};\mathbf{s}_1,\theta_{g_1}) - \hat{\mathbf{x}}||^2\\
+&+ \sum_{\hat{\mathbf{x}} \in \hat{X}_2}||g_{2}(\hat{\mathbf{y_2}};\mathbf{s}_2,\theta_{g_2}) - \hat{\mathbf{x}}||^2\\
+&+ \sum_{\hat{\mathbf{x}} \in \hat{X}_3}||g_{3}(\hat{\mathbf{y_3}};\mathbf{s}_3,\theta_{g_3}) - \hat{\mathbf{x}}||^2,\\
 \end{aligned}
 \end{equation}
-in which $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are sampled as a convex combination of vertexes in each triangle as:
+where $\hat{\mathbf{x}}$ and $\hat{\mathbf{y}_l}$ are sampled as a convex combination of vertexes in each triangle as:
 \begin{equation}
 \begin{aligned}
 \label{equ:sample}
