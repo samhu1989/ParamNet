@@ -74,6 +74,12 @@ To better expose the issue we are addressing in this paper, we render the genera
 	\caption{Visualization of the effect of our cycle regularization in the coarse-to-fine framework of Pixel2Mesh. The green rectangle shows a close-up view of a subtle self-intersection.}
 	\label{fig:3level}
 \end{figure}
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{revision/img/torus/torus}
+	\caption{Exploration into genus-1}
+	\label{fig:torus}
+\end{figure}
 In this subsection, we visualize the deformation process, providing a more intuitive view into the effect of our cycle regularization term. Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one. Therefore, we do not involve any semantic networks and show the effect of our proposed technique in a pure shape deforming manner (different from the training neural networks) in this experiment. In other words, we optimize the same objective function as in Eq.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18 \cite{resnet} nor PointNet \cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as free variable.  We use the same MLP for $f$ and $g$ as in Eq.~(\ref{equ:atlascycle}), but we only deform the generated shape to approach a specific groundtruth shape. We initialize the parameters $\theta_f,\theta_g,\mathbf{s}$ randomly with standard normal distribution and sample $X$ from sphere surface. We use gradient descent as the optimizer. Under such setting, we are deforming a randomly initialized shape (probably start with self-intersection) to approach a specific groundtruth shape. As the two cases in Figure~\ref{fig:opt} show, our cycle regularization term takes effect after only a few iterations. It not only keeps the mapping injective in following iterations but also corrects the self-intersections from the random initialization.
 
 \begin{figure}
