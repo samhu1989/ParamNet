@@ -1,0 +1,144 @@
+Dear Xuejin Chen, 
+
+We have completed the first round of the decision process for the 13th International Conference on Geometric Modeling and Processing (GMP 2019). Your submission 
+
+-------------
+paper1027
+-------------
+
+has been identified by the reviewers to offer strong potentials but requiring a major revision beyond the time frame of GMP 2019. Your submission's reviews and a short summary, if available, are included at the end of this email message.
+
+If you agree, it will be recommended to the Computer-Aided Geometric Design (CAGD) journal for a fast-track submission process with optional reviewer continuity. Please let us know at your earliest convenience whether you would like to accept this CAGD fast-track option.
+
+Thank you for your submission to GMP 2019. We appreciate your effort toward the papers program, and we hope that the reviewers' feedback attached below is useful for you to revise your work. 
+
+In addition, we encourage you to submit a shortened version of the work to the Poster Session at the Geometry Summit (to which GMP, and three other conferences, belong). An open call-for-poster will be announced soon. If you plan to submit a poster, please note in your submission that it is based on a fast-track paper from GMP 2019.
+
+Our program at GMP 2019 this year will be very exciting, and we would like you to be a part of it by attending and meeting with others. We are looking forward to your participation in the conference, which takes place between June 19-21 in Vancouver, Canada. For further details, please visit https://gmpconf.github.io/GMP2019/.
+
+Again, please let us know as soon as possible if you would like to accept the CAGD fast-track option.
+
+Sincerely,
+
+Tao Ju (Washington University in St. Louis, USA) 
+Jiri Kosinka (University of Groningen, The Netherlands) 
+Yang Liu (Microsoft Research Asia, China) 
+-- Program Co-Chairs, GMP2019 --
+
+
+====================================================================
+Reviews
+====================================================================   
+
+-------------------- Chair Decision --------------------
+
+Journal referral with major revisions
+The revision should focus on the case of models of non-zero genus. 
+
+
+-------------------- Review 1 --------------------
+
+Overall Recommendation: 3 (3 - clearly below EG standard)
+Evaluation Confidence: 2 (2 - Rather unconfident, but I know a bit)
+
+Summary: The paper deals with mesh reconstruction from 2D images using neural network approach. 
+
+
+Clarity of Exposition: Some details are missing, see the report below.
+
+
+Technical Soundness: Yes.
+
+
+Quality of References: Some relevant references were recommended.
+
+
+Reproducibility: I do not understand the part on *training*, but this can be caused my poor knowledge of machine learning. The rest looks reproducible to me. 
+
+
+Explanation of Recommendation: The title speaks about self-intersections problem for meshes, but it is not clear from what input; the introduction clarifies that, but as there are different inputs possible, as e.g. point clouds, I recommend to state the 2D image input directly in the title. 
+
+The paper should also better distinguish between local an global self-intersections. The non-vanishing Jacobian guarantees self-intersection free mapping only locally, which is probably the main objective of the current work, but global interference should be briefly discussed too. 
+
+There are several relevant references that deal with local self-intersection free mappings, see e.g.:
+
+Sederberg, T.W. and Parry, S.R., 1986. Free-form deformation of solid geometric models. ACM SIGGRAPH computer graphics, 20(4), pp.151-160.
+
+Sch¨¹ller, C., Kavan, L., Panozzo, D. and Sorkine-Hornung, O., 2013, July. Locally injective mappings. In Proceedings of the Eleventh Eurographics/ACMSIGGRAPH Symposium on Geometry Processing (pp. 125-135). Eurographics Association.
+
+Pekerman, D., Elber, G. and Kim, M.S., 2008. Self-intersection detection and elimination in freeform curves and surfaces. Computer-Aided Design, 40(2), pp.150-159.
+
+The structure of the paper is quite unfortunate. For example Section 3.1. refers to Definition 1 that appears later; this is very reader-unfriendly. Moreover, the paper speaks about injectivity of f and self-overlapped points like these were two different phenomena. Another rather confusing part is Def. 1 itself. Why do you formulate (1) and (2)? These are obviously equivalent and there is no reason to state them both. 
+
+Proposition 1: b is not defined. 
+
+Looking at fig. 4, one wonders how many iterations are needed to receive results with desired chamfer distance. How do you set the number of iterations in your algorithm; what is the termination criterion? 
+
+Fig.8 is very small and the zoom-in is barely visible.  Some other figures should be provided in higher resolution, e.g. the *Input* row in Fig.6 is really bad. 
+
+What about objects with other genus than zero? Can the algorithm be adapted to such input? For example Fig. 7, the car or the chair, are surfaces of higher genus and this feature is not captured (cannot be when having a sphere as the original mesh for the mapping; for such an input one should use a proper "doughnut", assuming the topology information is available from the 2D image). Discussion of this kind is missing in the paper. 
+
+minor errors and typos:
+abstract: our experiments ... demonstrates  -> demonstrate,
+caption of Fig.1: The Some -> Some,
+line 65: trys -> tries,
+line 79: reconstruction and modeling ... has -> have,
+line 115: class of object -> objects, 
+line 194: sphere surface -> sphere or spherical surface?,
+line 239: experiment-> experiments. 
+line 254: free variable -> a free variable
+
+
+-------------------- Review 2 --------------------
+
+Overall Recommendation: 6 (6 - acceptable)
+Evaluation Confidence: 3 (3 - Moderately confident, I know as much as most)
+
+Summary: The paper presents a regularization term to existing mesh generation pipelines to reduce the number of self-intersected faces of their generated meshes. This term has been incorporated into AtlasNet and Pixel2Mesh networks and obvious improvements have been shown in the experiments.
+
+
+Clarity of Exposition: yes.
+
+
+Technical Soundness: yes.
+
+
+Quality of References: there are approaches addressing intersections introduced in recent years, although not learning based approaches, such as:
+"Yixin Hu, Qingnan Zhou, Xifeng Gao, Alec Jacobson, Denis Zorin, Daniele Panozzo. ACM Transactions on Graphics (SIGGRAPH 2018)"
+"Yijing Li, Jernej Barbi?: Immersion of Self-Intersecting Solids and Surfaces, ACM Transactions on Graphics 37(4) (SIGGRAPH 2018), Aug 2018"
+
+I think they should be cited since they can be directly applied to the generated meshes as a postprocessing step in a very robust way.
+
+
+Reproducibility: code attached.
+
+
+Explanation of Recommendation: The introduced intersection prevention term is based on the fact that the intersected region doesn't maintain an injective mapping. This new term is general enough that can be embedded into existing learning based meshing pipeline. The drawback is that it penalizes the appearance of intersections, but doesn't completely eliminate the issue, as shown in table 1 and 2, where none of the results has no intersections. Tuning the $\lamda$ parameter is also tedious and hard to find a good one.
+
+Overall, the contribution shows promising results and source code is attached as well, so I think it's worth a publication in GMP.
+
+
+-------------------- Review 3 --------------------
+
+Overall Recommendation: 6 (6 - acceptable)
+Evaluation Confidence: 3 (3 - Moderately confident, I know as much as most)
+
+Summary: This paper provides a technique for modifying existing generative models for parametric mesh generation to include a particular geometric prior, namely that the meshes avoid self-intersections. While previous deep learning methods, such as AtlasNet and Pixel2Mesh, attempt to deal with self-intersection as a post-processing step, the method proposed in the paper sets out to avoid self-intersections as a soft constraint at training time, by incorporating an additional loss term in the penalty function. This loss term comes from formulating self-intersection in terms of non-injectivity of the underlying surface parametrization. A strength of the method is that it can be combined with a large class of existing surface mesh reconstruction networks, and the authors show that it works well on two existing methods (AtlasNet and Pixel2Mesh) in the sense that it pretty much retains the order of approximation while decreasing the number of self-intersecting triangles by several orders of magnitude.
+
+
+Clarity of Exposition: The structure of the paper is clear, it is easy to follow. The language could benefit from an additional spelling and grammar check, but in the current state it does not distract from the main message. There are some smaller issues with the paper:
+* In Proposition 1, the free variable x should be bound by a quantifier.
+* The first sentence of section 3.3 is describing a version of the Universal Approximation Theorem and would do well to refer to this.
+
+
+Technical Soundness: I could not detect any errors in reasoning.
+
+
+Quality of References: The references are adequate.
+
+
+Reproducibility: This is fine. I was happy to learn that details on the implementation can be found in the supplemental material.
+
+
+
+Explanation of Recommendation: I enjoyed reading the paper. The authors provide a novel solution to the important problem of avoiding self-intersections in mesh generation. A rather stringent limitation of the method is that it only applies to models with zero genus. Approximation-wise the results are comparable (in the Chamfer distance) to the original methods (AtlasNet and Pixel2Mesh), but they achieve several orders of magnitude reduction in the number of self-intersecting triangles. 
