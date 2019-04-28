@@ -46,64 +46,94 @@
 	\hdashrule{\linewidth}{1pt}{1mm}
 	Chair:
 	
-	Q: \emph{The revision should focus on the case of models of non-zero genus.}
+	[Q]: \emph{The revision should focus on the case of models of non-zero genus.}
 	
-	A: As a response to chair's directives, we have added extra experiments in Sec 4.1 of our revised paper to try our proposed cycle regularization on case of models of genus-1. We discussed the effect of our cycle regularization in such cases. It is also our opinion that how to enable the neural network to learn to predict surface with arbitrary genus remains a challenging problem and is beyond the scope of this paper. 
-	
-	\hdashrule{\linewidth}{1pt}{1mm}
-	%----------------------------------------------------------------------------------------
-	Reviewer 21833:\\
-	Q: \emph{I recommend to state the 2D image input directly in the title.}
-	
-	A:We have changed our title to ``Preventing Self-intersection with Cycle Regularization in Single RGB Image Based Mesh Reconstruction Networks''
-	
-	Q: \emph{The paper should also better distinguish between local an global self-intersections.}
-	
-	A:We have rephrased our discussion about self-intersections in introduction to better distinguish the local and global interference.
-	
-	Q: \emph{The structure of the paper is quite unfortunate. For example Section 3.1. refers to Definition 1 that appears later; this is very reader-unfriendly.}
-	
-	A:We have adjusted our manuscript to avoid such case as much as we can. However, we also want to avoid overcrowding of the figures.
-	
-	Q:\emph{Moreover, the paper speaks about injectivity of $f$ and self-overlapped points like these were two different phenomena.}
-	
-	A:Injectivity is a property of the regressed function $f$. Self-overlapped 3D points are observed defects on surface meshes. They maybe naturally related but we should still distinguish these two concepts.
-	
-	Q:\emph{Another rather confusing part is Def. 1 itself. Why do you formulate (1) and (2)? These are obviously equivalent and there is no reason to state them both.}
-	
-	A:We only keep statement (2) in our revised paper for your convenience.
-	
-	Q:\emph{Fig.8 is very small and the zoom-in is barely visible.  Some other figures should be provided in higher resolution, e.g. the *Input* row in Fig.6 is really bad.} 
-	
-	A:For input images, the images from the benchmark dataset are all low resolution images(224x224). This is now the standard setting with neural networks. It is difficult for us to provide high resolution version of them. For output meshes, we have adjusted the images in our revised paper for better view.
-	
-	Q:\emph{Looking at fig. 4, One wonders how many iterations are needed to receive results with desired chamfer distance. How do you set the number of iterations in your algorithm; what is the termination criterion?}
-	
-	A:We set the maximum iteration number to 1024. We have added such details in Sec 4.1 to elaborate on the experiment. we also add the curve of chamfer distance in Fig.4. 
-	
-	Q:\emph{What about objects with other genus than zero?}
-	
-	A:Solving this problem requires enabling neural network to learn to predict surfaces of arbitrary genus, which remains a challenge and beyond the scope of this paper. However, we do small exploration into the cases of genus-1 by manually selecting torus as source surface in our revised paper. Please see our revised Sec 4.1 for more details.
+	[A]: As a response to chair's directives, we have added extra experiments in our revised paper to try our proposed cycle regularization on cases of models of genus-1. The results of these new expriments is shown in Sec 4.1 Figure 6. We also add discussion about these results at Sec 4.1 Line 272 as follows:
+	 
+	\mdf{We also explore into cases with higher genus by manually choose torus as source surface. Though this is not a viable approach to enable nerual networks to generate shapes with complex topology, it allows us to observe the effect of our cycle regularization in the cases of genus-1. As shown in Figure 6, our observation can be concluded as follows: With a torus as the source surface, cycle regularization can significantly reduce self-intersection and prevent the collapse of the hole in the torus. As shown in the cases of ``okay" and ``love", the outputs without cycle regularization are wildly self-intersected and the hole in the toruses both collapsed, while the outputs with cycle regularization all preserve the hole.  However, the torus based outputs is more easily to get stuck at a local minimum where the remaining self-intersected triangles tends to concentrate and form two knots. With a sphere as the source surface, though the outputs are not able to express the hole in the groundtruth, they are less likely to get stuck at a local minimum with self-intersection.  
+	}
 	
 	\hdashrule{\linewidth}{1pt}{1mm}
 	%----------------------------------------------------------------------------------------
-	Reviewer 21924:\\
+	Reviewer 21833:
 	
-	We have added your recommendation of references as related work in our revised manuscript. Lifiting the limitation you have pointed out is beyond our reach for now. We will keep working on the problem.
-	  
+	[Q]: \emph{I recommend to state the 2D image input directly in the title.}
+	
+	[A]: We have changed our title to ``Preventing Self-intersection with Cycle Regularization \mdf{in Neural Networks for Mesh Reconstruction from a Single RGB Image}''
+	
+	[Q]: \emph{The paper should also better distinguish between local and global self-intersections. The non-vanishing Jacobian guarantees self-intersection free mapping only locally, which is probably the main objective of the current work, but global interference should be briefly discussed too.}
+	
+	[A]: To clarify that non-vanishing Jacobian only prevents self-intersection locally, we have rewritten our discussion about existing strategy for enforcing injectivity in introduction at Line 44 as follows:
+	
+	\mdf{To enforce injectivity, one possible strategy is to start from a feasible solution and keep every deformation or optimization step inside feasible regions. In works of deformation (e.g. Sederberg and Parry (1986); Gain and Dodgson (2001)), such strategy is usually excuted as follows. A clean mesh that is free from self-intersection is chosen as intial mesh and local self-intersection is prevented by constraining the Jacobian of the mapping function in the following steps of the deformation. In works of parameterization optimization for surface with disk topology, the strategy is usually carried out by using Tutte’s embedding Tutte (1963) or its variants to get a intial bijiective mapping and preventing triangle fold (preventing local self intersection) in following optimization steps. More specifically, triangle fold can be prevented by adding barrier energy from distortion metrics (e.g. Poranne and Lipman (2014); Aigerman et al. (2014)), bounding the triangle distortion (e.g.Smith and Schaefer (2015); Lipman (2012)) or using a progressive strategy Liu et al. (2018). }
+	
+	To emphasize that our technique redcues both local and global self-intersections, we also add statement in introduction at Line 59 as follows:
+	
+	\mdf{Our technique is deduced from basic decision theorem of injectivity. It reduces not only local self-intersections but also global self-interferences of the surface.}
+	
+	[Q]: 
+	\emph{There are several relevant references that deal with local self-intersection free mappings, see e.g.:\\
+	Sederberg, T.W. and Parry, S.R., 1986. Free-form deformation of solid geometric models. ACM SIGGRAPH computer graphics, 20(4), pp.151-160.\\
+	Schüller, C., Kavan, L., Panozzo, D. and Sorkine-Hornung, O., 2013, July. Locally injective mappings. In Proceedings of the Eleventh Eurographics/ACMSIGGRAPH Symposium on Geometry Processing (pp. 125-135). Eurographics Association.\\
+	Pekerman, D., Elber, G. and Kim, M.S., 2008. Self-intersection detection and elimination in freeform curves and surfaces. Computer-Aided Design, 40(2), pp.150-159.}
+
+	[A]: We have added these references in introduction and relate work.
+	
+	
+	[Q]: \emph{The structure of the paper is quite unfortunate. For example Section 3.1. refers to Definition 1 that appears later; this is very reader-unfriendly.}
+	
+	[A]: We have adjusted our manuscript to avoid such case as much as we can. Now the Definition 1 appears before it is referred to at Line 151.
+	
+	[Q]: \emph{Moreover, the paper speaks about injectivity of $f$ and self-overlapped points like these were two different phenomena.}
+	
+	[A]: Injectivity is a property of the regressed function $f$. Self-overlapped 3D points are observed defects on surface meshes. They maybe naturally related but we should still distinguish these two concepts.
+	
+	[Q]: \emph{Another rather confusing part is Def. 1 itself. Why do you formulate (1) and (2)? These are obviously equivalent and there is no reason to state them both.}
+	
+	[A]: First of all, we explictly used the words ``Equivalently'' in Definition 1, our statement should not cause any misunderstanding about relation between (1) and (2). Secondly, (1) and (2) maybe equivalent but they are expressing the injectivity property in two different ways: (1) states that for injective function , same image point must come from same pre-image point. (2) states that injective function will not map different points to overlapped position. (1) is more commonly seen in students' text book and in Wikipedia while (2) explains why injectivity means no self-overlapped points in a more straightforward mannar. Since we are targeting readers with different research background, we feel that a little redundancy of expression is necessary.
+	
+	[Q]: \emph{Fig.8 is very small and the zoom-in is barely visible.  Some other figures should be provided in higher resolution, e.g. the *Input* row in Fig.6 is really bad.} 
+	
+	[A]: For input images, the actual input images are low resolutions images. These images from the benchmark dataset have the size of (224x224). This is now the common setting with neural networks. For output shapes, we have enlarged the images in the original Figure 8 as Figure 9 in our revised manuscript.
+	
+	[Q]: \emph{Looking at fig. 4, One wonders how many iterations are needed to receive results with desired chamfer distance. How do you set the number of iterations in your algorithm; what is the termination criterion?}
+	
+	[A]: We add the curve of loss to show the convergence in Figure 4. and add explaination at Sec 4.1 Line 261 as follows:
+	
+	\mdf{We set maximum iteration number to 1024 for all experiments in this subsection. As shown in Figure 4, 1024 iteration is more than enough for the optimization to converge.}
+	
+	[Q]: \emph{What about objects with other genus than zero?}
+	
+	[A]: Please refer to our response to the Chair's directives before. 
 	
 	\hdashrule{\linewidth}{1pt}{1mm}
 	%----------------------------------------------------------------------------------------
-	Reviewer 21930:\\
+	Reviewer 21924:
 	
-	Q: \emph{In Proposition 1, the free variable x should be bound by a quantifier.
+	Thank you for your approval.
+	
+	[Q]: there are approaches addressing intersections introduced in recent years, although not learning based approaches, such as:
+	"Yixin Hu, Qingnan Zhou, Xifeng Gao, Alec Jacobson, Denis Zorin, Daniele Panozzo. ACM Transactions on Graphics (SIGGRAPH 2018)"
+	"Yijing Li, Jernej Barbi?: Immersion of Self-Intersecting Solids and Surfaces, ACM Transactions on Graphics 37(4) (SIGGRAPH 2018), Aug 2018"
+	
+	[A]: We have added the later references in our related work in Sec 2.5 Line 143 as one of the classic (not learning based) methods. The former references focus on tetrahedral meshing and is less related to the subject of our paper.
+	
+	[Q]: The drawback is that it penalizes the appearance of intersections, but doesn't completely eliminate the issue.
+	
+	[A]: We leave this issue for future work, thank you for point it out.
+	
+	\hdashrule{\linewidth}{1pt}{1mm}
+	%----------------------------------------------------------------------------------------
+	Reviewer 21930:
+	
+	Thank you for your approval.
+	
+	[Q]: \emph{In Proposition 1, the free variable x should be bound by a quantifier.
 		\\The first sentence of section 3.3 is describing a version of the Universal Approximation Theorem and would do well to refer to this.}
 	
-	A: We have fixed these two issues in our revised paper.
+	[A]: We have fixed these two issues in our revised paper. 
 	
-	Q:\emph{ A rather stringent limitation of the method is that it only applies to models with zero genus.}
+	[Q]: \emph{A rather stringent limitation of the method is that it only applies to models with zero genus.}
 	
-	A: Lifting such limitation requires enabling neural network to learn to predict surfaces of arbitrary genus, which is still beyond our reach for now. However, we add some small exploration and discussion into the cases of genus-1. Please see Sec 4.1 and Figure~6 for details in our new manuscript. 
-
-	
+	[A]: Please refer to our response to the Chair's directives before. 
 \end{document}

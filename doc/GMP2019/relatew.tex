@@ -6,7 +6,7 @@ Learning-based approaches, especially deep learning methods, can acquire more co
 \subsection{General Learning Approaches}
 As far as we known, early learning-based approaches can be traced back to \cite{Hoiem2007} and \cite{learn3D2007}. These methods learn to segment and classify regions in an image and finally produce a coarse 3D scene by folding the 2D image.
 %
-More recent techniques break down the problem to two stages \cite{Su:2014,jointimgshape}. They first retrieve shape components from a large dataset, and then assemble the components and deform the assembled shape to fit the observed image. These methods need to segment all object models into components for the database.
+More recent techniques devide the problem to two stages \cite{Su:2014,jointimgshape}. They first retrieve shape components from a large dataset, and then assemble the components and deform the assembled shape to fit the observed image. These methods need to segment all object models into components for the database.
 %
 However, shape retrieval from images itself is an challenging problem due to the loss of information during 3D-to-2D projection. 
 \cite{imgrecon15} avoid the retrieval step by learning a deformable 3D shape for each category and learn to predict deformation from an input image for these specific categories.
@@ -32,7 +32,7 @@ The first attempt to generate a set of discrete points from a single image using
 
 \noindent\textbf{Mesh}.
 Meshes are widely used in game and movie industries.
-In addition to vertex positions, mesh representation contains local structures of vertices. 
+In addition to vertex positions, mesh representation conveys local structures of vertices. 
 However, mesh representation is not well supported in current neural networks.
 % 
 To generate mesh models using neural networks, composition weights of a series of base meshes are predicted by networks \cite{img2mesh} and \cite{endface}. %produce meshes by linear interpolating base meshes. 
@@ -45,11 +45,11 @@ In comparison, the idea of learning to map from a predefined domain as in AtlasN
 The idea of utilizing surface parameterization for neural networks has been explored by \cite{surfnet,geoimg}. 
 Typically, a non-trainable procedure is involved for the creation of geometry image. 
 Manifold surfaces are required as training data so that the shapes can be parameterized using spherical parameterization and turned into geometry images. However, public datasets like ShapeNet \cite{shapenetdata} contain meshes that are not manifold surfaces. 
-In comparison, we are seeking techniques that can be integrated into networks and can be trained end-to-end along with the networks. Our idea is based on the same insight (self-intersection for surface mesh is related to non-injective mapping) as the parameterization techniques \mdf{(e.g.\cite{boundeddistortion,local-inj-map,provableplanarmapping,lifted_bijection,freeboundary,Liu_PP_2018})}. But we propose a novel technique that is more suitable for training neural networks in an end-to-end manner. 
+In comparison, we are seeking techniques that can be integrated into networks and can be trained end-to-end along with the networks. Based on the same insight (self-intersection for surface mesh is related to non-injective mapping) as the parameterization techniques \mdf{(e.g.\cite{boundeddistortion,local-inj-map,provableplanarmapping,lifted_bijection,freeboundary,Liu_PP_2018})}, we propose a novel technique that is more suitable for training neural networks in an end-to-end manner. 
 
 \subsection{Cycle Neural Networks}
 The general idea of using neural networks to map from one domain to another domain and then map back has been utilized in previous works. In CycleGAN \cite{CycleGAN2017}, a famous example of such work, the cycle relation provides an extra constraint for translating between unpaired data from different domains. In comparison, our work uses the same general idea to enforce injectivity for 3D surface mesh generation networks and trying to prevent self-intersection in generated meshes. 
 
 \subsection{Self-Intersection Removal}
-The classic methods \mdf{(e.g. \cite{removeoffset,detectandremove,edgeswap,imofinter})} for removing self-intersections follow the pipeline that first identify the self-intersected faces and then alter the faces with their proposed methods. However, it is difficult to integrate such a pipeline into networks or to formulate their alteration operations in a differentiable manner. 
+Classic methods \mdf{(e.g. \cite{removeoffset,detectandremove,edgeswap,imofinter})} for removing self-intersections follow the pipeline that first identifies the self-intersected faces and then alters the faces with their proposed methods. However, it is difficult to integrate such a pipeline into nueral networks or to formulate their alteration operations in a differentiable manner. 
 
