@@ -1,25 +1,32 @@
 \section{Experiments}
-\noindent{\textbf{Data}} To fairly evaluate the effect of cycle regularization, we use the datasets released by AtlasNet and Pixel2Mesh respectively. Their model sets are both subsets of ShapeNet \cite{shapenetdata} and they both used the rendered images from \cite{3DR2N2} \mdf{with sizes of $224 \times 224$}. However, the absolute sizes and positions of the models and the sampled points as ground truth are not processed in the same way in these two datasets, which makes it unreasonable to compare them all together. Therefore we evaluate the effect of our regularization technique with these two networks separately with their own released data.
+\noindent{\textbf{Data.}} To fairly evaluate the effect of cycle regularization, we use the datasets released by AtlasNet and Pixel2Mesh respectively. Their model sets are both subsets of ShapeNet \cite{shapenetdata} and they both used the rendered images from \cite{3DR2N2} \mdf{with sizes of $224 \times 224$}. However, the absolute sizes and positions of the models and the sampled points as ground truth are not processed in the same way in these two datasets, which makes it unreasonable to compare them all together. Therefore we evaluate the effect of our regularization technique with these two networks separately with their own released data.
 
-\noindent{\textbf{Training}}
+\noindent{\textbf{Training.}}
 Unless specifically explained, the network models shown in this paper are trained as follows. The parameters for image encoders and forward 3D decoders $\theta_f$ are initialized with parameters released by AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh} respectively. The parameters for inverse decoders $\theta_g$ are randomly initialized. We use the ADAM \cite{adam} optimizer with the same learning rate as in the original codes of AtlasNet and Pixel2Mesh respectively. We use $\lambda=0.25$ as an empirical choice for the weight of our cycle regularization term.
 
-\noindent{\textbf{Evaluation Criteria}}
+\noindent{\textbf{Evaluation Criteria.}}
 In order to quantitatively evaluate the issue of self-intersection and self-overlap, we count the percentage of self-intersected triangles (``SI") over the total number of triangles. For this evaluation, we provide our code in the supplemental material which calculates the ``SI" for an input mesh.  
 We also use the value of Chamfer distance (``CD") as the original AtlasNet and Pixel2Mesh to evaluate how well the generated mesh approximates the ground truth shape. For the evaluation of Chamfer distance we used the codes that are already implemented by AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh}.
 
-\noindent{\textbf{Mesh Generation and Visualization}} Since we are addressing an issue regarding the quality of generated mesh, any post-processing used in AtlasNet \cite{atlasnet} is not used in our \mdf{experiments}. All the triangulations are directly transferred from the predefined surface. We do not divide the triangles to get denser vertices either. The meshes from AtlasNet all have 2500 vertices and about 4k faces. The meshes from Pixel2Mesh all have 2466 vertices and 4928 faces.
+\noindent{\textbf{Mesh Generation and Visualization.}} Since we are addressing an issue regarding the quality of generated mesh, any post-processing used in AtlasNet \cite{atlasnet} is not used in our \mdf{experiments}. All the triangulations are directly transferred from the source surface. We do not divide the triangles to get denser vertices either. The meshes from AtlasNet all have 2500 vertices and about 4k faces. The meshes from Pixel2Mesh all have 2466 vertices and 4928 faces.
 
 To better expose the issue we are addressing in this paper, we render the generated mesh in MeshLab and use the ``gooch.gdp" in the software as our shader. In such mode, triangles are rendered golden outside and bluish inside. The golden region and bluish region interlacing at surface evidently indicates the self-intersected surfaces.
 
-\subsection{Observations on toy data}
-\label{subsec:deform}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/opt/opt2}
-	\caption{\mdf{Convergence of optimization. When optimized with our cycle regularization term, the term takes effect after only a few iterations. It does not only keep the mapping injective during optimization but also corrects the self-intersection from the initialization. When optimized without cycle regularization term, the surface usually converges to a surface with self-intersection.}}
+	\caption{\mdf{Optimization of a random initialized MLP to approximate a specific target GT shape with and without cycle regulation. The cycle regulation takes effect after only a few iterations. It does not only keep the mapping injective during optimization, but also corrects the self-intersection from the initialization. When optimized without cycle regularization term, self-intersections occurs during the deformation and can not be eliminated even after many iterations.}}
 	\label{fig:opt}
 \end{figure}
+
+\subsection{Experiments on toy data}
+\label{subsec:deform}
+ Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one. Therefore, in this experiment, we do not involve any semantic networks and show the effect of our proposed technique in approximating a specific shape. Such experiments with toy data quickly provide an intuitive view to observe the effect of our cycle regularization term at a much smaller cost than actually training networks on a large dataset. We optimize the same objective function as in Eq.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18 \cite{resnet} nor PointNet \cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as \mdf{a free variable}. We use the same MLP for $f$ and $g$ as in Eq.~(\ref{equ:atlascycle}), but we only optimize the output shape to approach a specific groundtruth shape. We initialize the parameters $\theta_f,\theta_g$ and $\mathbf{s}$ randomly with standard normal distributions and sample $X$ from \mdf{a spherical surface}. We use ADAM \cite{adam} as the optimizer with $0.001$ as the learning rate. \mdf{We set the maximum iteration number to $1024$ for all experiments in this subsection. As shown in Figure~\ref{fig:opt}, $1024$ iterations are usually more than enough for the optimization to converge.} Under such setting, we are deforming a randomly initialized shape, on which self-intersection could appear very likely, to approach a specific groundtruth shape. 
+ 
+ We first visualize the converging process when optimized with or without the proposed cycle regularization term. As the case shown in Figure~\ref{fig:opt}, our cycle regularization takes effect after only a few iterations. It not only keeps the mapping injective in following iterations, but also corrects self-intersections from the random initialization.
+ 
+We then test on different $\lambda$ to control the contribution of the cycle regularization term in the entire objective function. As shown in Figure~\ref{fig:lambda}, visually speaking, when $\lambda=0.25$, the deformed shape is able to approximate more details than using a larger $\lambda$ (i.e. $\lambda=0.5$ and $1.0$), and it is also sufficient to enforce the injective mapping.  Therefore, we use $\lambda=0.25$ as an empirical choice in following experiments. However, finer tuning of $\lambda$ for specific networks is possible.
+
 \begin{wrapfigure}{r}{0.48\textwidth}
 	\begin{center}
 		\includegraphics[width=0.48\textwidth]{img/opt/lambda}
@@ -27,32 +34,28 @@ To better expose the issue we are addressing in this paper, we render the genera
 	\caption{Deformation results with different $\lambda$.}
 	\label{fig:lambda}
 \end{wrapfigure}
+
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{revision/img/torus/torus}
-	\caption{Exploration into higher genus: The columns of ``init"  are intial output shapes. The columns of ``with cycle" or ``without cycle" are final output shapes optimized with or without cycle regularization term. Under each final output shape, we report its chamdfer distance(CD) to ground truth, cycle regularization loss (Cycle, if used) at the end of iteration and the percentage of self-intersection(SI). }
+	\caption{Approximation of genus-one surfaces with and without cycle regulation: The columns of ``Init"  are intial output shapes. The columns of ``With Cycle" or ``Without Cycle" are final output shapes optimized with or without cycle regularization term. Under each final output shape, we report its chamdfer distance (CD) to ground truth, cycle regularization loss (Cycle, if used) and the percentage of self-intersection (SI). }
 	\label{fig:torus}
 \end{figure}
- Being free of self-intersection is a rather geometric prior for surface mesh than a semantic one. Therefore, in this experiment, we do not involve any semantic networks and show the effect of our proposed technique in approximating a specific shape. Such experiments with toy data quickly provide an intuitive view to observe the effect of our cycle regularization term at a much smaller cost than actually training networks on large dataset. We optimize the same objective function as in Eq.~(\ref{equ:atlascycle}), but do not use semantic networks (neither ResNet-18 \cite{resnet} nor PointNet \cite{pointnet}) to generate the latent shape representation $\mathbf{s}$. We treat $\mathbf{s}$ as \mdf{a free variable}. We use the same MLP for $f$ and $g$ as in Eq.~(\ref{equ:atlascycle}), but we only optimize the output shape to approach a specific groundtruth shape. We initialize the parameters $\theta_f,\theta_g,\mathbf{s}$ randomly with standard normal distribution and sample $X$ from sphere surface. We use ADAM \cite{adam} as the optimizer with $0.001$ as learning rate. \mdf{We set maximum iteration number to $1024$ for all experiments in this subsection. As shown in Figure~\ref{fig:opt}, $1024$ iteration is usually more than enough for the optimization to converge.} Under such setting, we are deforming a randomly initialized shape (probably start with self-intersection) to approach a specific groundtruth shape. 
- 
- We first visualize the converging process when optimized with or without the proposed cycle regularization term. As the case shown in Figure~\ref{fig:opt}, our cycle regularization term takes effect after only a few iterations. It not only keeps the mapping injective in following iterations but also corrects the self-intersections from the random initialization.
 
-We then experiment on different $\lambda$ controlling the contribution of the cycle regularization term in the entire objective function. As shown in Figure~\ref{fig:lambda}, visually speaking, when $\lambda=0.25$, the deformed shape is able to approximate more details than a larger value (i.e. $\lambda=0.5,1.0$), and it is also sufficient to enforce the injective mapping.  Therefore, we use $\lambda=0.25$ as an empirical choice in following experiments. However, finer tuning for specific networks is possible.
-
-\mdf{We also explore into cases with higher genus by manually choose torus as source surface. Though this is not a viable approach to enable nerual networks to generate shapes with complex topology, it allows us to observe the effect of our cycle regularization in the cases of genus-1. As shown in Figure~\ref{fig:torus}, our observation can be concluded as follows: With a torus as the source surface, cycle regularization can significantly reduce self-intersection and prevent the collapse of the hole in the torus. As shown in the cases of ``okay" and ``love", the outputs without cycle regularization are wildly self-intersected and the hole in the toruses both collapsed, while the outputs with cycle regularization all preserve the hole.  However, the torus based outputs is more easily to get stuck at a local minimum where the remaining self-intersected triangles tends to concentrate and form two knots. With a sphere as the source surface, though the outputs are not able to express the hole in the groundtruth, they are less likely to get stuck at a local minimum with self-intersection.  
+\mdf{We also explore into cases with higher genus by manually choosing torus as the source surface. Though this is not a viable approach to enable nerual networks to generate shapes with complex topology, it allows us to observe the effect of our cycle regularization in the cases of genus-one. As shown in Figure 6, with a torus as the source surface, the cycle regularization significantly reduces self-intersection and prevents the collapse of the hole in the torus. As shown in the cases of ``okay" and ``love" shapes, the outputs without cycle regularization are wildly self-intersected and the hole in the toruses both collapsed, while the outputs with cycle regularization all preserve the hole.  However, the torus-based outputs are more easily to get stuck at a local minimum where the remaining self-intersected triangles tends to concentrate and form two knots. With a sphere as the source surface, though the outputs do not contain the hole as in the groundtruth models, they are less likely to get stuck at a local minimum with self-intersection.
 }
 
 \subsection{Cycle Regularization in AtlasNet and Pixel2Mesh}
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{img/atlas/svr}
-	\caption{Cycle regularization on AtlasNet. All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view direction are manually adjusted to better expose the differences. The red rectangles highlight a case where more details are preserved than the original network because injectivity is enforced with our cycle regularization.}
+	\caption{Cycle regularization on AtlasNet. All the visualized cases here are selected from the test set of AtlasNet. Some meshes' view directions are manually adjusted to better expose the differences. The red rectangles highlight a case where more details are preserved than the original network because injectivity is enforced with our cycle regularization.}
 	\label{fig:svr}
 \end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{img/p2m/final}
-	\caption{Cycle regularization on Pixel2Mesh. All the visualized cases here are selected from the test set of Pixel2Mesh. Some meshes' view direction are manually adjusted to better expose the differences.}
+	\caption{Cycle regularization on Pixel2Mesh. All the visualized cases here are selected from the test set of Pixel2Mesh. Some meshes' view directions are manually adjusted to better expose the differences.}
 	\label{fig:p2m}
 \end{figure}
 \begin{figure}

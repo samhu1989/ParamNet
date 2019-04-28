@@ -58,7 +58,7 @@ However, it is almost impossible to actually minimize a regularization term to z
 	\begin{equation}
 	\exists~g, \mdf{\forall \mathbf{x} \in X}, || g(f(\mathbf{x})) - \mathbf{x} ||^2 \leq \min_{\mathbf{b} \in X}|| g(f(\mathbf{x})) - \mathbf{b} ||^2,
 	\end{equation}
-	then $f$ is injective. \mdf{$\mathbf{x}$ and $\mathbf{b}$ are both used to represent elements in $X$}
+	then $f$ is injective. \mdf{$\mathbf{x}$ and $\mathbf{b}$ are both used to represent elements in $X$.}
 \end{m_prop}
 
 \textbf{Proposition}~\ref{prop:nearest} can be proved by simply compositing the nearest neighbor with the function $g$. We can construct a nearest neighbor function $q: \mathcal{R}^3 \rightarrow X $ as:
@@ -88,7 +88,7 @@ The constraint in Eq.~(\ref{equ:injective}) is defined over continuous surface, 
 \end{figure}
 \mdf{As a simple inference from the \emph{Universal Approximation Theorem},} AtlasNet \cite{atlasnet} has stated that it is possible to use a multilayer perceptron with ReLU nonlinearities and sufficient hidden units to approximate any shape within a small positive error $\epsilon$. In practice, we employ another 3D surface decoder to approximate $g$. Then we explain how we implement this technique for AtlasNet and Pixel2Mesh respectively. Generally speaking, we reuse their network structures respectively and show that our cycle regularization is generally suitable for this type of networks.
 
-\noindent\textbf{Cycle-AtlasNet} Depending on a shape representing feature $\mathbf{s}$, AtlasNet uses point-wise MLP
+\noindent\textbf{Cycle-AtlasNet.} Depending on a shape representing feature $\mathbf{s}$, AtlasNet uses point-wise MLP
 $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathbf{x}$ are points uniformally sampled from surface $P\}$ to points in $Y=\{\mathbf{y}| \mathbf{y}$ are points uniformally sampled from surface $S\}$. In our implementation, $P$ is a \mdf{spherical surface}. $S$ is the generated surface for an object. We use another point-wise MLP $g$ with parameters $\theta_g$ to map points from $Y$ back to $X$. Along with our cycle regularization, the total loss function for Cycle-AtlasNet is:
 \begin{equation}
 \begin{aligned}
@@ -98,7 +98,7 @@ $f$ with parameters $\theta_f$ to learn to map points in $X=\{\mathbf{x}| \mathb
  \end{equation}
 where the shape representation feature is simply concatenated to each point so that $f$ and $g$ depend on a global shape representing feature $\mathbf{s}$. $\lambda$ is the weight for cycle regularization term. In AtlasNet, $\mathbf{s}$ is generated from either PointNet \cite{resnet} for auto-encoding or ResNet-18 \cite{resnet} for single view reconstruction. $g$ is a MLP with the same number of units in hidden layers as $f$, as shown in Figure~\ref{fig:net}.
 
-\noindent\textbf{Cycle-Pixel2Mesh}
+\noindent\textbf{Cycle-Pixel2Mesh.}
 Comparing to AtlasNet, Pixel2Mesh uses a more complicated network structure which generates shapes in a coarse-to-fine framework. As shown in Figure~\ref{fig:net}, Pixel2Mesh uses three blocks of graph-based convolutional residual network ($f_1,f_2,f_3$) to map mesh-based features to the generated surface at three different levels of point density. To make cycle regularization compatible with such a framework, we also use three point-wise MLPs as the inverse decoder and form our regularization term as:
 \begin{equation}
 \begin{aligned}
