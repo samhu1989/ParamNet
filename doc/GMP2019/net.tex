@@ -1,5 +1,5 @@
 \section{Proposed Method}
-In this section, we firstly establish the relation between self-intersection and non-injectivity.  
+In this section, we first establish the relationship between self-intersection and non-injectivity.  
 Then we introduce the proposed cycle regularization technique as shown in Figure~\ref{fig:net} and explain in details about how we respectively apply this general technique onto AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh}, whose network structures are quite different from each other.
 
 \subsection{Injective Mapping and Self-Overlapped Points}
@@ -73,7 +73,7 @@ then
 &\Rightarrow q\Big(g\big(f(\mathbf{x})\big)\Big) = \mathbf{x}\\
 \end{aligned}
 \end{equation}
-then $g^*(\mathbf{y}) = q\big(g(\mathbf{y})\big)$ is the left inverse of $f$, therefore $f$ is injective. $\mathbf{y}$ is an element in $Y$.
+then $g^*(\mathbf{y}) = q\big(g(\mathbf{y})\big)$ is the left inverse of $f$, therefore $f$ is injective. Here, $\mathbf{y}$ is used to represent an arbitrary element in $Y$.
 
 \noindent\textbf{Remaining Gap.}
 Even when the condition in Proposition~\ref{prop:nearest} is met after optimization, there is still no guarantee for the injectivity of $f$ over a continuous surface. The reason is that when we turn Eq.~(\ref{equ:injective}) into Eq.~(\ref{equ:cycle_term}), we actually create a theoretical gap. 

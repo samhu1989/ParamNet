@@ -38,7 +38,7 @@ However, mesh representation is not well supported in current neural networks.
 To generate mesh models using neural networks, composition weights of a series of base meshes are predicted by networks \cite{img2mesh} and \cite{endface}. %produce meshes by linear interpolating base meshes. 
 Since it is only possible to choose or learn base meshes for a specific class of \mdf{objects}, these two networks only generate meshes for a specific class of objects, such as face.
 %
-In comparison, the idea of learning to map from a predefined domain as in AtlasNet  \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh}, can generate surface meshes for generic objects. Our work is a follow-up of their general idea and addresses a specific issue of surface self-intersection in their networks.
+In comparison, the idea of learning to map from a predefined domain as in AtlasNet \cite{atlasnet} and Pixel2Mesh \cite{pixel2mesh}, can generate surface meshes for generic objects. Our work is a follow-up of their general idea and addresses a specific issue of surface self-intersection in their networks.
 %but it .
 
 \subsection{Parameterization for Neural Networks}
@@ -48,7 +48,7 @@ Manifold surfaces are required as training data so that the shapes can be parame
 In comparison, we are seeking techniques that can be integrated into networks and can be trained end-to-end along with the networks. Based on the same insight (self-intersection for surface mesh is related to non-injective mapping) as the parameterization techniques \mdf{(e.g. \cite{boundeddistortion,local-inj-map,provableplanarmapping,lifted_bijection,freeboundary,Liu_PP_2018})}, we propose a novel technique that is more suitable for training neural networks in an end-to-end manner. 
 
 \subsection{Cycle Neural Networks}
-The general idea of using neural networks to map from one domain to another domain and then map back has been utilized in previous works. In CycleGAN \cite{CycleGAN2017}, a famous example of such work, the cycle relation provides an extra constraint for translating between unpaired data from different domains. In comparison, our work uses the same general idea to enforce injectivity for 3D surface mesh generation networks and trying to prevent self-intersection in generated meshes. 
+The general idea of using neural networks to map from one domain to another domain and then map back has been utilized in previous works. In CycleGAN \cite{CycleGAN2017}, a famous example of such work, the cycle relation provides an extra constraint for translating between unpaired data from different domains. In comparison, our work uses the same general idea to enforce injectivity for 3D surface mesh generation networks and prevent self-intersections in generated meshes. 
 
 \subsection{Non-learning Based Self-Intersection Removal}
 \mdf{Non-learning based} methods \mdf{(e.g. \cite{removeoffset,detectandremove,edgeswap,imofinter})} for removing self-intersections follow the pipeline that first identifies the self-intersected faces and then alters the faces with their proposed methods. However, it is difficult to integrate such a pipeline into nueral networks or to formulate their alteration operations in a differentiable manner. 
