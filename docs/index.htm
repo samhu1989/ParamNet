@@ -1,0 +1,262 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0061)http://staff.ustc.edu.cn/~xjchen99/FoldingCartons.html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><HTML 
+xmlns="http://www.w3.org/1999/xhtml"><HEAD><META content="IE=11.0000" 
+http-equiv="X-UA-Compatible">
+ 
+<META http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<TITLE>FoldingCartons</TITLE> 
+<STYLE type="text/css">
+.ys01 {
+	font-size: 30px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: #57524C;
+}
+.ys02 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: #6293A2;
+	text-align: center;
+}
+.ys2 {
+}
+.ys2 {
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	color: #6293A2;
+	text-align: center;
+}
+.ys2 sup {
+	color: #57524C;
+}
+.ys3 {
+	font-weight: bold;
+}
+.ys3 {
+	font-family: Arial, Helvetica, sans-serif;
+}
+.ys3 {
+	text-align: center;
+	color: #57524C;
+}
+.ys3 {
+}
+.ys4 {
+	text-align: center;
+}
+.ys2 .ys2 {
+	color: #57524C;
+}
+.ys5 {
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.ys6 {
+	font-family: Arial, Helvetica, sans-serif;
+}
+.ys7 {
+	text-align: center;
+}
+a:link {
+	text-decoration: none;
+}
+a:visited {
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+a:active {
+	text-decoration: none;
+}
+.teaser {
+	font-weight: bold;
+	font-family: "Times New Roman", Times, serif;
+	color: #57524C;
+	text-align: left;
+}
+.text {
+	font-family: "Times New Roman", Times, serif;
+	color: #57524C;
+	text-align: justify;
+	font-weight: normal;
+}
+.title1 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #6293A2;
+	font-weight: bold;
+	text-align: left;
+	font-size: 18px;
+}
+.text2 {
+	text-align: justify;
+	font-family: "Times New Roman", Times, serif;
+	color: #57524C;
+	font-weight: normal;
+}
+.title1 .teaser {
+	text-align: justify;
+}
+.copyright {
+	font-family: "Times New Roman", Times, serif;
+	color: #57524C;
+	text-align: right;
+}
+.copy {
+	font-family: "Times New Roman", Times, serif;
+	text-align: right;
+	color: #57524C;
+}
+.download {
+}
+.download {
+	font-family: Arial, Helvetica, sans-serif;
+}
+.download {
+	font-weight: bold;
+}
+.download {
+	color: #6293A2;
+}
+body {
+	background-color: #FFFFFF;
+	text-align: center;
+}
+.teaser {
+	text-align: justify;
+}
+.copy1 {
+	text-align: right;
+	color: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+.STYLE17 {font-size: medium}
+.style1 {	FONT-FAMILY: "Times New Roman", Times, Verdana, Arial, Helvetica, sans-serif ;
+	FONT-SIZE: 18px
+}
+</STYLE>
+ 
+<META name="GENERATOR" content="MSHTML 11.00.9600.18538"></HEAD> 
+<BODY>
+<TABLE width="1044" align="center" background="">
+  <TBODY>
+  <TR>
+    <TD width="1044" height="3355" align="center" valign="top">
+      <P>&nbsp;</P>
+      <TABLE width="900">
+        <TBODY>
+        <TR>
+          <TD>
+            <P align="center" class="ys01">Folding Cartons: Interactive Manipulation of Cartons from 2D Layouts</P>
+            <P class="ys2">Shuang Shan&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Yiting Ma&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Chengcheng Tang&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<A href="http://staff.ustc.edu.cn/~xjchen99" 
+            target="_new">Xuejin Chen*</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;         
+              
+            <P class="ys2"><A href="http://www.ustc.edu.cn/" 
+            target="_new">University of Science and Technology of China</A></P>
+            <P class="ys2">International Conference on Geometric Modeling and Processing 2018</P></TD></TR>
+        <TR>
+          <TD>
+            <P class="ys02"><IMG width="800" alt="Overview" src="figures/overview.png"></P>
+            <TABLE width="800" height="21" align="center" 
+        border="0"></TABLE></TD></TR>
+        <TR>
+          <TD>
+            <P class="teaser">Figure 1:<SPAN class="text"> Algorithm overview. Given a 2D layout (a), we first extract its 2D mesh (b) with different panels in different colors. By providing each folding edge with the same angle, which is π/2, an initial 3D model can be constructed (c). The final carton model (e) is built by a shape optimization technique based on a series of suggested geometrical constraints (d).</SPAN></P></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD>
+            <P class="title1">Abstract:</P></TD></TR>
+        <TR>
+          <TD>
+            <P class="text2"> Cartons are broadly used in the packaging industry and in our daily life. While most traditional packages are axis-aligned cuboids, there is a recent trend of creating paper packages and cartons with more complicated geometries. In this work, we present an interactive system to manipulate 3D cartons from 2D layouts. Two key components, automatic folding and suggestive editing, make our system remarkably easy to use. The automatic folding step computes the 3D coordinates of vertexes in a 3D carton model based on a simple observation. Then, the suggestive editing step determines several geometric constraints, such as vertex merging, merging propagation, and panel pasting, so that users can flexibly manipulate 3D shapes. Moreover, our system supports automatic updating of the corresponding 2D layouts when the user constructs and edits carton shapes in 3D to correct and explore potential layouts.  </P></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD>
+            <P class="title1">Results:</P></TD></TR>
+        <TR>
+          <TD>
+            <DIV align="center"><IMG width="800" alt="AutomaticalResult" src="figures/resulta.png"></DIV></TD></TR>
+        <TR>
+          <TD>
+            <DIV align="center"><SPAN class="teaser">Figure 2:</SPAN> <SPAN 
+            class="text">Eight carton examples that can be automatically generated. For each example, four subfigures are shown from left to right: the input 2D layout, an intermediate stage during folding, and the final 3D shape from two views.</SPAN></DIV></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD>
+            <DIV align="center"><IMG width="800" alt="OptimizationResult" src="figures/resultb.png"></DIV></TD></TR>
+        <TR>
+          <TD>
+            <DIV align="center"><SPAN class="teaser">Figure 3:</SPAN><SPAN 
+            class="text"> <SPAN class="text2">Six complicated results with shape refinement. In each example, the first two images represent the 2D layout and the initial model, and the last two show the final model from different views. The middle images illustrate the intermediate shapes with different shape constraints, which are marked in red circles.
+            </SPAN></SPAN></DIV></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD>
+            <DIV align="center"><IMG width="800" alt="LayoutOptimizationResult" src="figures/editing.png"></DIV></TD></TR>
+        <TR>
+          <TD>
+            <DIV align="center"><SPAN class="teaser">Figure 3:</SPAN><SPAN 
+            class="text"> <SPAN class="text2">Two examples of layout modification from 3D model editing. For each example, a box-like carton can be generated from the given 2D layout. Users can edit the shape of the 3D carton by dragging edges in our system. By enforcing the shape rigidity constraints, our system automatically updates the 2D layout.
+            </SPAN></SPAN></DIV></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+       
+
+        <TR>
+          <TD><SPAN class="title1">Acknowledgements:</SPAN></TD></TR>
+        <TR>
+          <TD>
+            <P class="text2"> We thank the reviewers for their generous reviews, and Siyu Hu for stimulating discussions. This work was supported by the National Natural Science Foundation of China under Nos. 61472377 and 61632006. Chengcheng Tang would like to thank the support of NSF grant IIS-1528025, a Google Focused Research Award, a gift from the Adobe Corporation, and a hardware donation from NVIDIA.
+			</P></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><SPAN class="title1">Main References:</SPAN></TD></TR>
+        <TR>
+          <TD>
+            <P class="text2"> [1] S. Bouaziz, M. Deuss, Y. Schwartzburg, T. Weise, M. Pauly. Shape-up: shaping discrete geometry with projections. Comput. Graph. Forum(2012).
+            <P class="text2"> [2] G. Fussell. The beginner’s guide to packaging design. https://design.tutsplus.com/articles/the-beginners-guide-to-packaging-design--cms-27380.
+        </P></TD></TR>
+        <TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><SPAN class="title1">BibTex:</SPAN></TD></TR>
+        <TR>
+          <TD><SPAN class="text2">@article{Shan2018Folding,<BR>author = 
+            {Shan, Shuang and Ma, Yiting and Tang, Chengcheng and Chen, Xuejin},<BR>title = {Folding Cartons: Interactive Manipulation of Cartons from 2D Layouts},
+			<BR>journal={Computer Aided Geometric Design},<BR>          year = {2018}<BR>          } </SPAN></TD></TR>
+        <TR>
+          <TD>&nbsp;</TD></TR>
+        <TR>
+          <TD><SPAN class="title1">Downloads:</SPAN></TD></TR>
+        <TR>
+          <TD><SPAN class="text2">Disclaimer: The paper listed on this page is 
+            copyright-protected. By clicking on the paper link below, you 
+            confirm that you or your institution have the right to access the 
+            corresponding pdf file.</SPAN></TD></TR>
+        <TR>
+          <TD>
+            <UL>
+              <LI class="download"><A href="https://github.com/ssfly/FoldingCartons_2018/tree/master/paper">Paper 
+              </A></LI>
+              <LI class="download"><A href="https://github.com/ssfly/FoldingCartons_2018/tree/master/video">Video</A></LI></UL></TD></TR></TBODY></TABLE>
+      <TABLE width="900" align="center">
+        <TBODY>
+        <TR>
+          <TD>
+            <HR>
+          </TD></TR>
+        <TR>
+          <TD class="copy1">Copyright © 2018 GCL&nbsp;, 
+      USTC</TD></TR></TBODY></TABLE>
+      <P>&nbsp;</P></TD></TR></TBODY></TABLE></BODY></HTML>
