@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
 <!-- saved from url=(0061)http://staff.ustc.edu.cn/~xjchen99/FoldingCartons.html -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><HTML 
 xmlns="http://www.w3.org/1999/xhtml"><HEAD><META content="IE=11.0000" 
@@ -139,7 +139,7 @@ body {
 }
 </STYLE>
  
-<META name="GENERATOR" content="MSHTML 11.00.9600.18538"></HEAD> 
+<meta name="generator" content="Bluefish 2.2.10" ></HEAD> 
 <BODY>
 <TABLE width="1044" align="center" background="">
   <TBODY>
@@ -151,22 +151,25 @@ body {
         <TR>
           <TD>
             <P align="center" class="ys01">Preventing Self-Intersection with Cycle Regularization in Neural Networks for Mesh Reconstruction from a Single RGB Image</P>
-            <span><A href="https://samhu1989.github.io/#" 
-            target="_new">Siyu Hu</A></span>
-            <A href="http://staff.ustc.edu.cn/~xjchen99" 
-            target="_new">Xuejin Chen*</A>        
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <A href="https://samhu1989.github.io/" target="_new">Siyu Hu</A>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <A href="http://staff.ustc.edu.cn/~xjchen99" target="_new">Xuejin Chen*</A>        
               
             <P class="ys2"><A href="http://www.ustc.edu.cn/" 
             target="_new">University of Science and Technology of China</A></P>
-            <P class="ys2">International Conference on Geometric Modeling and Processing 2018</P></TD></TR>
+            <P class="ys2">Computer Aided Geometric Design 2019</P></TD></TR>
         <TR>
           <TD>
-            <P class="ys02"><IMG width="800" alt="Overview" src="figures/overview.png"></P>
+            <P class="ys02"><IMG width="800" alt="network" src="./net.png"></P>
             <TABLE width="800" height="21" align="center" 
         border="0"></TABLE></TD></TR>
         <TR>
           <TD>
-            <P class="teaser">Figure 1:<SPAN class="text"> Algorithm overview. Given a 2D layout (a), we first extract its 2D mesh (b) with different panels in different colors. By providing each folding edge with the same angle, which is π/2, an initial 3D model can be constructed (c). The final carton model (e) is built by a shape optimization technique based on a series of suggested geometrical constraints (d).</SPAN></P></TD></TR>
+            <P class="teaser">Figure 1:<SPAN class="text"> The cycle regularization implemented along with two networks. (a) is the implementation with AtlasNet Groueix et al. (2018). f is the forward 3D surface decoder in the original network and g is our inverse decoder used to form the regularization term. (b) is the implementation with Pixel2Mesh Wang et al. (2018). Pixel2Mesh Wang et al. (2018) adopts the coarse-to-fine framework and uses three G-ResNet blocks (f1 , f2 , f3) to map the mesh to target shape on three different point density. The graph-unpooling layers are used for mesh upsampling. We use three point-wise MLP (g1 , g2 , g3) as the inverse decoders for each level of point density and form a regularization term for each level.</SPAN></P></TD></TR>
         <TR>
           <TD>&nbsp;</TD></TR>
         <TR>
@@ -182,30 +185,30 @@ body {
             <P class="title1">Results:</P></TD></TR>
         <TR>
           <TD>
-            <DIV align="center"><IMG width="800" alt="AutomaticalResult" src="figures/resulta.png"></DIV></TD></TR>
+            <DIV align="center"><IMG width="800" alt="atlas_svr" src="./atlas_svr.png"></DIV></TD></TR>
         <TR>
           <TD>
-            <DIV align="center"><SPAN class="teaser">Figure 2:</SPAN> <SPAN 
-            class="text">Eight carton examples that can be automatically generated. For each example, four subfigures are shown from left to right: the input 2D layout, an intermediate stage during folding, and the final 3D shape from two views.</SPAN></DIV></TD></TR>
+            <DIV align="left"><SPAN class="teaser">Figure 2:</SPAN> <SPAN 
+            class="text"> Cycle regularization on AtlasNet. All the visualized cases here are selected from the test set of AtlasNet. We manually adjust the view direction for some meshes to better expose the differences. The red rectangles highlight a case where more details are preserved than the original network because injectivity is enforced with our cycle regularization.</SPAN></DIV></TD></TR>
         <TR>
           <TD>&nbsp;</TD></TR>
         <TR>
           <TD>
-            <DIV align="center"><IMG width="800" alt="OptimizationResult" src="figures/resultb.png"></DIV></TD></TR>
+            <DIV align="center"><IMG width="800" alt="p2m_svr" src="./p2m_svr.png"></DIV></TD></TR>
         <TR>
           <TD>
-            <DIV align="center"><SPAN class="teaser">Figure 3:</SPAN><SPAN 
-            class="text"> <SPAN class="text2">Six complicated results with shape refinement. In each example, the first two images represent the 2D layout and the initial model, and the last two show the final model from different views. The middle images illustrate the intermediate shapes with different shape constraints, which are marked in red circles.
+            <DIV align="left"><SPAN class="teaser">Figure 3:</SPAN><SPAN 
+            class="text"> <SPAN class="text2">Cycle regularization on Pixel2Mesh. These examples are selected from the test set of Pixel2Mesh. We adjust the view direction for some meshes to better expose the differences.
             </SPAN></SPAN></DIV></TD></TR>
         <TR>
           <TD>&nbsp;</TD></TR>
         <TR>
           <TD>
-            <DIV align="center"><IMG width="800" alt="LayoutOptimizationResult" src="figures/editing.png"></DIV></TD></TR>
+            <DIV align="center"><IMG width="800" alt="p2m_3level" src="./3level.png"></DIV></TD></TR>
         <TR>
           <TD>
-            <DIV align="center"><SPAN class="teaser">Figure 3:</SPAN><SPAN 
-            class="text"> <SPAN class="text2">Two examples of layout modification from 3D model editing. For each example, a box-like carton can be generated from the given 2D layout. Users can edit the shape of the 3D carton by dragging edges in our system. By enforcing the shape rigidity constraints, our system automatically updates the 2D layout.
+            <DIV align="left"><SPAN class="teaser">Figure 4:</SPAN><SPAN 
+            class="text"> <SPAN class="text2">Visualization of the effect of our cycle regularization in the coarse-to-fine framework of Pixel2Mesh. The green rectangle shows a close-up view of a subtle self-intersection in the airplane model.
             </SPAN></SPAN></DIV></TD></TR>
         <TR>
           <TD>&nbsp;</TD></TR>
@@ -224,8 +227,8 @@ body {
           <TD><SPAN class="title1">Main References:</SPAN></TD></TR>
         <TR>
           <TD>
-            <P class="text2"> [1] S. Bouaziz, M. Deuss, Y. Schwartzburg, T. Weise, M. Pauly. Shape-up: shaping discrete geometry with projections. Comput. Graph. Forum(2012).
-            <P class="text2"> [2] G. Fussell. The beginner’s guide to packaging design. https://design.tutsplus.com/articles/the-beginners-guide-to-packaging-design--cms-27380.
+            <P class="text2"> [1] Wang, N., Zhang, Y., Li, Z., Fu, Y., Liu, W., Jiang, Y.G., 2018. Pixel2mesh: generating 3D mesh models from single RGB images. In: The European Conference on Computer Vision. ECCV.
+            <P class="text2"> [2] Groueix, T., Fisher, M., Kim, V.G., Russell, B.C., Aubry, M., 2018. A papier-mâché approach to learning 3D surface generation. In: The IEEE Conference on Computer Vision and Pattern Recognition. CVPR.
         </P></TD></TR>
         <TR>
         <TR>
@@ -257,7 +260,7 @@ body {
             <UL>
               <LI class="download"><A href="./ParamNet.pdf">Paper 
               </A></LI>
-              <LI class="download"><A href="https://github.com/ssfly/FoldingCartons_2018/tree/master/video">Video</A></LI></UL></TD></TR></TBODY></TABLE>
+              <LI class="download"><A href="https://data.mendeley.com/datasets/52z7nxkkz6/draft?a=3e7e6179-8290-4dea-9025-1998a594da12">Code and Trained Model</A></LI></UL></TD></TR></TBODY></TABLE>
       <TABLE width="900" align="center">
         <TBODY>
         <TR>
